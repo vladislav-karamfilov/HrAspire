@@ -10,15 +10,14 @@ var blobs = builder
     .RunAsEmulator(c => c.WithDataVolume("blob-data"))
     .AddBlobs("blobs");
 
-var apiService = builder
-    .AddProject<Projects.HrAspire_ApiService>("apiservice")
-    .WithReference(db)
-    .WithReference(blobs)
-    .WithReplicas(2);
+//var apiService = builder
+//    .AddProject<Projects.HrAspire_ApiService>("apiservice")
+//    .WithReference(db)
+//    .WithReference(blobs)
+//    .WithReplicas(2);
 
 builder
     .AddProject<Projects.HrAspire_Web>("webfrontend")
-    .WithExternalHttpEndpoints()
-    .WithReference(apiService);
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();

@@ -10,14 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HrAspire.ApiService\HrAspire.ApiService.csproj" />
-    <ProjectReference Include="..\HrAspire.Web\HrAspire.Web.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.1" />
     <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="8.0.1" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HrAspire.Web\HrAspire.Web.csproj" />
   </ItemGroup>
 
 </Project>

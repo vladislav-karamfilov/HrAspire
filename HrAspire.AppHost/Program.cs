@@ -1,23 +1,28 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var db = builder
-    .AddPostgres("db")
+var postgres = builder
+    .AddPostgres("postgres")
     .WithDataVolume("db-data")
-    .AddDatabase("hr-aspire");
+    .WithPgAdmin();
 
-var blobs = builder
-    .AddAzureStorage("storage")
-    .RunAsEmulator(c => c.WithDataVolume("blob-data"))
-    .AddBlobs("blobs");
+var employeesDb = postgres.AddDatabase("employees-db", "employees");
+var salariesDb = postgres.AddDatabase("salaries-db", "salaries");
+var vacationsDb = postgres.AddDatabase("vacations-db", "vacations");
 
-//var apiService = builder
-//    .AddProject<Projects.HrAspire_ApiService>("apiservice")
-//    .WithReference(db)
-//    .WithReference(blobs)
-//    .WithReplicas(2);
+var azureStorage = builder
+    .AddAzureStorage("azure-storage")
+    .RunAsEmulator(c => c.WithDataVolume("blob-data"));
+
+var blobs = azureStorage.AddBlobs("blobs");
+
+var apiGateway = builder
+    .AddProject<Projects.HrAspire_Web_ApiGateway>("api-gateway")
+    .WithReference(employeesDb)
+    .WithExternalHttpEndpoints();
 
 builder
-    .AddProject<Projects.HrAspire_Web>("webfrontend")
+    .AddProject<Projects.HrAspire_Web>("web-front-end")
+    .WithReference(apiGateway)
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();

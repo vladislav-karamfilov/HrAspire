@@ -28,6 +28,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web", "HrAspire.We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Client", "HrAspire.Web.Client\HrAspire.Web.Client.csproj", "{2FB2DD8B-EE11-4DED-9C6F-30312FD5350B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Web.ApiGateway", "HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj", "{8A56DE28-F499-43BB-90E6-7B24AB96FA96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{2FB2DD8B-EE11-4DED-9C6F-30312FD5350B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FB2DD8B-EE11-4DED-9C6F-30312FD5350B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FB2DD8B-EE11-4DED-9C6F-30312FD5350B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

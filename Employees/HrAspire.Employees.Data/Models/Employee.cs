@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Identity;
 
 public class Employee : IdentityUser
 {
+    public override required string? UserName { get; set; }
+
+    public override required string? Email { get; set; }
+
     public required string FullName { get; set; }
 
     public DateOnly DateOfBirth { get; set; }
 
-    public required string Department { get; set; }
+    public string? Department { get; set; }
 
     public required string Position { get; set; }
 

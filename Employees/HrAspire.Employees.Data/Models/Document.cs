@@ -10,11 +10,11 @@ public class Document
 
     public string EmployeeId { get; set; } = default!;
 
-    public Employee Employee { get; set; } = default!;
+    public Employee? Employee { get; set; }
 
     public string CreatedById { get; set; } = default!;
 
-    public Employee CreatedBy { get; set; } = default!;
+    public Employee? CreatedBy { get; set; }
 
     public DateTime CreatedOn { get; set; }
 }

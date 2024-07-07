@@ -29,18 +29,17 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
-
-app.MapDefaultEndpoints();
-
-app.MapGet("/apiBaseUrl", (IConfiguration configuration) => configuration["ApiGatewayUrl"]);
 
 app
     .MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(HrAspire.Web.Client._Imports).Assembly);
+
+app.MapDefaultEndpoints();
+
+app.MapGet("/apiBaseUrl", (IConfiguration configuration) => configuration["ApiGatewayUrl"]);
 
 app.Run();

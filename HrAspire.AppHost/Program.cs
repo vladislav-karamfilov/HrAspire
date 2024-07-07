@@ -4,7 +4,7 @@ var postgres = builder
     .AddPostgres(
         "postgres",
         // workaround for https://github.com/dotnet/aspire/issues/1151
-        password: builder.CreateResourceBuilder(new ParameterResource("postgres-password", _ => "workaround-PASS!", secret: true)))
+        password: builder.CreateResourceBuilder(new ParameterResource("postgres-password", _ => "Workaround!!-P755!", secret: true)))
     .WithDataVolume("db-data")
     .WithPgAdmin();
 

@@ -1,12 +1,17 @@
-using HrAspire.Web.Client.Pages;
 using HrAspire.Web.Components;
+using HrAspire.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.AddServiceDefaults();
+
+builder.Services.AddHttpClient<ApiGatewayClient>(static client => client.BaseAddress = new Uri("https://api-gateway"));
 
 var app = builder.Build();
 
@@ -18,6 +23,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -27,7 +33,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
+app.MapDefaultEndpoints();
+
+app.MapGet("/apiBaseUrl", static (IConfiguration configuration) => configuration["ApiGatewayUrl"]);
+
+app
+    .MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(HrAspire.Web.Client._Imports).Assembly);

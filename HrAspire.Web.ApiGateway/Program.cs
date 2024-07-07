@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors();
+
 builder.Services.AddNpgsql<EmployeesDbContext>("employees-db", static opts => opts.MigrationsAssembly("HrAspire.Web.ApiGateway"));
 
 var app = builder.Build();
@@ -19,6 +21,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(options => options
+    .WithOrigins(app.Configuration["WebFrontEndUrl"]!)
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
 
 var summaries = new[]
 {

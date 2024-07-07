@@ -1,7 +1,21 @@
 ﻿@page "/"
+@using HrAspire.Web.Services
+
+@inject ApiGatewayClient HttpClient
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+@Result
+
+@code {
+    private string? Result { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Result = await this.HttpClient.GetWeatherAsync();
+    }
+}

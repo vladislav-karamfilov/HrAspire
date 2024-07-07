@@ -20,9 +20,16 @@ var apiGateway = builder
     .WithReference(employeesDb)
     .WithExternalHttpEndpoints();
 
-builder
+var apiGatewayEndpoint = apiGateway.GetEndpoint("https");
+
+var webFrontEnd = builder
     .AddProject<Projects.HrAspire_Web>("web-front-end")
     .WithReference(apiGateway)
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithEnvironment("ApiGatewayUrl", apiGatewayEndpoint);
+
+var webFrontEndEndpoint = webFrontEnd.GetEndpoint("https");
+
+apiGateway = apiGateway.WithEnvironment("WebFrontEndUrl", webFrontEndEndpoint);
 
 builder.Build().Run();

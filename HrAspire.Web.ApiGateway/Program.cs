@@ -9,7 +9,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors();
 
-builder.Services.AddNpgsql<EmployeesDbContext>("employees-db", static opts => opts.MigrationsAssembly("HrAspire.Web.ApiGateway"));
+builder.AddServiceDefaults();
+
+builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 
 var app = builder.Build();
 
@@ -27,6 +29,8 @@ app.UseCors(policyBuilder => policyBuilder
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());
+
+app.MapDefaultEndpoints();
 
 var summaries = new[]
 {
@@ -48,10 +52,11 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-using (var db = app.Services.GetRequiredService<EmployeesDbContext>())
-{
-    await db.Database.EnsureCreatedAsync();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
+//    await db.Database.EnsureCreatedAsync();
+//}
 
 app.Run();
 

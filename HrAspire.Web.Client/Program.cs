@@ -13,6 +13,5 @@ await builder.Build().RunAsync();
 static async Task<string> GetApiBaseUrlAsync(string baseAddress)
 {
     using var httpClient = new HttpClient() { BaseAddress = new Uri(baseAddress) };
-
     return await httpClient.GetStringAsync("/apiBaseUrl");
 }

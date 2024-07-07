@@ -11,7 +11,7 @@ builder.Services
 
 builder.AddServiceDefaults();
 
-builder.Services.AddHttpClient<ApiGatewayClient>(static client => client.BaseAddress = new Uri("https://api-gateway"));
+builder.Services.AddHttpClient<ApiGatewayClient>(client => client.BaseAddress = new Uri("https://api-gateway"));
 
 var app = builder.Build();
 
@@ -35,7 +35,7 @@ app.UseAntiforgery();
 
 app.MapDefaultEndpoints();
 
-app.MapGet("/apiBaseUrl", static (IConfiguration configuration) => configuration["ApiGatewayUrl"]);
+app.MapGet("/apiBaseUrl", (IConfiguration configuration) => configuration["ApiGatewayUrl"]);
 
 app
     .MapRazorComponents<App>()

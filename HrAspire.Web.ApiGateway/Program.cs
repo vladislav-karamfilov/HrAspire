@@ -22,7 +22,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(options => options
+app.UseCors(policyBuilder => policyBuilder
     .WithOrigins(app.Configuration["WebFrontEndUrl"]!)
     .AllowAnyMethod()
     .AllowAnyHeader()
@@ -47,6 +47,11 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+using (var db = app.Services.GetRequiredService<EmployeesDbContext>())
+{
+    await db.Database.EnsureCreatedAsync();
+}
 
 app.Run();
 

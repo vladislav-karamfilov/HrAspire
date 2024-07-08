@@ -4,17 +4,17 @@ public class Document
 {
     public int Id { get; set; }
 
-    public required string Title { get; set; }
+    public string Title { get; set; } = default!;
 
-    public required string Url { get; set; }
+    public string Url { get; set; } = default!;
 
     public string EmployeeId { get; set; } = default!;
 
-    public Employee Employee { get; set; } = default!;
+    public Employee? Employee { get; set; }
 
     public string CreatedById { get; set; } = default!;
 
-    public Employee CreatedBy { get; set; } = default!;
+    public Employee? CreatedBy { get; set; }
 
     public DateTime CreatedOn { get; set; }
 }

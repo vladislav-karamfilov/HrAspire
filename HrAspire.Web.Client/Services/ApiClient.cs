@@ -1,10 +1,10 @@
 ﻿namespace HrAspire.Web.Services;
 
-public class ApiGatewayClient
+public class ApiClient
 {
     private readonly HttpClient httpClient;
 
-    public ApiGatewayClient(HttpClient httpClient)
+    public ApiClient(HttpClient httpClient)
     {
         this.httpClient = httpClient;
     }

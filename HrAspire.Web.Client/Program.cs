@@ -8,7 +8,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var apiBaseUrl = await GetApiBaseUrlAsync(builder);
 
 builder.Services
-    .AddHttpClient<ApiGatewayClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
+    .AddHttpClient<ApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<CookieHttpMessageHandler>();
 
 await builder.Build().RunAsync();

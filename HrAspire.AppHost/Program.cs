@@ -1,10 +1,12 @@
+using HrAspire.AppHost;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder
     .AddPostgres(
         "postgres",
         // workaround for https://github.com/dotnet/aspire/issues/1151
-        password: builder.CreateResourceBuilder(new ParameterResource("postgres-password", _ => "Workaround!!-P755!", secret: true)))
+        password: builder.CreateStablePassword("postgres-password", special: false))
     .WithDataVolume("db-data")
     .WithPgAdmin();
 

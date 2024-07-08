@@ -1,4 +1,8 @@
 using HrAspire.Employees.Data;
+using HrAspire.Employees.Data.Models;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +17,22 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
+builder.Services.AddAuthorizationBuilder();
+
+builder.Services
+    .AddIdentityCore<Employee>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<EmployeesDbContext>()
+    .AddApiEndpoints();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
+    await db.Database.EnsureCreatedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -30,7 +49,25 @@ app.UseCors(policyBuilder => policyBuilder
     .AllowAnyHeader()
     .AllowCredentials());
 
-app.MapDefaultEndpoints();
+app.MapIdentityApi<Employee>();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+// https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
+app
+    .MapPost("/logout", async (SignInManager<Employee> signInManager, [FromBody] object empty) =>
+    {
+        if (empty is not null)
+        {
+            await signInManager.SignOutAsync();
+
+            return Results.Ok();
+        }
+
+        return Results.Unauthorized();
+    })
+    .RequireAuthorization();
 
 var summaries = new[]
 {
@@ -52,11 +89,7 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
-//    await db.Database.EnsureCreatedAsync();
-//}
+app.MapDefaultEndpoints();
 
 app.Run();
 

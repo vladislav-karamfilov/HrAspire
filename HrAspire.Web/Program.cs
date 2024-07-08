@@ -11,7 +11,7 @@ builder.Services
 
 builder.AddServiceDefaults();
 
-builder.Services.AddHttpClient<ApiGatewayClient>(client => client.BaseAddress = new Uri("https://api-gateway"));
+builder.Services.AddHttpClient<ApiClient>(client => client.BaseAddress = new Uri("https://api-gateway"));
 
 var app = builder.Build();
 

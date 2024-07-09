@@ -1,0 +1,74 @@
+﻿@using HrAspire.Web.Client.Models.Accounts
+@using HrAspire.Web.Client.Services
+
+@page "/login"
+
+@inject IAccountManagementService AccountManagementService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Log in</PageTitle>
+
+<h1>Log in</h1>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <StatusMessage Message="@ErrorMessage" IsError="true" />
+            <EditForm Model="Input" OnValidSubmit="LoginUser">
+                <DataAnnotationsValidator />
+                <hr />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email"
+                               class="form-control"
+                               autocomplete="username"
+                               aria-required="true"
+                               placeholder="name@example.com" />
+                    <label for="email" class="form-label">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password"
+                               @bind-Value="Input.Password"
+                               class="form-control"
+                               autocomplete="current-password"
+                               aria-required="true"
+                               placeholder="password" />
+                    <label for="password" class="form-label">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                </div>
+                <div>
+                    <p>
+                        <a href="/forgotten-password">Forgot your password?</a>
+                    </p>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    private string? ErrorMessage { get; set; }
+
+    private LoginInputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private async Task LoginUser()
+    {
+        this.ErrorMessage = null;
+
+        var loggedIn = await this.AccountManagementService.LoginAsync(this.Input.Email, this.Input.Password);
+        if (loggedIn)
+        {
+            this.NavigationManager.NavigateTo(string.IsNullOrWhiteSpace(this.ReturnUrl) ? "/" : this.ReturnUrl);
+        }
+        else
+        {
+            this.ErrorMessage = "Invalid email and/or password.";
+        }
+    }
+}

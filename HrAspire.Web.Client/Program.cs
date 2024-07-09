@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddAuthorizationCore();
-builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>();
+builder.Services.AddScoped(serviceProvider => (IAccountManagementService)serviceProvider.GetRequiredService<AuthenticationStateProvider>());
 
 builder.Services.AddTransient<CookieHttpMessageHandler>();
 
@@ -18,7 +19,7 @@ builder.Services
     .AddHttpMessageHandler<CookieHttpMessageHandler>();
 
 builder.Services
-    .AddHttpClient<AuthApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
+    .AddHttpClient<AccountApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<CookieHttpMessageHandler>();
 
 await builder.Build().RunAsync();

@@ -1,5 +1,8 @@
+using System.Security.Claims;
+
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
+using HrAspire.Web.ApiGateway.Endpoints;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -58,25 +61,10 @@ app.UseCors(policyBuilder => policyBuilder
     .AllowAnyHeader()
     .AllowCredentials());
 
-app.MapIdentityApi<Employee>();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
-app
-    .MapPost("/logout", async (SignInManager<Employee> signInManager, [FromBody] object empty) =>
-    {
-        if (empty is not null)
-        {
-            await signInManager.SignOutAsync();
-
-            return Results.Ok();
-        }
-
-        return Results.Unauthorized();
-    })
-    .RequireAuthorization();
+app.MapAccountEndpoints();
 
 var summaries = new[]
 {

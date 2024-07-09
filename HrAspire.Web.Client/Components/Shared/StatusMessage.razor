@@ -1,0 +1,16 @@
+﻿@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert alert-@StatusMessageClass" role="alert">
+        @Message
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public bool IsError { get; set; }
+
+    private string StatusMessageClass => this.IsError ? "danger" : "success";
+}

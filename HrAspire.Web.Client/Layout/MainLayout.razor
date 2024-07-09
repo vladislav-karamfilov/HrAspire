@@ -9,8 +9,7 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <span>Hello, TODO</span>
-
+                    <span>Hello, @UserName</span>
                     <a href="/profile">Profile</a>
                 </Authorized>
                 <NotAuthorized>
@@ -30,3 +29,16 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    private string? UserName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.UserName = authState.User.Identity?.Name;
+    }
+}

@@ -2,7 +2,9 @@
 
 public class UserInfo
 {
+    public string Id { get; set; } = default!;
+
     public string Email { get; set; } = default!;
 
-    public Dictionary<string, string>? Claims { get; set; }
+    public string[] Roles { get; set; } = [];
 }

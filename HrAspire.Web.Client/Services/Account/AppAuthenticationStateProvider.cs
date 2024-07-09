@@ -2,6 +2,8 @@
 
 using System.Security.Claims;
 
+using HrAspire.Web.Common.Models.Account;
+
 using Microsoft.AspNetCore.Components.Authorization;
 
 public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAccountManagementService
@@ -45,9 +47,9 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAcco
         return new AuthenticationState(Unauthenticated);
     }
 
-    public async Task<bool> LoginAsync(string email, string password)
+    public async Task<bool> LoginAsync(LoginRequestModel model)
     {
-        var loggedIn = await this.accountApiClient.LoginAsync(email, password);
+        var loggedIn = await this.accountApiClient.LoginAsync(model);
         if (loggedIn)
         {
             this.NotifyAuthenticationStateChanged(this.GetAuthenticationStateAsync());

@@ -52,7 +52,7 @@
 
     private string? ErrorMessage { get; set; }
 
-    private LoginInputModel Input { get; set; } = new();
+    private LoginRequestModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
@@ -70,7 +70,7 @@
     {
         this.ErrorMessage = null;
 
-        var loggedIn = await this.AccountManagementService.LoginAsync(this.Input.Email, this.Input.Password);
+        var loggedIn = await this.AccountManagementService.LoginAsync(this.Input);
         if (loggedIn)
         {
             this.NavigationManager.NavigateTo(string.IsNullOrWhiteSpace(this.ReturnUrl) ? "/" : this.ReturnUrl);

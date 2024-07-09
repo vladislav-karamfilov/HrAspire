@@ -3,7 +3,8 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using HrAspire.Web.Client.Services.Account.Models;
+
+using HrAspire.Web.Common.Models.Account;
 
 public class AccountApiClient
 {
@@ -17,9 +18,9 @@ public class AccountApiClient
         this.httpClient = httpClient;
     }
 
-    public async Task<bool> LoginAsync(string email, string password)
+    public async Task<bool> LoginAsync(LoginRequestModel model)
     {
-        var response = await httpClient.PostAsJsonAsync("account/login?useCookies=true", new { email, password });
+        var response = await httpClient.PostAsJsonAsync("account/login?useCookies=true", model, JsonSerializerOptions);
 
         return response.IsSuccessStatusCode;
     }
@@ -27,17 +28,17 @@ public class AccountApiClient
     public async Task<bool> LogoutAsync()
     {
         // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
-        var response = await httpClient.PostAsJsonAsync("account/logout", new object());
+        var response = await httpClient.PostAsJsonAsync("account/logout", new LogoutRequestModel());
 
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<UserInfo?> GetUserInfoAsync()
+    public async Task<UserInfoResponseModel?> GetUserInfoAsync()
     {
         var userResponse = await httpClient.GetAsync("account/userInfo");
         if (userResponse.IsSuccessStatusCode)
         {
-            return await userResponse.Content.ReadFromJsonAsync<UserInfo>(JsonSerializerOptions);
+            return await userResponse.Content.ReadFromJsonAsync<UserInfoResponseModel>(JsonSerializerOptions);
         }
 
         return null;

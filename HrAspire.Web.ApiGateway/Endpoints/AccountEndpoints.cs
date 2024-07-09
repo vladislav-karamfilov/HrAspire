@@ -3,6 +3,7 @@
 using System.Security.Claims;
 
 using HrAspire.Employees.Data.Models;
+using HrAspire.Web.Common.Models.Account;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +17,19 @@ public static class AccountEndpoints
         accountGroup.MapIdentityApi<Employee>();
 
         accountGroup
-            .MapGet("/UserInfo", (ClaimsPrincipal user) =>
+            .MapGet("/UserInfo", (ClaimsPrincipal user) => new UserInfoResponseModel
             {
-                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                var userEmail = user.FindFirstValue(ClaimTypes.Email);
-                var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
-
-                return new { id = userId, email = userEmail, roles }; // TODO: extract model
+                Id = user.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                Email = user.FindFirstValue(ClaimTypes.Email)!,
+                Roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList(),
             })
             .RequireAuthorization();
 
         // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
         accountGroup
-            .MapPost("/Logout", async (SignInManager<Employee> signInManager, [FromBody] object empty) =>
+            .MapPost("/Logout", async (SignInManager<Employee> signInManager, [FromBody] LogoutRequestModel? model) =>
             {
-                if (empty is not null)
+                if (model is not null)
                 {
                     await signInManager.SignOutAsync();
 

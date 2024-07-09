@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Client", "HrAs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.ApiGateway", "HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj", "{8A56DE28-F499-43BB-90E6-7B24AB96FA96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Common", "HrAspire.Common\HrAspire.Common.csproj", "{A9183123-A148-4995-B4FE-A1F7C7275051}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Web.Common", "HrAspire.Web.Common\HrAspire.Web.Common.csproj", "{20F95957-E8BB-49A8-9103-DF4D0C377B25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,10 +82,10 @@ Global
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9183123-A148-4995-B4FE-A1F7C7275051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9183123-A148-4995-B4FE-A1F7C7275051}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9183123-A148-4995-B4FE-A1F7C7275051}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9183123-A148-4995-B4FE-A1F7C7275051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿@page "/login"
 
-@inject IAccountManagementService AccountManagementService
+@inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Log in</PageTitle>
@@ -10,7 +10,7 @@
     <div class="col-md-4">
         <section>
             <StatusMessage Message="@ErrorMessage" IsError="true" />
-            <EditForm Model="Input" OnValidSubmit="LoginUser">
+            <EditForm Model="Input" OnValidSubmit="LoginAsync">
                 <DataAnnotationsValidator />
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
@@ -66,11 +66,11 @@
         }
     }
 
-    private async Task LoginUser()
+    private async Task LoginAsync()
     {
         this.ErrorMessage = null;
 
-        var loggedIn = await this.AccountManagementService.LoginAsync(this.Input);
+        var loggedIn = await this.AuthenticationService.LoginAsync(this.Input);
         if (loggedIn)
         {
             this.NavigationManager.NavigateTo(string.IsNullOrWhiteSpace(this.ReturnUrl) ? "/" : this.ReturnUrl);

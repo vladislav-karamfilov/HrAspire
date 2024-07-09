@@ -43,4 +43,11 @@ public class AccountApiClient
 
         return null;
     }
+
+    public async Task<bool> SendForgottenPasswordEmailAsync(ForgottenPasswordRequestModel model)
+    {
+        var response = await this.httpClient.PostAsJsonAsync("/account/forgotPassword", model, JsonSerializerOptions);
+
+        return response.IsSuccessStatusCode;
+    }
 }

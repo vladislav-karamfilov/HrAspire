@@ -1,6 +1,6 @@
 ﻿@page "/logout"
 
-@inject IAccountManagementService AccountManagementService
+@inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Logout</PageTitle>
@@ -29,7 +29,7 @@
         var authState = await this.AuthState;
         if (authState.User.Identity?.IsAuthenticated == true)
         {
-            var loggedOut = await this.AccountManagementService.LogoutAsync();
+            var loggedOut = await this.AuthenticationService.LogoutAsync();
             if (loggedOut)
             {
                 this.NavigationManager.NavigateTo("/", forceLoad: true);

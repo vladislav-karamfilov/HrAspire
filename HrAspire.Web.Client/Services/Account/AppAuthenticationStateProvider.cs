@@ -6,7 +6,7 @@ using HrAspire.Web.Common.Models.Account;
 
 using Microsoft.AspNetCore.Components.Authorization;
 
-public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAccountManagementService
+public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAuthenticationService
 {
     private static readonly ClaimsPrincipal Unauthenticated = new(new ClaimsIdentity());
 

@@ -8,7 +8,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>();
-builder.Services.AddScoped(serviceProvider => (IAccountManagementService)serviceProvider.GetRequiredService<AuthenticationStateProvider>());
+builder.Services.AddScoped(serviceProvider => (IAuthenticationService)serviceProvider.GetRequiredService<AuthenticationStateProvider>());
 
 builder.Services.AddTransient<CookieHttpMessageHandler>();
 

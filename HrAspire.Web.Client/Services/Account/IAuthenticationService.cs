@@ -2,7 +2,7 @@
 
 using HrAspire.Web.Common.Models.Account;
 
-public interface IAccountManagementService
+public interface IAuthenticationService
 {
     Task<bool> LoginAsync(LoginRequestModel model);
 

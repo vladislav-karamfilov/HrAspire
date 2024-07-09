@@ -14,4 +14,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HrAspire.Common\HrAspire.Common.csproj" />
+  </ItemGroup>
+
 </Project>

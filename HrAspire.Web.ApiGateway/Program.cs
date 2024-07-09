@@ -1,11 +1,9 @@
-using System.Security.Claims;
-
+using HrAspire.Common;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 using HrAspire.Web.ApiGateway.Endpoints;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +30,7 @@ builder.Services
 builder.Services.AddAuthorizationBuilder();
 
 builder.Services
-    .AddIdentityCore<Employee>()
+    .AddIdentityCore<Employee>(options => options.Password.RequiredLength = GlobalConstants.PasswordMinLength)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<EmployeesDbContext>()
     .AddApiEndpoints();

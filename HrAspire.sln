@@ -8,19 +8,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.ServiceDefaults", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Employees", "Employees", "{885E4403-4B6C-4959-B8E8-DEBC2C15A837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Employees.Data", "Employees\HrAspire.Employees.Data\HrAspire.Employees.Data.csproj", "{F5EE5743-4964-40B7-8AE2-9FF3F438A5FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Employees.Data", "Employees\HrAspire.Employees.Data\HrAspire.Employees.Data.csproj", "{F5EE5743-4964-40B7-8AE2-9FF3F438A5FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Employees.Business", "Employees\HrAspire.Employees.Business\HrAspire.Employees.Business.csproj", "{E095B22F-9560-41F2-8AAC-10E51B134BC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Employees.Business", "Employees\HrAspire.Employees.Business\HrAspire.Employees.Business.csproj", "{E095B22F-9560-41F2-8AAC-10E51B134BC1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Salaries", "Salaries", "{BCE16A81-EB57-49A4-A942-AC2346E632F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Salaries.Business", "Salaries\HrAspire.Salaries.Business\HrAspire.Salaries.Business.csproj", "{4C61DFEE-376D-4CE8-AFCD-AB3EC9599C57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Salaries.Business", "Salaries\HrAspire.Salaries.Business\HrAspire.Salaries.Business.csproj", "{4C61DFEE-376D-4CE8-AFCD-AB3EC9599C57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vacations", "Vacations", "{EEB03013-3150-463F-BF79-B738C01CDDD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Vacations.Data", "Vacations\HrAspire.Vacations.Data\HrAspire.Vacations.Data.csproj", "{8C4D59F2-7F4D-468B-99DB-6EB362D2959A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Vacations.Data", "Vacations\HrAspire.Vacations.Data\HrAspire.Vacations.Data.csproj", "{8C4D59F2-7F4D-468B-99DB-6EB362D2959A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Vacations.Business", "Vacations\HrAspire.Vacations.Business\HrAspire.Vacations.Business.csproj", "{E0B2C8C9-CE24-4D35-BD44-4EA3C83F9F99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Vacations.Business", "Vacations\HrAspire.Vacations.Business\HrAspire.Vacations.Business.csproj", "{E0B2C8C9-CE24-4D35-BD44-4EA3C83F9F99}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Salaries.Data", "Salaries\HrAspire.Salaries.Data\HrAspire.Salaries.Data.csproj", "{BC4474E8-0CCF-419D-AA8A-80DD6A80B9BB}"
 EndProject
@@ -28,7 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web", "HrAspire.We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Client", "HrAspire.Web.Client\HrAspire.Web.Client.csproj", "{2FB2DD8B-EE11-4DED-9C6F-30312FD5350B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Web.ApiGateway", "HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj", "{8A56DE28-F499-43BB-90E6-7B24AB96FA96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.ApiGateway", "HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj", "{8A56DE28-F499-43BB-90E6-7B24AB96FA96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Common", "HrAspire.Common\HrAspire.Common.csproj", "{A9183123-A148-4995-B4FE-A1F7C7275051}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,10 @@ Global
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9183123-A148-4995-B4FE-A1F7C7275051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9183123-A148-4995-B4FE-A1F7C7275051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9183123-A148-4995-B4FE-A1F7C7275051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9183123-A148-4995-B4FE-A1F7C7275051}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,8 @@
 
 using System.ComponentModel.DataAnnotations;
 
+using HrAspire.Common;
+
 public class LoginInputModel
 {
     [Required]
@@ -9,6 +11,6 @@ public class LoginInputModel
     public string Email { get; set; } = default!;
 
     [Required]
-    [MinLength(6, ErrorMessage = "{0} must be at least {1} characters long.")] // TODO: const
+    [MinLength(GlobalConstants.PasswordMinLength, ErrorMessage = "{0} must be at least {1} characters long.")]
     public string Password { get; set; } = default!;
 }

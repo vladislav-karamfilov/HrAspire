@@ -1,5 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@implements IDisposable
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -36,9 +40,20 @@
 
     private string? UserName { get; set; }
 
+    public void Dispose() => this.AuthenticationStateProvider.AuthenticationStateChanged -= this.HandleAuthStateChanged;
+
     protected override async Task OnInitializedAsync()
     {
-        var authState = await this.AuthState;
-        this.UserName = authState.User.Identity?.Name;
+        await this.SetUserNameAsync(this.AuthState);
+
+        this.AuthenticationStateProvider.AuthenticationStateChanged += this.HandleAuthStateChanged;
+    }
+
+    private async void HandleAuthStateChanged(Task<AuthenticationState> authState) => await this.SetUserNameAsync(authState);
+
+    private async Task SetUserNameAsync(Task<AuthenticationState> authState)
+    {
+        var auth = await this.AuthState;
+        this.UserName = auth.User.Identity?.Name;
     }
 }

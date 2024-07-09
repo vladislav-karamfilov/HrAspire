@@ -47,12 +47,24 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     private string? ErrorMessage { get; set; }
 
     private LoginInputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            this.NavigationManager.NavigateTo("/");
+        }
+    }
 
     private async Task LoginUser()
     {

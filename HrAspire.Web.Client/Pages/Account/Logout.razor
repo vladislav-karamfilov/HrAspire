@@ -1,0 +1,43 @@
+﻿@page "/logout"
+
+@inject IAccountManagementService AccountManagementService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Logout</PageTitle>
+
+<h1>Logout</h1>
+
+<StatusMessage Message="@ErrorMessage" IsError="true"/>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="alert alert-info">Logging you out...</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-success">You're logged out. <a href="/login">Log in.</a></div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string? ErrorMessage { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            var loggedOut = await this.AccountManagementService.LogoutAsync();
+            if (loggedOut)
+            {
+                this.NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                this.ErrorMessage = "An unexpected error has occurred. Please try again later.";
+            }
+        }
+    }
+}

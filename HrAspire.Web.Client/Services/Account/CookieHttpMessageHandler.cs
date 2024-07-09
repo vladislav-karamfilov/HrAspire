@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Web.Client.Services;
+﻿namespace HrAspire.Web.Client.Services.Account;
 
 using System.Threading;
 using System.Threading.Tasks;

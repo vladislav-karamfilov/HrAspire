@@ -1,4 +1,4 @@
-using HrAspire.Web.Client.Services;
+using HrAspire.Web.Client.Services.Account;
 using HrAspire.Web.Services;
 
 using Microsoft.AspNetCore.Components.Authorization;

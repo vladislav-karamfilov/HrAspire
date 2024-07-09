@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Web.Client.Models.Accounts;
+﻿namespace HrAspire.Web.Client.Models.Account;
 
 using System.ComponentModel.DataAnnotations;
 

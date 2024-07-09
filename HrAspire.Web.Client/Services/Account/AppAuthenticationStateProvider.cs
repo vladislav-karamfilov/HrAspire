@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Web.Client.Services;
+﻿namespace HrAspire.Web.Client.Services.Account;
 
 using System.Security.Claims;
 
@@ -19,7 +19,7 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAcco
     {
         try
         {
-            var userInfo = await this.accountApiClient.GetUserInfoAsync();
+            var userInfo = await accountApiClient.GetUserInfoAsync();
             if (userInfo is not null)
             {
                 var claims = new List<Claim>
@@ -46,10 +46,10 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAcco
 
     public async Task<bool> LoginAsync(string email, string password)
     {
-        var loggedIn = await this.accountApiClient.LoginAsync(email, password);
+        var loggedIn = await accountApiClient.LoginAsync(email, password);
         if (loggedIn)
         {
-            this.NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
         return loggedIn;
@@ -57,10 +57,10 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAcco
 
     public async Task<bool> LogoutAsync()
     {
-        var loggedOut = await this.accountApiClient.LogoutAsync();
+        var loggedOut = await accountApiClient.LogoutAsync();
         if (loggedOut)
         {
-            this.NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
         return loggedOut;

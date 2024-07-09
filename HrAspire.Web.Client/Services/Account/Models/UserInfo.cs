@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Web.Client.Services;
+﻿namespace HrAspire.Web.Client.Services.Account.Models;
 
 public class UserInfo
 {

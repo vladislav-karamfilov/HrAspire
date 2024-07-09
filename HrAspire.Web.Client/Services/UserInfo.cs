@@ -4,5 +4,5 @@ public class UserInfo
 {
     public string Email { get; set; } = default!;
 
-    public Dictionary<string, string> Claims { get; set; } = [];
+    public Dictionary<string, string>? Claims { get; set; }
 }

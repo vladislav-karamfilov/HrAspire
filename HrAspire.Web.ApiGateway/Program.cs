@@ -17,7 +17,15 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
+builder.Services
+    .AddAuthentication(IdentityConstants.ApplicationScheme)
+    .AddIdentityCookies(options => options.ApplicationCookie!
+        .Configure(cookieOptions =>
+        {
+            cookieOptions.Cookie.SameSite = SameSiteMode.None;
+            cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        }));
+
 builder.Services.AddAuthorizationBuilder();
 
 builder.Services
@@ -28,6 +36,7 @@ builder.Services
 
 var app = builder.Build();
 
+// TODO: Extract to another service - console app for seeding data if on dev env
 using (var scope = app.Services.CreateScope())
 {
     using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();

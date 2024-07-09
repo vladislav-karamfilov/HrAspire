@@ -17,44 +17,6 @@ public class AuthApiClient
         this.httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<string>> RegisterAsync(string email, string password)
-    {
-        var response = await this.httpClient.PostAsJsonAsync("register", new { email, password });
-        if (response.IsSuccessStatusCode)
-        {
-            return [];
-        }
-
-        var errors = new List<string>();
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var problemDetails = JsonDocument.Parse(responseContent);
-        var errorList = problemDetails.RootElement.GetProperty("errors");
-
-        foreach (var errorEntry in errorList.EnumerateObject())
-        {
-            if (errorEntry.Value.ValueKind == JsonValueKind.String)
-            {
-                errors.Add(errorEntry.Value.GetString()!);
-            }
-            else if (errorEntry.Value.ValueKind == JsonValueKind.Array)
-            {
-                errors.AddRange(
-                    errorEntry.Value
-                        .EnumerateArray()
-                        .Select(e => e.GetString() ?? string.Empty)
-                        .Where(e => !string.IsNullOrEmpty(e)));
-            }
-        }
-
-        if (errors.Any())
-        {
-            return errors;
-        }
-
-        return ["An unexpected error has occurred. Please try again later."];
-    }
-
     public async Task<bool> LoginAsync(string email, string password)
     {
         var response = await this.httpClient.PostAsJsonAsync("login?useCookies=true", new { email, password });
@@ -64,7 +26,7 @@ public class AuthApiClient
 
     public async Task<bool> LogoutAsync()
     {
-        // https://learn.microsoft.com/en-us/aspnet/core/blazor/security/webassembly/standalone-with-identity?view=aspnetcore-8.0#antiforgery-support
+        // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
         const string EmptyObjectString = "{}";
         var emptyContent = new StringContent(EmptyObjectString, Encoding.UTF8, "application/json");
 
@@ -81,6 +43,6 @@ public class AuthApiClient
             return null;
         }
 
-        return await userResponse.Content.ReadFromJsonAsync<UserInfo?>();
+        return await userResponse.Content.ReadFromJsonAsync<UserInfo?>(JsonSerializerOptions);
     }
 }

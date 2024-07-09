@@ -4,13 +4,15 @@ using Microsoft.AspNetCore.Identity;
 
 public class Employee : IdentityUser
 {
-    public string FullName { get; set; } = default!;
+    // TODO: non-nullable
+    public string? FullName { get; set; } = default!;
 
     public DateOnly DateOfBirth { get; set; }
 
     public string? Department { get; set; }
 
-    public string Position { get; set; } = default!;
+    // TODO: non-nullable
+    public string? Position { get; set; } = default!;
 
     public string? ManagerId { get; set; }
 

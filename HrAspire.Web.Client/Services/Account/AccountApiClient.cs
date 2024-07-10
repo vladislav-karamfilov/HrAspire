@@ -20,7 +20,7 @@ public class AccountApiClient
 
     public async Task<bool> LoginAsync(LoginRequestModel model)
     {
-        var response = await httpClient.PostAsJsonAsync("account/login?useCookies=true", model, JsonSerializerOptions);
+        var response = await this.httpClient.PostAsJsonAsync("account/login?useCookies=true", model, JsonSerializerOptions);
 
         return response.IsSuccessStatusCode;
     }
@@ -28,14 +28,14 @@ public class AccountApiClient
     public async Task<bool> LogoutAsync()
     {
         // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
-        var response = await httpClient.PostAsJsonAsync("account/logout", new LogoutRequestModel());
+        var response = await this.httpClient.PostAsJsonAsync("account/logout", new LogoutRequestModel());
 
         return response.IsSuccessStatusCode;
     }
 
     public async Task<UserInfoResponseModel?> GetUserInfoAsync()
     {
-        var userResponse = await httpClient.GetAsync("account/userInfo");
+        var userResponse = await this.httpClient.GetAsync("account/userInfo");
         if (userResponse.IsSuccessStatusCode)
         {
             return await userResponse.Content.ReadFromJsonAsync<UserInfoResponseModel>(JsonSerializerOptions);

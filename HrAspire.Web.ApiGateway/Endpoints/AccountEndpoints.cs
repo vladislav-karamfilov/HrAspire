@@ -17,27 +17,31 @@ public static class AccountEndpoints
         accountGroup.MapIdentityApi<Employee>();
 
         accountGroup
-            .MapGet("/UserInfo", (ClaimsPrincipal user) => new UserInfoResponseModel
-            {
-                Id = user.FindFirstValue(ClaimTypes.NameIdentifier)!,
-                Email = user.FindFirstValue(ClaimTypes.Email)!,
-                Roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList(),
-            })
+            .MapGet(
+                "/UserInfo",
+                (ClaimsPrincipal user) => new UserInfoResponseModel
+                {
+                    Id = user.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                    Email = user.FindFirstValue(ClaimTypes.Email)!,
+                    Roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList(),
+                })
             .RequireAuthorization();
 
         // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
         accountGroup
-            .MapPost("/Logout", async (SignInManager<Employee> signInManager, [FromBody] LogoutRequestModel? model) =>
-            {
-                if (model is not null)
+            .MapPost(
+                "/Logout",
+                async (SignInManager<Employee> signInManager, [FromBody] LogoutRequestModel? model) =>
                 {
-                    await signInManager.SignOutAsync();
+                    if (model is not null)
+                    {
+                        await signInManager.SignOutAsync();
 
-                    return Results.Ok();
-                }
+                        return Results.Ok();
+                    }
 
-                return Results.Unauthorized();
-            })
+                    return Results.Unauthorized();
+                })
             .RequireAuthorization();
 
         return accountGroup;

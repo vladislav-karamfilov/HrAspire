@@ -1,5 +1,5 @@
+using HrAspire.Web.Client.Services;
 using HrAspire.Web.Components;
-using HrAspire.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services
 
 builder.AddServiceDefaults();
 
-builder.Services.AddHttpClient<ApiClient>(client => client.BaseAddress = new Uri("https://api-gateway"));
+builder.Services.AddApplicationServices(builder.Configuration["ApiGatewayUrl"]!);
 
 var app = builder.Build();
 
@@ -29,7 +29,9 @@ else
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
 app.UseAntiforgery();
 
 app

@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Web.Services;
+﻿namespace HrAspire.Web.Client.Services;
 
 public class ApiClient
 {
@@ -11,6 +11,6 @@ public class ApiClient
 
     public Task<string> GetWeatherAsync()
     {
-        return this.httpClient.GetStringAsync("/weatherforecast");
+        return httpClient.GetStringAsync("/weatherforecast");
     }
 }

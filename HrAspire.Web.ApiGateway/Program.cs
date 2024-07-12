@@ -1,5 +1,6 @@
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
+using HrAspire.Employees.Web;
 using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
 
@@ -26,6 +27,8 @@ builder.Services
             cookieOptions.Cookie.SameSite = SameSiteMode.None;
             cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         }));
+
+builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new("https://employees-service"));
 
 builder.Services.AddAuthorizationBuilder();
 
@@ -63,6 +66,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAccountEndpoints();
+
+app.MapEmployeesEndpoints();
 
 var summaries = new[]
 {

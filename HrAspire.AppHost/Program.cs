@@ -20,9 +20,15 @@ var azureStorage = builder
 
 var blobs = azureStorage.AddBlobs("blobs");
 
+var employeesService = builder
+    .AddProject<Projects.HrAspire_Employees_Web>("employees-service")
+    .WithReference(employeesDb)
+    .WithReference(blobs);
+
 var apiGateway = builder
     .AddProject<Projects.HrAspire_Web_ApiGateway>("api-gateway")
     .WithReference(employeesDb)
+    .WithReference(employeesService)
     .WithExternalHttpEndpoints();
 
 var apiGatewayEndpoint = apiGateway.GetEndpoint("https");

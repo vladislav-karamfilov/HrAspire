@@ -20,7 +20,13 @@ public class Employee : IdentityUser
 
     public DateTime CreatedOn { get; set; }
 
+    public string? CreatedById { get; set; }
+
+    public Employee? CreatedBy { get; set; }
+
     public ICollection<Document> Documents { get; set; } = [];
 
     public ICollection<Document> CreatedDocuments { get; set; } = [];
+
+    public ICollection<Employee> CreatedEmployees { get; set; } = [];
 }

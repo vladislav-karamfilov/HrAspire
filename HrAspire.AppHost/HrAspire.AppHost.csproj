@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Employees\HrAspire.Employees.Web\HrAspire.Employees.Web.csproj" />
     <ProjectReference Include="..\HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj" />
     <ProjectReference Include="..\HrAspire.Web\HrAspire.Web.csproj" />
   </ItemGroup>

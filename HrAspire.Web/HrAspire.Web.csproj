@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\HrAspire.Web.Client\HrAspire.Web.Client.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
   </ItemGroup>
 
 </Project>

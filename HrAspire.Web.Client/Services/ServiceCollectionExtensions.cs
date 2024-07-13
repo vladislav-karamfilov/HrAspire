@@ -22,9 +22,5 @@ public static class ServiceCollectionExtensions
         services
             .AddHttpClient<EmployeesApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
             .AddHttpMessageHandler<CookieHttpMessageHandler>();
-
-        services
-            .AddHttpClient<ApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
-            .AddHttpMessageHandler<CookieHttpMessageHandler>();
     }
 }

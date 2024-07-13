@@ -28,7 +28,7 @@ builder.Services
             cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         }));
 
-builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new("https://employees-service"));
+builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri("https://employees-service"));
 
 builder.Services.AddAuthorizationBuilder();
 

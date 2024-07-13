@@ -2,6 +2,7 @@
 
 using HrAspire.Employees.Web;
 using HrAspire.Web.ApiGateway.Mappers;
+using HrAspire.Web.Common.Models.Employees;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,7 @@ public static class EmployeesEndpoints
 
         employeesGroup
             .MapGet(
-                "/Page",
+                "/",
                 async (Employees.EmployeesClient employeesClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10) =>
                 {
                     var employeesResponse = await employeesClient.GetEmployeesPageAsync(
@@ -21,7 +22,7 @@ public static class EmployeesEndpoints
 
                     var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
 
-                    return employees;
+                    return new EmployeesPageResponseModel(employees, employeesResponse.Total);
                 });
         // .RequireAuthorization(); // TODO:
 

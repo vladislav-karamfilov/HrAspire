@@ -23,6 +23,7 @@ message GetEmployeeRequest {
 
 message GetEmployeesPageResponse {
 	repeated PageEmployee employees = 1;
+	int32 total = 2;
 }
 
 message GetEmployeeResponse {

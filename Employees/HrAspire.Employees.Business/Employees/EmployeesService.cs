@@ -19,6 +19,8 @@ public class EmployeesService : IEmployeesService
     public Task<EmployeeDetailsServiceModel?> GetEmployeeAsync(string id)
         => this.dbContext.Employees.Where(e => e.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
 
+    public Task<int> GetEmployeesCountAsync() => this.dbContext.Employees.CountAsync();
+
     public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesPageAsync(int pageNumber, int pageSize)
     {
         if (pageNumber < 0)

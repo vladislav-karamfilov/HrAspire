@@ -19,8 +19,9 @@ public class EmployeesGrpcService : Employees.EmployeesBase
     public override async Task<GetEmployeesPageResponse> GetEmployeesPage(GetEmployeesPageRequest request, ServerCallContext context)
     {
         var employees = await this.employeesService.GetEmployeesPageAsync(request.PageNumber, request.PageSize);
+        var total = await this.employeesService.GetEmployeesCountAsync();
 
-        var response = new GetEmployeesPageResponse();
+        var response = new GetEmployeesPageResponse { Total = total };
         foreach (var employee in employees)
         {
             response.Employees.Add(employee.MapToPageEmployee());
@@ -33,7 +34,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
     {
         var employee = await this.employeesService.GetEmployeeAsync(request.Id);
 
-        var response = new GetEmployeeResponse { Employee = employee?.MapToEmployeeDetails(), };
+        var response = new GetEmployeeResponse { Employee = employee?.MapToEmployeeDetails() };
 
         return response;
     }

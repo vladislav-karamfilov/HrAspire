@@ -21,9 +21,10 @@ message GetEmployeesPageResponse {
 }
 
 message PageEmployee {
-	string fullName = 1;
-	google.protobuf.Timestamp dateOfBirth = 2;
-	google.protobuf.StringValue department = 3;
-	string position = 4;
-	google.protobuf.Timestamp createdOn = 5;
+	string id = 1;
+	string fullName = 2;
+	google.protobuf.Timestamp dateOfBirth = 3;
+	google.protobuf.StringValue department = 4;
+	string position = 5;
+	google.protobuf.Timestamp createdOn = 6;
 }

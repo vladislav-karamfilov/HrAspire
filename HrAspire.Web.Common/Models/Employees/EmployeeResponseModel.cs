@@ -1,6 +1,8 @@
-﻿namespace HrAspire.Employees.Business.Employees;
+﻿namespace HrAspire.Web.Common.Models.Employees;
 
-public record EmployeeServiceModel(
+using System;
+
+public record EmployeeResponseModel(
     string Id,
     string FullName,
     DateOnly DateOfBirth,

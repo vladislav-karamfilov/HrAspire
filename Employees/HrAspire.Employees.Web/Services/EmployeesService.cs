@@ -26,6 +26,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         {
             response.Employees.Add(new PageEmployee
             {
+                Id = employee.Id,
                 FullName = employee.FullName,
                 DateOfBirth = employee.DateOfBirth.ToDateTime(default, DateTimeKind.Utc).ToTimestamp(),
                 CreatedOn = employee.CreatedOn.ToTimestamp(),

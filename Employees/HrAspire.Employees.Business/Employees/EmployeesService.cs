@@ -17,20 +17,7 @@ public class EmployeesService : IEmployeesService
     }
 
     public Task<EmployeeDetailsServiceModel?> GetEmployeeAsync(string id)
-        => this.dbContext.Employees
-            .Where(e => e.Id == id)
-            .Select(e => new EmployeeDetailsServiceModel
-            {
-                FullName = e.FullName!,
-                DateOfBirth = e.DateOfBirth,
-                Department = e.Department,
-                Position = e.Position!,
-                ManagerId = e.ManagerId,
-                ManagerFullName = e.Manager!.FullName,
-                CreatedOn = e.CreatedOn,
-                CreatedByFullName = e.CreatedBy!.FullName,
-            })
-            .FirstOrDefaultAsync();
+        => this.dbContext.Employees.Where(e => e.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
 
     public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesPageAsync(int pageNumber, int pageSize)
     {
@@ -52,14 +39,7 @@ public class EmployeesService : IEmployeesService
             .OrderByDescending(e => e.CreatedOn)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
-            .Select(e => new EmployeeServiceModel
-            {
-                FullName = e.FullName!,
-                DateOfBirth = e.DateOfBirth,
-                Department = e.Department,
-                Position = e.Position!,
-                CreatedOn = e.CreatedOn,
-            })
+            .ProjectToServiceModel()
             .ToListAsync();
     }
 }

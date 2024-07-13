@@ -2,11 +2,10 @@
 
 using System.Threading.Tasks;
 
-using Google.Protobuf.WellKnownTypes;
-
 using Grpc.Core;
 
 using HrAspire.Employees.Business.Employees;
+using HrAspire.Employees.Web.Mappers;
 
 public class EmployeesGrpcService : Employees.EmployeesBase
 {
@@ -24,16 +23,17 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         var response = new GetEmployeesPageResponse();
         foreach (var employee in employees)
         {
-            response.Employees.Add(new PageEmployee
-            {
-                Id = employee.Id,
-                FullName = employee.FullName,
-                DateOfBirth = employee.DateOfBirth.ToDateTime(default, DateTimeKind.Utc).ToTimestamp(),
-                CreatedOn = employee.CreatedOn.ToTimestamp(),
-                Department = employee.Department,
-                Position = employee.Position,
-            });
+            response.Employees.Add(employee.MapToPageEmployee());
         }
+
+        return response;
+    }
+
+    public override async Task<GetEmployeeResponse> GetEmployee(GetEmployeeRequest request, ServerCallContext context)
+    {
+        var employee = await this.employeesService.GetEmployeeAsync(request.Id);
+
+        var response = new GetEmployeeResponse { Employee = employee?.MapToEmployeeDetails(), };
 
         return response;
     }

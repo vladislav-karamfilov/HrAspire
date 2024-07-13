@@ -13,6 +13,7 @@
   <ItemGroup>
 	<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.63.0" />
+	<PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

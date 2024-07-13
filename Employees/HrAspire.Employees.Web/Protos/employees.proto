@@ -9,6 +9,7 @@ package employee;
 
 service Employees {
   rpc GetEmployeesPage (GetEmployeesPageRequest) returns (GetEmployeesPageResponse);
+  rpc GetEmployee (GetEmployeeRequest) returns (GetEmployeeResponse);
 }
 
 message GetEmployeesPageRequest {
@@ -16,8 +17,16 @@ message GetEmployeesPageRequest {
   int32 pageSize = 2;
 }
 
+message GetEmployeeRequest {
+	string id = 1;
+}
+
 message GetEmployeesPageResponse {
   repeated PageEmployee employees = 1;
+}
+
+message GetEmployeeResponse {
+	EmployeeDetails employee = 1;
 }
 
 message PageEmployee {
@@ -27,4 +36,16 @@ message PageEmployee {
 	google.protobuf.StringValue department = 4;
 	string position = 5;
 	google.protobuf.Timestamp createdOn = 6;
+}
+
+message EmployeeDetails {
+	google.protobuf.StringValue id = 1;
+	google.protobuf.StringValue fullName = 2;
+	google.protobuf.Timestamp dateOfBirth = 3;
+	google.protobuf.StringValue department = 4;
+	google.protobuf.StringValue position = 5;
+	google.protobuf.StringValue managerId = 6;
+	google.protobuf.StringValue managerFullName = 7;
+	google.protobuf.Timestamp createdOn = 8;
+	google.protobuf.StringValue createdByFullName = 9;
 }

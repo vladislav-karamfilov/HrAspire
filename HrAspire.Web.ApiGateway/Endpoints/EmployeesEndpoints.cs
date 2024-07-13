@@ -25,6 +25,23 @@ public static class EmployeesEndpoints
                 });
         // .RequireAuthorization(); // TODO:
 
+        employeesGroup
+            .MapGet(
+                "/{id}",
+                async (Employees.EmployeesClient employeesClient, string id) =>
+                {
+                    var employeeResponse = await employeesClient.GetEmployeeAsync(new GetEmployeeRequest { Id = id });
+                    if (employeeResponse.Employee is null)
+                    {
+                        return null;
+                    }
+
+                    var employee = employeeResponse.Employee.MapToDetailsResponseModel();
+
+                    return employee;
+                });
+        // .RequireAuthorization(); // TODO:
+
         return employeesGroup;
     }
 }

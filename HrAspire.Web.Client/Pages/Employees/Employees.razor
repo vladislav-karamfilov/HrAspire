@@ -5,19 +5,17 @@
 <h1>Employees</h1>
 <hr />
 
-<div class="grid">
-    <QuickGrid ItemsProvider="GridEmployeesProvider" Pagination="Pagination">
-        <TemplateColumn Title="Full Name">
-            <a href="/employees/@context.Id">@context.FullName</a>
-        </TemplateColumn>
-        <PropertyColumn Property="@(e => e.Position)" />
-        <PropertyColumn Property="@(e => e.Department)" />
-        <PropertyColumn Property="@(e => e.DateOfBirth)" />
-        <PropertyColumn Property="@(e => e.CreatedOn)" />
-    </QuickGrid>
+<QuickGrid ItemsProvider="GridEmployeesProvider" Pagination="Pagination">
+    <TemplateColumn Title="Full Name">
+        <a href="/employees/@context.Id">@context.FullName</a>
+    </TemplateColumn>
+    <PropertyColumn Property="@(e => e.Position)" />
+    <PropertyColumn Property="@(e => e.Department)" />
+    <PropertyColumn Property="@(e => e.DateOfBirth)" />
+    <PropertyColumn Property="@(e => e.CreatedOn)" />
+</QuickGrid>
 
-    <Paginator State="Pagination"></Paginator>
-</div>
+<Paginator State="Pagination"></Paginator>
 
 @code {
     private GridItemsProvider<EmployeeResponseModel>? GridEmployeesProvider { get; set; }
@@ -28,17 +26,15 @@
     private async ValueTask<GridItemsProviderResult<EmployeeResponseModel>> GetGridEmployeesAsync(
         GridItemsProviderRequest<EmployeeResponseModel> request)
     {
-        var pageNumber = request.Count.HasValue && request.Count > 0
-            ? request.StartIndex / request.Count.Value
-            : 0;
+        var pageNumber = request.StartIndex / this.Pagination.ItemsPerPage;
 
         var employeesPage = await this.EmployeesApiClient.GetEmployeesPageAsync(pageNumber, this.Pagination.ItemsPerPage);
 
         var result = new GridItemsProviderResult<EmployeeResponseModel>
-            {
-                Items = employeesPage.Employees,
-                TotalItemCount = employeesPage.Total,
-            };
+        {
+            Items = employeesPage.Employees,
+            TotalItemCount = employeesPage.Total,
+        };
 
         return result;
     }

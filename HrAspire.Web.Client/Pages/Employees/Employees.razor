@@ -5,10 +5,11 @@
 <h1>Employees</h1>
 <hr />
 
-<QuickGrid ItemsProvider="GridEmployeesProvider" Pagination="Pagination">
+<QuickGrid ItemsProvider="GridEmployeesProvider" Pagination="Pagination" Class="table table-bordered table-striped">
     <TemplateColumn Title="Full Name">
         <a href="/employees/@context.Id">@context.FullName</a>
     </TemplateColumn>
+    <PropertyColumn Property="@(e => e.Email)" />
     <PropertyColumn Property="@(e => e.Position)" />
     <PropertyColumn Property="@(e => e.Department)" />
     <PropertyColumn Property="@(e => e.DateOfBirth)" />

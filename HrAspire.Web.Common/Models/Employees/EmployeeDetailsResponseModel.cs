@@ -4,6 +4,7 @@ using System;
 
 public record EmployeeDetailsResponseModel(
     string Id,
+    string Email,
     string FullName,
     DateOnly DateOfBirth,
     string? Department,

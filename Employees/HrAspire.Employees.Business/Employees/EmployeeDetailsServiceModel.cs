@@ -2,6 +2,7 @@
 
 public record EmployeeDetailsServiceModel(
     string Id,
+    string Email,
     string FullName,
     DateOnly DateOfBirth,
     string? Department,

@@ -50,5 +50,6 @@ message EmployeeDetails {
 	google.protobuf.StringValue managerId = 7;
 	google.protobuf.StringValue managerFullName = 8;
 	google.protobuf.Timestamp createdOn = 9;
-	google.protobuf.StringValue createdByFullName = 10;
+	google.protobuf.StringValue createdById = 10;
+	google.protobuf.StringValue createdByFullName = 11;
 }

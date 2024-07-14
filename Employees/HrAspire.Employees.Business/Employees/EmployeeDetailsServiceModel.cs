@@ -10,4 +10,5 @@ public record EmployeeDetailsServiceModel(
     string? ManagerId,
     string? ManagerFullName,
     DateTime CreatedOn,
+    string? CreatedById,
     string? CreatedByFullName);

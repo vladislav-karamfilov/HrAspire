@@ -1,0 +1,86 @@
+﻿@page "/employees/{id}"
+
+@inject EmployeesApiClient EmployeesApiClient
+
+<h1>Employee - @Employee?.FullName</h1>
+<hr />
+
+<StatusMessage IsError="true" Message="@ErrorMessage" />
+
+@if (Employee is not null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-product">
+                    <tbody>
+                        <tr>
+                            <td width="390">Full Name</td>
+                            <td>@Employee.FullName</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>
+                                <a href="mailto:@Employee.Email">@Employee.Email</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td>@Employee.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td>Position</td>
+                            <td>@Employee.Position</td>
+                        </tr>
+                        <tr>
+                            <td>Department</td>
+                            <td>@Employee.Department</td>
+                        </tr>
+                        <tr>
+                            <td>Manager</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(Employee.ManagerId))
+                                {
+                                    <a href="/employees/@Employee.ManagerId">@Employee.ManagerFullName</a>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Created on</td>
+                            <td>@Employee.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        </tr>
+                        <tr>
+                            <td>Created by</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(Employee.CreatedById))
+                                {
+                                    <a href="/employees/@Employee.CreatedById">@Employee.CreatedByFullName</a>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = default!;
+
+    private EmployeeDetailsResponseModel? Employee { get; set; }
+
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        this.ErrorMessage = null;
+
+        this.Employee = await this.EmployeesApiClient.GetEmployeeDetailsAsync(this.Id);
+        if (this.Employee is null)
+        {
+            this.ErrorMessage = "No such employee found.";
+        }
+    }
+}

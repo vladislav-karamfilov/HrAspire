@@ -4,8 +4,6 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.AppHost", "HrAspire.AppHost\HrAspire.AppHost.csproj", "{4B7977B2-7ABE-498A-BAFE-41C6FFFCCAA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.ServiceDefaults", "HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj", "{0A63B520-8570-41EF-9479-331131113EA1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Employees", "Employees", "{885E4403-4B6C-4959-B8E8-DEBC2C15A837}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Employees.Data", "Employees\HrAspire.Employees.Data\HrAspire.Employees.Data.csproj", "{F5EE5743-4964-40B7-8AE2-9FF3F438A5FD}"
@@ -30,9 +28,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Client", "HrAs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.ApiGateway", "HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj", "{8A56DE28-F499-43BB-90E6-7B24AB96FA96}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Common", "HrAspire.Web.Common\HrAspire.Web.Common.csproj", "{20F95957-E8BB-49A8-9103-DF4D0C377B25}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Employees.Web", "Employees\HrAspire.Employees.Web\HrAspire.Employees.Web.csproj", "{50712D41-BC3A-44DA-97FE-0DD42E188363}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Business.Common", "Common\HrAspire.Business.Common\HrAspire.Business.Common.csproj", "{A0B7020E-7958-4D28-BC90-C968F75E973C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Data.Common", "Common\HrAspire.Data.Common\HrAspire.Data.Common.csproj", "{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.ServiceDefaults", "Common\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj", "{275A33C3-54A1-4D4D-9F55-74846A25044C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Common", "Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj", "{FFA7D01B-1392-460F-AD29-F346C07E5A4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,10 +50,6 @@ Global
 		{4B7977B2-7ABE-498A-BAFE-41C6FFFCCAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B7977B2-7ABE-498A-BAFE-41C6FFFCCAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B7977B2-7ABE-498A-BAFE-41C6FFFCCAA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A63B520-8570-41EF-9479-331131113EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A63B520-8570-41EF-9479-331131113EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A63B520-8570-41EF-9479-331131113EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A63B520-8570-41EF-9479-331131113EA1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5EE5743-4964-40B7-8AE2-9FF3F438A5FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F5EE5743-4964-40B7-8AE2-9FF3F438A5FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5EE5743-4964-40B7-8AE2-9FF3F438A5FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -84,14 +86,26 @@ Global
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A56DE28-F499-43BB-90E6-7B24AB96FA96}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20F95957-E8BB-49A8-9103-DF4D0C377B25}.Release|Any CPU.Build.0 = Release|Any CPU
 		{50712D41-BC3A-44DA-97FE-0DD42E188363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{50712D41-BC3A-44DA-97FE-0DD42E188363}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50712D41-BC3A-44DA-97FE-0DD42E188363}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50712D41-BC3A-44DA-97FE-0DD42E188363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0B7020E-7958-4D28-BC90-C968F75E973C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0B7020E-7958-4D28-BC90-C968F75E973C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0B7020E-7958-4D28-BC90-C968F75E973C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0B7020E-7958-4D28-BC90-C968F75E973C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{275A33C3-54A1-4D4D-9F55-74846A25044C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{275A33C3-54A1-4D4D-9F55-74846A25044C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{275A33C3-54A1-4D4D-9F55-74846A25044C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{275A33C3-54A1-4D4D-9F55-74846A25044C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +118,10 @@ Global
 		{E0B2C8C9-CE24-4D35-BD44-4EA3C83F9F99} = {EEB03013-3150-463F-BF79-B738C01CDDD6}
 		{BC4474E8-0CCF-419D-AA8A-80DD6A80B9BB} = {BCE16A81-EB57-49A4-A942-AC2346E632F5}
 		{50712D41-BC3A-44DA-97FE-0DD42E188363} = {885E4403-4B6C-4959-B8E8-DEBC2C15A837}
+		{A0B7020E-7958-4D28-BC90-C968F75E973C} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
+		{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
+		{275A33C3-54A1-4D4D-9F55-74846A25044C} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
+		{FFA7D01B-1392-460F-AD29-F346C07E5A4A} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {442FA5B4-33D8-4BE0-AAC0-4E0895CEB4C7}

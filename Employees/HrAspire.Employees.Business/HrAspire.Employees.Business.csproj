@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\HrAspire.Business.Common\HrAspire.Business.Common.csproj" />
     <ProjectReference Include="..\HrAspire.Employees.Data\HrAspire.Employees.Data.csproj" />
   </ItemGroup>
 

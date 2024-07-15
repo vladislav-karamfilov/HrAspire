@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\Common\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\HrAspire.Employees.Business\HrAspire.Employees.Business.csproj" />
   </ItemGroup>
 

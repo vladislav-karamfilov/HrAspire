@@ -1,8 +1,10 @@
 ﻿namespace HrAspire.Employees.Data.Models;
 
+using HrAspire.Data.Common;
+
 using Microsoft.AspNetCore.Identity;
 
-public class Employee : IdentityUser
+public class Employee : IdentityUser, IDeletableEntity
 {
     // TODO: non-nullable
     public string? FullName { get; set; } = default!;
@@ -23,6 +25,10 @@ public class Employee : IdentityUser
     public string? CreatedById { get; set; }
 
     public Employee? CreatedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime? DeletedOn { get; set; }
 
     public ICollection<Document> Documents { get; set; } = [];
 

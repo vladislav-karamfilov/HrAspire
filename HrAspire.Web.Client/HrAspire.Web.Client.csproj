@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HrAspire.Web.Common\HrAspire.Web.Common.csproj" />
+    <ProjectReference Include="..\Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj" />
   </ItemGroup>
 
 </Project>

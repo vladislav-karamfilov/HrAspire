@@ -36,6 +36,7 @@ public class EmployeesService : IEmployeesService
     {
         var employee = new Employee
         {
+            UserName = email,
             Email = email,
             FullName = fullName,
             DateOfBirth = dateOfBirth,

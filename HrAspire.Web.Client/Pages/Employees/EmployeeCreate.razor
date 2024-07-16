@@ -1,0 +1,89 @@
+﻿@page "/employee-create"
+
+@inject EmployeesApiClient EmployeesApiClient
+@inject NavigationManager NavigationManager
+
+<h1>Create Employee</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <StatusMessage Message="@ErrorMessage" IsError="true" />
+            <EditForm Model="Input" OnValidSubmit="CreateEmployeeAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email"
+                               class="form-control"
+                               autocomplete="username"
+                               aria-required="true"
+                               placeholder="name@example.com" />
+                    <label for="email" class="form-label">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password"
+                               @bind-Value="Input.Password"
+                               class="form-control"
+                               autocomplete="current-password"
+                               aria-required="true"
+                               placeholder="password" />
+                    <label for="password" class="form-label">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.FullName" class="form-control" aria-required="true" placeholder="full name" />
+                    <label for="full-name" class="form-label">Full Name</label>
+                    <ValidationMessage For="() => Input.FullName" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputDate @bind-Value="Input.DateOfBirth" class="form-control" aria-required="true" />
+                    <label for="date-of-birth" class="form-label">Date of Birth</label>
+                    <ValidationMessage For="() => Input.DateOfBirth" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Position" class="form-control" aria-required="true" placeholder="position" />
+                    <label for="position" class="form-label">Position</label>
+                    <ValidationMessage For="() => Input.Position" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Department" class="form-control" placeholder="department" />
+                    <label for="department" class="form-label">Department</label>
+                    <ValidationMessage For="() => Input.Department" class="text-danger" />
+                </div>
+                <!-- TODO: populate dropdown options -->
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.ManagerId" class="form-control" placeholder="manager" />
+                    <label for="department" class="form-label">Manager</label>
+                    <ValidationMessage For="() => Input.ManagerId" class="text-danger" />
+                </div>
+
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Create</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    private EmployeeCreateRequestModel Input { get; set; } = new();
+
+    private string? ErrorMessage { get; set; }
+
+    private async Task CreateEmployeeAsync()
+    {
+        this.ErrorMessage = null;
+
+        var (newEmployeeId, errorMessage) = await this.EmployeesApiClient.CreateEmployeeAsync(this.Input);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/employees/{newEmployeeId}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+}

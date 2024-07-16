@@ -10,6 +10,9 @@ package employees;
 service Employees {
 	rpc GetEmployeesPage (GetEmployeesPageRequest) returns (GetEmployeesPageResponse);
 	rpc GetEmployee (GetEmployeeRequest) returns (GetEmployeeResponse);
+	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
+	rpc UpdateEmployee(UpdateEmployeeRequest) returns (UpdateEmployeeResponse);
+	rpc DeleteEmployee(DeleteEmployeeRequest) returns (DeleteEmployeeResponse);
 }
 
 message GetEmployeesPageRequest {
@@ -52,4 +55,41 @@ message EmployeeDetails {
 	google.protobuf.Timestamp createdOn = 9;
 	google.protobuf.StringValue createdById = 10;
 	google.protobuf.StringValue createdByFullName = 11;
+}
+
+message CreateEmployeeRequest {
+	string email = 1;
+	string password = 2;
+	string fullName = 3;
+	google.protobuf.Timestamp dateOfBirth = 4;
+	string position = 5;
+	google.protobuf.StringValue department = 6;
+	google.protobuf.StringValue managerId = 7;
+	string createdById = 8;
+}
+
+message CreateEmployeeResponse {
+	google.protobuf.StringValue id = 1;
+	google.protobuf.StringValue errorMessage = 2;
+}
+
+message UpdateEmployeeRequest {
+	string id = 1;
+	string fullName = 2;
+	google.protobuf.Timestamp dateOfBirth = 3;
+	string position = 4;
+	google.protobuf.StringValue department = 5;
+	google.protobuf.StringValue managerId = 6;
+}
+
+message UpdateEmployeeResponse {
+	google.protobuf.StringValue errorMessage = 1;
+}
+
+message DeleteEmployeeRequest {
+	string id = 1;
+}
+
+message DeleteEmployeeResponse {
+	google.protobuf.StringValue errorMessage = 1;
 }

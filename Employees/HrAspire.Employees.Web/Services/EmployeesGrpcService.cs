@@ -38,4 +38,39 @@ public class EmployeesGrpcService : Employees.EmployeesBase
 
         return response;
     }
+
+    public override async Task<CreateEmployeeResponse> CreateEmployee(CreateEmployeeRequest request, ServerCallContext context)
+    {
+        var createResult = await this.employeesService.CreateAsync(
+            request.Email,
+            request.Password,
+            request.FullName,
+            DateOnly.FromDateTime(request.DateOfBirth.ToDateTime()),
+            request.Position,
+            request.Department,
+            request.ManagerId,
+            request.CreatedById);
+
+        return new CreateEmployeeResponse { Id = createResult.Data, ErrorMessage = createResult.ErrorMessage };
+    }
+
+    public override async Task<UpdateEmployeeResponse> UpdateEmployee(UpdateEmployeeRequest request, ServerCallContext context)
+    {
+        var updateResult = await this.employeesService.UpdateAsync(
+            request.Id,
+            request.FullName,
+            DateOnly.FromDateTime(request.DateOfBirth.ToDateTime()),
+            request.Position,
+            request.Department,
+            request.ManagerId);
+
+        return new UpdateEmployeeResponse { ErrorMessage = updateResult.ErrorMessage };
+    }
+
+    public override async Task<DeleteEmployeeResponse> DeleteEmployee(DeleteEmployeeRequest request, ServerCallContext context)
+    {
+        var deleteResult = await this.employeesService.DeleteAsync(request.Id);
+
+        return new DeleteEmployeeResponse { ErrorMessage = deleteResult.ErrorMessage };
+    }
 }

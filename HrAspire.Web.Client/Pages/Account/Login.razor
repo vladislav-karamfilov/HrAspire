@@ -6,13 +6,14 @@
 <PageTitle>Log in</PageTitle>
 
 <h1>Log in</h1>
+<hr />
+
 <div class="row">
     <div class="col-md-4">
         <section>
             <StatusMessage Message="@ErrorMessage" IsError="true" />
             <EditForm Model="Input" OnValidSubmit="LoginAsync">
                 <DataAnnotationsValidator />
-                <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
                     <InputText @bind-Value="Input.Email"

@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\Employees\EmployeeUpdate.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,84 @@
+﻿@page "/employee-update/{id}"
+
+@using HrAspire.Web.Common.Mappers
+
+@inject EmployeesApiClient EmployeesApiClient
+@inject NavigationManager NavigationManager
+
+<h1>Update Employee</h1>
+<hr />
+
+@if (Input is not null)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <section>
+                <StatusMessage Message="@ErrorMessage" IsError="true" />
+                <EditForm Model="Input" OnValidSubmit="UpdateEmployeeAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Input.FullName" class="form-control" aria-required="true" placeholder="full name" />
+                        <label for="full-name" class="form-label">Full Name</label>
+                        <ValidationMessage For="() => Input.FullName" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputDate @bind-Value="Input.DateOfBirth" class="form-control" aria-required="true" />
+                        <label for="date-of-birth" class="form-label">Date of Birth</label>
+                        <ValidationMessage For="() => Input.DateOfBirth" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Input.Position" class="form-control" aria-required="true" placeholder="position" />
+                        <label for="position" class="form-label">Position</label>
+                        <ValidationMessage For="() => Input.Position" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Input.Department" class="form-control" placeholder="department" />
+                        <label for="department" class="form-label">Department</label>
+                        <ValidationMessage For="() => Input.Department" class="text-danger" />
+                    </div>
+                    <!-- TODO: populate dropdown options -->
+                    <div class="form-floating mb-3">
+                        <InputSelect @bind-Value="Input.ManagerId" class="form-control" placeholder="manager" />
+                        <label for="department" class="form-label">Manager</label>
+                        <ValidationMessage For="() => Input.ManagerId" class="text-danger" />
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Update</button>
+                    </div>
+                </EditForm>
+            </section>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = default!;
+
+    private EmployeeUpdateRequestModel? Input { get; set; }
+
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var employee = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
+        this.Input = employee?.ToUpdateRequestModel();
+    }
+
+    private async Task UpdateEmployeeAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.EmployeesApiClient.UpdateEmployeeAsync(this.Id, this.Input!);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/employees/{this.Id}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+}

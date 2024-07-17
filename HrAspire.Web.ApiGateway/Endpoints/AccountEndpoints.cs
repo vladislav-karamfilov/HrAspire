@@ -27,12 +27,12 @@ public static class AccountEndpoints
                 })
             .RequireAuthorization();
 
-        // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
         accountGroup
             .MapPost(
                 "/Logout",
                 async (SignInManager<Employee> signInManager, [FromBody] LogoutRequestModel? model) =>
                 {
+                    // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
                     if (model is not null)
                     {
                         await signInManager.SignOutAsync();

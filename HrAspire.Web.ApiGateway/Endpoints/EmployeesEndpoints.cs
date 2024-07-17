@@ -75,6 +75,7 @@ public static class EmployeesEndpoints
                 // TODO: Make sure the model cannot come unvalidated!!!
                 var updateResponse = await employeesClient.UpdateEmployeeAsync(new UpdateEmployeeRequest
                 {
+                    Id = id,
                     FullName = model.FullName,
                     Position = model.Position,
                     DateOfBirth = model.DateOfBirth.ToDateTime(default, DateTimeKind.Utc).ToTimestamp(),

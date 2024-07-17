@@ -2,7 +2,6 @@
 
 using System.ComponentModel.DataAnnotations;
 
-// TODO: Record??? But how will data binding work???
 public class EmployeeUpdateRequestModel
 {
     [Required]

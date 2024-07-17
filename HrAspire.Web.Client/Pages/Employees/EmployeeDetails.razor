@@ -77,7 +77,7 @@
     {
         this.ErrorMessage = null;
 
-        this.Employee = await this.EmployeesApiClient.GetEmployeeDetailsAsync(this.Id);
+        this.Employee = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
         if (this.Employee is null)
         {
             this.ErrorMessage = "No such employee found.";

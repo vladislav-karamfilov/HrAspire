@@ -3,6 +3,7 @@
 using Google.Protobuf.WellKnownTypes;
 
 using HrAspire.Employees.Web;
+using HrAspire.Web.Common.Extensions;
 using HrAspire.Web.Common.Models.Employees;
 
 using Riok.Mapperly.Abstractions;
@@ -16,5 +17,5 @@ internal static partial class EmployeeMapper
 
     private static DateTime TimestampToDateTime(Timestamp timestamp) => timestamp.ToDateTime();
 
-    private static DateOnly TimestampToDate(Timestamp timestamp) => DateOnly.FromDateTime(timestamp.ToDateTime());
+    private static DateOnly TimestampToDate(Timestamp timestamp) => timestamp.ToDateOnly();
 }

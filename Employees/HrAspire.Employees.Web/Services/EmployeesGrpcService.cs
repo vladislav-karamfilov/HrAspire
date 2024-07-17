@@ -6,6 +6,7 @@ using Grpc.Core;
 
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Web.Mappers;
+using HrAspire.Web.Common.Extensions;
 
 public class EmployeesGrpcService : Employees.EmployeesBase
 {
@@ -45,7 +46,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.Email,
             request.Password,
             request.FullName,
-            DateOnly.FromDateTime(request.DateOfBirth.ToDateTime()),
+            request.DateOfBirth.ToDateOnly(),
             request.Position,
             request.Department,
             request.ManagerId,
@@ -59,7 +60,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         var updateResult = await this.employeesService.UpdateAsync(
             request.Id,
             request.FullName,
-            DateOnly.FromDateTime(request.DateOfBirth.ToDateTime()),
+            request.DateOfBirth.ToDateOnly(),
             request.Position,
             request.Department,
             request.ManagerId);

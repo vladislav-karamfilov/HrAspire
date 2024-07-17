@@ -6,6 +6,7 @@ using Google.Protobuf.WellKnownTypes;
 
 using HrAspire.Employees.Web;
 using HrAspire.Web.ApiGateway.Mappers;
+using HrAspire.Web.Common.Extensions;
 using HrAspire.Web.Common.Models.Employees;
 
 using Microsoft.AspNetCore.Mvc;
@@ -39,10 +40,10 @@ public static class EmployeesEndpoints
                     FullName = model.FullName,
                     Password = model.Password,
                     Position = model.Position,
-                    DateOfBirth = model.DateOfBirth!.Value.ToDateTime(default, DateTimeKind.Utc).ToTimestamp(), // TODO: Extension for this conversion OR implicit cast???
+                    DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
                     Department = model.Department,
                     ManagerId = model.ManagerId,
-                    CreatedById = user.FindFirstValue(ClaimTypes.NameIdentifier)!, // TODO: Extension method!
+                    CreatedById = user.GetId()!,
                 });
 
                 if (string.IsNullOrWhiteSpace(createResponse.ErrorMessage))
@@ -78,7 +79,7 @@ public static class EmployeesEndpoints
                     Id = id,
                     FullName = model.FullName,
                     Position = model.Position,
-                    DateOfBirth = model.DateOfBirth.ToDateTime(default, DateTimeKind.Utc).ToTimestamp(),
+                    DateOfBirth = model.DateOfBirth.ToTimestamp(),
                     Department = model.Department,
                     ManagerId = model.ManagerId,
                 });

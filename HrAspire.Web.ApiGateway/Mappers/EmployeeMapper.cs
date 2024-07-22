@@ -17,5 +17,5 @@ internal static partial class EmployeeMapper
 
     private static DateTime TimestampToDateTime(Timestamp timestamp) => timestamp.ToDateTime();
 
-    private static DateOnly TimestampToDate(Timestamp timestamp) => timestamp.ToDateOnly();
+    private static DateOnly TimestampToDateOnly(Timestamp timestamp) => timestamp.ToDateOnly();
 }

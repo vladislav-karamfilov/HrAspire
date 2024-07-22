@@ -20,7 +20,7 @@
 
 @code {
     private GridItemsProvider<EmployeeResponseModel>? GridEmployeesProvider { get; set; }
-    private PaginationState Pagination { get; set; } = new() { ItemsPerPage = 3 };
+    private PaginationState Pagination { get; set; } = new() { ItemsPerPage = 10 };
 
     protected override void OnInitialized() => this.GridEmployeesProvider = this.GetGridEmployeesAsync;
 

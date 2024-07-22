@@ -52,10 +52,11 @@
                     <label for="department" class="form-label">Department</label>
                     <ValidationMessage For="() => Input.Department" class="text-danger" />
                 </div>
-                <!-- TODO: populate dropdown options -->
                 <div class="form-floating mb-3">
-                    <InputSelect @bind-Value="Input.ManagerId" class="form-control" placeholder="manager" />
-                    <label for="department" class="form-label">Manager</label>
+                    <InputSelect @bind-Value="Input.ManagerId" class="form-control" placeholder="manager">
+                        <!-- TODO: populate dropdown options -->
+                    </InputSelect>
+                    <label for="manager" class="form-label">Manager</label>
                     <ValidationMessage For="() => Input.ManagerId" class="text-danger" />
                 </div>
 

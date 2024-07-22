@@ -36,7 +36,7 @@ public class EmployeesService : IEmployeesService
     {
         var employee = new Employee
         {
-            UserName = email,
+            UserName = Guid.NewGuid().ToString(),
             Email = email,
             FullName = fullName,
             DateOfBirth = dateOfBirth,

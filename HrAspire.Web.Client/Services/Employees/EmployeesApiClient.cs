@@ -56,4 +56,22 @@ public class EmployeesApiClient
 
         return errorMessage ?? Constants.UnexpectedErrorMessage;
     }
+
+    public async Task<string?> DeleteEmployeeAsync(string id)
+    {
+        var response = await this.httpClient.DeleteAsync($"employees/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        string? errorMessage = null;
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            errorMessage = problemDetails?.Detail;
+        }
+
+        return errorMessage ?? Constants.UnexpectedErrorMessage;
+    }
 }

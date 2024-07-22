@@ -1,5 +1,6 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
+using System.Net;
 using System.Security.Claims;
 
 using Google.Protobuf.WellKnownTypes;
@@ -51,7 +52,7 @@ public static class EmployeesEndpoints
                     return Results.Created(string.Empty, createResponse.Id);
                 }
 
-                return Results.Problem(createResponse.ErrorMessage);
+                return Results.Problem(createResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
             });
 
         employeesGroup.MapGet(
@@ -89,7 +90,7 @@ public static class EmployeesEndpoints
                     return Results.Ok();
                 }
 
-                return Results.Problem(updateResponse.ErrorMessage);
+                return Results.Problem(updateResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
             });
 
         employeesGroup.MapDelete(
@@ -102,7 +103,7 @@ public static class EmployeesEndpoints
                     return Results.Ok();
                 }
 
-                return Results.Problem(deleteResponse.ErrorMessage);
+                return Results.Problem(deleteResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
             });
 
         return employeesGroup;

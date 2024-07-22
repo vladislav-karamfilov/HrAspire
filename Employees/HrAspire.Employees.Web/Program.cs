@@ -18,7 +18,11 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 
 builder.Services
-    .AddIdentityCore<Employee>(options => options.Password.RequiredLength = AccountConstants.PasswordMinLength)
+    .AddIdentityCore<Employee>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = AccountConstants.PasswordMinLength;
+    })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<EmployeesDbContext>();
 

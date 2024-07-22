@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Web.Common.Extensions;
+﻿namespace HrAspire.Web.Common;
 
 using Google.Protobuf.WellKnownTypes;
 

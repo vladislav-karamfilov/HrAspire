@@ -6,7 +6,7 @@ using Grpc.Core;
 
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Web.Mappers;
-using HrAspire.Web.Common.Extensions;
+using HrAspire.Web.Common;
 
 public class EmployeesGrpcService : Employees.EmployeesBase
 {

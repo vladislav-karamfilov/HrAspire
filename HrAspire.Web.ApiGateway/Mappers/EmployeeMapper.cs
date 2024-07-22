@@ -3,7 +3,7 @@
 using Google.Protobuf.WellKnownTypes;
 
 using HrAspire.Employees.Web;
-using HrAspire.Web.Common.Extensions;
+using HrAspire.Web.Common;
 using HrAspire.Web.Common.Models.Employees;
 
 using Riok.Mapperly.Abstractions;

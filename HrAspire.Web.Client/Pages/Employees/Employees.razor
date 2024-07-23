@@ -1,11 +1,13 @@
 ﻿@page "/employees"
-@using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
 
 @inject EmployeesApiClient EmployeesApiClient
 
-<h1>Employees</h1>
+<h1>
+    Employees
+    <a href="/employee-create" class="btn btn-primary float-end">Create</a>
+</h1>
 <hr />
 
 <QuickGrid ItemsProvider="GridEmployeesProvider" Pagination="Pagination" Class="table table-bordered table-striped">
@@ -35,10 +37,10 @@
         var employeesPage = await this.EmployeesApiClient.GetEmployeesPageAsync(pageNumber, this.Pagination.ItemsPerPage);
 
         var result = new GridItemsProviderResult<EmployeeResponseModel>
-        {
-            Items = employeesPage.Employees,
-            TotalItemCount = employeesPage.Total,
-        };
+            {
+                Items = employeesPage.Employees,
+                TotalItemCount = employeesPage.Total,
+            };
 
         return result;
     }

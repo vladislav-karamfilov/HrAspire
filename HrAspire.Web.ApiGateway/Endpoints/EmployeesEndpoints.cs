@@ -16,7 +16,7 @@ public static class EmployeesEndpoints
 {
     public static IEndpointConventionBuilder MapEmployeesEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var employeesGroup = endpoints.MapGroup("/Employees"); // TODO: .RequireAuthorization();
+        var employeesGroup = endpoints.MapGroup("/Employees").RequireAuthorization();
 
         employeesGroup.MapGet(
             "/",

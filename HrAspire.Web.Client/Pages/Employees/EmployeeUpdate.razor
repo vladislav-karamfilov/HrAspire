@@ -1,6 +1,6 @@
 ﻿@page "/employee-update/{id}"
 
-@using HrAspire.Web.Common.Mappers
+@attribute [Authorize]
 
 @inject EmployeesApiClient EmployeesApiClient
 @inject NavigationManager NavigationManager

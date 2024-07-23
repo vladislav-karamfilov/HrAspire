@@ -1,5 +1,7 @@
 ﻿@page "/employees/{id}"
 
+@attribute [Authorize]
+
 @inject EmployeesApiClient EmployeesApiClient
 @inject NavigationManager NavigationManager
 
@@ -8,9 +10,11 @@
 
     @if (Employee is not null)
     {
-        <button type="button" class="btn btn-danger float-end" data-bs-toggle="modal" data-bs-target="#delete-employee-modal">
+        <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-employee-modal">
             Delete
         </button>
+
+        <a href="/employee-update/@Employee.Id" class="btn btn-primary float-end">Update</a>
     }
 </h1>
 <hr />

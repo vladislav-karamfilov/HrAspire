@@ -1,4 +1,3 @@
-using HrAspire.Web.Client.Services;
 using HrAspire.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,12 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services
     .AddRazorComponents()
-    .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.AddServiceDefaults();
-
-builder.Services.AddApplicationServices(builder.Configuration["ApiGatewayUrl"]!);
 
 var app = builder.Build();
 
@@ -36,7 +32,6 @@ app.UseAntiforgery();
 
 app
     .MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(HrAspire.Web.Client._Imports).Assembly);
 

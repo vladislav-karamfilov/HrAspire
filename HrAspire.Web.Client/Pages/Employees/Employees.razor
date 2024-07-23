@@ -1,4 +1,7 @@
 ﻿@page "/employees"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 @inject EmployeesApiClient EmployeesApiClient
 

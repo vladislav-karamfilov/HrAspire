@@ -10,7 +10,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var apiBaseUrl = await GetApiBaseUrlAsync(builder);
 
 builder.Services.AddAuthorizationCore();
-builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>();
 builder.Services.AddScoped(serviceProvider => (IAuthenticationService)serviceProvider.GetRequiredService<AuthenticationStateProvider>());
 

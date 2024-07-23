@@ -4,7 +4,7 @@
     protected override void OnInitialized()
     {
         var absoluteUri = this.NavigationManager.Uri;
-        var relativePath = this.NavigationManager.ToBaseRelativePath(absoluteUri);
-        this.NavigationManager.NavigateTo($"login?returnUrl=/{Uri.EscapeDataString(relativePath)}");
+        var relativePath = $"/{this.NavigationManager.ToBaseRelativePath(absoluteUri)}";
+        this.NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(relativePath)}");
     }
 }

@@ -1,5 +1,7 @@
 using HrAspire.Web.Components;
 
+using Microsoft.AspNetCore.Authorization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +10,11 @@ builder.Services
     .AddInteractiveWebAssemblyComponents();
 
 builder.AddServiceDefaults();
+
+builder.Services.AddAuthorization();
+
+// workaround for https://github.com/dotnet/aspnetcore/issues/52063
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, BlazorAuthorizationMiddlewareResultHandler>();
 
 var app = builder.Build();
 
@@ -29,6 +36,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseAntiforgery();
+
+app.UseAuthorization();
 
 app
     .MapRazorComponents<App>()

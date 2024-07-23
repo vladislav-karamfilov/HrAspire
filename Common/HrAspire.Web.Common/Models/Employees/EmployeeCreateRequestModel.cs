@@ -10,6 +10,9 @@ public class EmployeeCreateRequestModel
     [Required]
     public string Password { get; set; } = default!;
 
+    [Compare(nameof(Password))]
+    public string ConfirmPassword { get; set; } = default!;
+
     [Required]
     public string FullName { get; set; } = default!;
 

@@ -1,5 +1,7 @@
 ﻿@page "/employee-create"
 
+@attribute [Authorize]
+
 @inject EmployeesApiClient EmployeesApiClient
 @inject NavigationManager NavigationManager
 
@@ -31,6 +33,16 @@
                                placeholder="password" />
                     <label for="password" class="form-label">Password</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password"
+                               @bind-Value="Input.ConfirmPassword"
+                               class="form-control"
+                               autocomplete="current-password"
+                               aria-required="true"
+                               placeholder="confirm password" />
+                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                    <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
                     <InputText @bind-Value="Input.FullName" class="form-control" aria-required="true" placeholder="full name" />

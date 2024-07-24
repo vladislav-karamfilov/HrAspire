@@ -32,6 +32,7 @@ public class EmployeesApiClient
         string? errorMessage = null;
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
+            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
             var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
             errorMessage = problemDetails?.Detail;
         }

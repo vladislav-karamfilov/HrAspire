@@ -11,10 +11,9 @@ builder.Services
 
 builder.AddServiceDefaults();
 
-builder.Services.AddAuthorization();
-
 // workaround for https://github.com/dotnet/aspnetcore/issues/52063
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, BlazorAuthorizationMiddlewareResultHandler>();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

@@ -6,7 +6,11 @@ public class Document
 
     public string Title { get; set; } = default!;
 
+    public string? Description { get; set; }
+
     public string Url { get; set; } = default!;
+
+    public string FileName { get; set; } = default!;
 
     public string EmployeeId { get; set; } = default!;
 

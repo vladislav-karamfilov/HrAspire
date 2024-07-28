@@ -8,11 +8,11 @@ import "google/protobuf/wrappers.proto";
 package employees;
 
 service Employees {
-	rpc GetEmployees (GetEmployeesRequest) returns (GetEmployeesResponse);
-	rpc GetEmployee (GetEmployeeRequest) returns (GetEmployeeResponse);
-	rpc CreateEmployee (CreateEmployeeRequest) returns (CreateEmployeeResponse);
-	rpc UpdateEmployee (UpdateEmployeeRequest) returns (UpdateEmployeeResponse);
-	rpc DeleteEmployee (DeleteEmployeeRequest) returns (DeleteEmployeeResponse);
+	rpc GetEmployees(GetEmployeesRequest) returns (GetEmployeesResponse);
+	rpc GetEmployee(GetEmployeeRequest) returns (GetEmployeeResponse);
+	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
+	rpc UpdateEmployee(UpdateEmployeeRequest) returns (UpdateEmployeeResponse);
+	rpc DeleteEmployee(DeleteEmployeeRequest) returns (DeleteEmployeeResponse);
 }
 
 message GetEmployeesRequest {

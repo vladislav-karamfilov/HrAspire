@@ -15,6 +15,8 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 
+builder.AddAzureBlobClient("blobs");
+
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 
 builder.Services

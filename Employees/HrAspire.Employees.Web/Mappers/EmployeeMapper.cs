@@ -10,9 +10,9 @@ using Riok.Mapperly.Abstractions;
 [Mapper]
 internal static partial class EmployeeMapper
 {
-    public static partial PageEmployee MapToPageEmployee(this EmployeeServiceModel employee);
+    public static partial EmployeeModel MapToPageEmployee(this EmployeeServiceModel employee);
 
-    public static partial EmployeeDetails MapToEmployeeDetails(this EmployeeDetailsServiceModel employee);
+    public static partial EmployeeDetailsModel MapToEmployeeDetails(this EmployeeDetailsServiceModel employee);
 
     private static Timestamp DateOnlyToTimestamp(DateOnly dateOnly) => dateOnly.ToTimestamp();
 

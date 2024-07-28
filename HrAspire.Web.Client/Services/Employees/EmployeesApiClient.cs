@@ -14,8 +14,8 @@ public class EmployeesApiClient
         this.httpClient = httpClient;
     }
 
-    public Task<EmployeesPageResponseModel> GetEmployeesPageAsync(int pageNumber, int pageSize)
-        => this.httpClient.GetFromJsonAsync<EmployeesPageResponseModel>($"employees?pageNumber={pageNumber}&pageSize={pageSize}")!;
+    public Task<EmployeesResponseModel> GetEmployeesAsync(int pageNumber, int pageSize)
+        => this.httpClient.GetFromJsonAsync<EmployeesResponseModel>($"employees?pageNumber={pageNumber}&pageSize={pageSize}")!;
 
     public Task<EmployeeDetailsResponseModel?> GetEmployeeAsync(string id)
         => this.httpClient.GetFromJsonAsync<EmployeeDetailsResponseModel>($"employees/{id}");

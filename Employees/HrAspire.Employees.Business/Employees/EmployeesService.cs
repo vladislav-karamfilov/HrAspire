@@ -93,7 +93,7 @@ public class EmployeesService : IEmployeesService
 
     public Task<int> GetEmployeesCountAsync() => this.dbContext.Employees.CountAsync();
 
-    public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesPageAsync(int pageNumber, int pageSize)
+    public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(int pageNumber, int pageSize)
     {
         if (pageNumber < 0)
         {

@@ -48,7 +48,7 @@ public class DocumentService : IDocumentsService
         var url = await this.UploadFileToBlobStorageAsync(fileContent, fileName, employeeId);
         if (string.IsNullOrWhiteSpace(url))
         {
-            return ServiceResult<int>.Error("An error has occurred while uploading the file. Please try again later.");
+            return ServiceResult<int>.Error("An error has occurred while uploading the document. Please try again later.");
         }
 
         var document = new Document
@@ -68,10 +68,10 @@ public class DocumentService : IDocumentsService
         return ServiceResult<int>.Success(document.Id);
     }
 
-    public async Task<ServiceResult> DeleteAsync(int id)
+    public async Task<ServiceResult> DeleteAsync(int id, string employeeId)
     {
         var deletedCount = await this.dbContext.Documents
-            .Where(e => e.Id == id)
+            .Where(d => d.Id == id && d.EmployeeId == employeeId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(e => e.IsDeleted, true)
                 .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
@@ -79,7 +79,7 @@ public class DocumentService : IDocumentsService
         return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
 
-    public async Task<IEnumerable<DocumentServiceModel>> GetByEmployeeIdAsync(string employeeId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<DocumentServiceModel>> GetEmployeeDocumentsAsync(string employeeId, int pageNumber, int pageSize)
     {
         pageNumber = Math.Max(pageNumber, 0);
 
@@ -100,28 +100,40 @@ public class DocumentService : IDocumentsService
             .ToListAsync();
     }
 
-    public Task<DocumentDetailsServiceModel?> GetDocumentAsync(int id)
-        => this.dbContext.Documents.Where(d => d.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
+    public Task<int> GetEmployeeDocumentsCountAsync(string employeeId)
+        => this.dbContext.Documents.CountAsync(d => d.EmployeeId == employeeId);
 
-    public async Task<ServiceResult> UpdateAsync(int id, string title, string? description, byte[]? fileContent, string? fileName)
+    public Task<DocumentDetailsServiceModel?> GetDocumentAsync(int id, string employeeId)
+        => this.dbContext.Documents
+            .Where(d => d.Id == id && d.EmployeeId == employeeId)
+            .ProjectToDetailsServiceModel()
+            .FirstOrDefaultAsync();
+
+    public async Task<ServiceResult> UpdateAsync(
+        int id,
+        string employeeId,
+        string title,
+        string? description,
+        byte[]? fileContent,
+        string? fileName)
     {
-        var document = await this.dbContext.Documents.FirstOrDefaultAsync(d => d.Id == id);
+        var document = await this.dbContext.Documents.FirstOrDefaultAsync(d => d.Id == id && d.EmployeeId == employeeId);
         if (document is null)
         {
             return ServiceResult.ErrorNotFound;
         }
 
-        if (fileContent is not null)
+        if (fileContent is not null && !string.IsNullOrWhiteSpace(fileName))
         {
             // TODO: Consider deleting the old file from blob storage
-            var url = await this.UploadFileToBlobStorageAsync(fileContent, fileName!, document.EmployeeId);
+            var url = await this.UploadFileToBlobStorageAsync(fileContent, fileName, document.EmployeeId);
             if (string.IsNullOrWhiteSpace(url))
             {
-                return ServiceResult<int>.Error("An error has occurred while uploading the file. Please try again later.");
+                return ServiceResult<int>.Error("An error has occurred while uploading the document. Please try again later.");
             }
 
             document.Url = url;
-            document.FileName = fileName!;
+            document.FileName = fileName;
         }
 
         document.Title = title;
@@ -133,7 +145,7 @@ public class DocumentService : IDocumentsService
     }
 
     private static (string BlobName, string ContainerName) BuildBlobAndContainerNames(string fileName, string employeeId)
-        => ($"{Guid.NewGuid():N}{Path.GetExtension(fileName)}", $"documents-{employeeId}");
+        => ($"{Guid.NewGuid()}{Path.GetExtension(fileName)}", $"documents-{employeeId}");
 
     private async Task<string?> UploadFileToBlobStorageAsync(byte[] fileContent, string fileName, string employeeId)
     {
@@ -149,7 +161,7 @@ public class DocumentService : IDocumentsService
         }
         catch (Exception ex)
         {
-            this.logger.LogError("Error uploading file '{fileName}' to blob storage: {exception}", fileName, ex);
+            this.logger.LogError("Error uploading file '{file}' to container '{container}': {exception}", fileName, containerName, ex);
             return null;
         }
 

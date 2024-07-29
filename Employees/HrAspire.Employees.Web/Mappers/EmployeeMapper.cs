@@ -10,7 +10,7 @@ using Riok.Mapperly.Abstractions;
 [Mapper]
 internal static partial class EmployeeMapper
 {
-    public static partial EmployeeModel MapToPageEmployee(this EmployeeServiceModel employee);
+    public static partial EmployeeModel MapToEmployeeModel(this EmployeeServiceModel employee);
 
     public static partial EmployeeDetailsModel MapToEmployeeDetails(this EmployeeDetailsServiceModel employee);
 

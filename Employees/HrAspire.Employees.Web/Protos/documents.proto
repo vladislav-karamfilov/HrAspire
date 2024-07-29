@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+option csharp_namespace = "HrAspire.Employees.Web";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+package documents;
+
+service Documents {
+	rpc GetEmployeeDocuments(GetEmployeeDocumentsRequest) returns (GetEmployeeDocumentsResponse);
+	rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
+	rpc CreateDocument(CreateDocumentRequest) returns (CreateDocumentResponse);
+	rpc UpdateDocument(UpdateDocumentRequest) returns (UpdateDocumentResponse);
+	rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse);
+}
+
+message GetEmployeeDocumentsRequest {
+	string employeeId = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
+}
+
+message GetDocumentRequest {
+	int32 id = 1;
+	string employeeId = 2;
+}
+
+message GetEmployeeDocumentsResponse {
+	repeated DocumentModel documents = 1;
+	int32 total = 2;
+}
+
+message GetDocumentResponse {
+	DocumentDetailsModel document = 1;
+}
+
+message DocumentModel {
+	int32 id = 1;
+	string title = 2;
+	string fileName = 3;
+	google.protobuf.Timestamp createdOn = 4;
+}
+
+message DocumentDetailsModel {
+	int32 id = 1;
+	string title = 2;
+	google.protobuf.StringValue description = 3;
+	string fileName = 4;
+	google.protobuf.Timestamp createdOn = 5;
+	google.protobuf.StringValue createdByFullName = 6;
+}
+
+message CreateDocumentRequest {
+	string employeeId = 1;
+	string title = 2;
+	google.protobuf.StringValue description = 3;
+	bytes fileContent = 4;
+	string fileName = 5;
+	string createdById = 6;
+}
+
+message CreateDocumentResponse {
+ 	google.protobuf.Int32Value id = 1;
+	google.protobuf.StringValue errorMessage = 2;
+}
+
+message UpdateDocumentRequest {
+	int32 id = 1;
+	string employeeId = 2;
+	string title = 3;
+	google.protobuf.StringValue description = 4;
+	google.protobuf.BytesValue fileContent = 5;
+	google.protobuf.StringValue fileName = 6;
+}
+
+message UpdateDocumentResponse {
+	google.protobuf.StringValue errorMessage = 1;
+}
+
+message DeleteDocumentRequest {
+	int32 id = 1;
+	string employeeId = 2;
+}
+
+message DeleteDocumentResponse {
+	google.protobuf.StringValue errorMessage = 1;
+}

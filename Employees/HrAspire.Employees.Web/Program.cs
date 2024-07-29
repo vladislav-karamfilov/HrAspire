@@ -1,3 +1,4 @@
+using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
@@ -18,6 +19,7 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 builder.AddAzureBlobClient("blobs");
 
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
+builder.Services.AddScoped<IDocumentsService, DocumentService>();
 
 builder.Services
     .AddIdentityCore<Employee>(options =>
@@ -32,6 +34,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.MapGrpcService<EmployeesGrpcService>();
+app.MapGrpcService<DocumentsGrpcService>();
 
 app.MapGet(
     "/",

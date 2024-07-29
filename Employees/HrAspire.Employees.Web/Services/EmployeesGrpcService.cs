@@ -25,7 +25,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         var response = new GetEmployeesResponse { Total = total };
         foreach (var employee in employees)
         {
-            response.Employees.Add(employee.MapToPageEmployee());
+            response.Employees.Add(employee.MapToEmployeeModel());
         }
 
         return response;

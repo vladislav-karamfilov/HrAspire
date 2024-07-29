@@ -19,7 +19,7 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 builder.AddAzureBlobClient("blobs");
 
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
-builder.Services.AddScoped<IDocumentsService, DocumentService>();
+builder.Services.AddScoped<IDocumentsService, DocumentsService>();
 
 builder.Services
     .AddIdentityCore<Employee>(options =>

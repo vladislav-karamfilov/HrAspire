@@ -18,18 +18,18 @@ using HrAspire.Employees.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-public class DocumentService : IDocumentsService
+public class DocumentsService : IDocumentsService
 {
     private readonly EmployeesDbContext dbContext;
     private readonly BlobServiceClient blobServiceClient;
     private readonly TimeProvider timeProvider;
-    private readonly ILogger<DocumentService> logger;
+    private readonly ILogger<DocumentsService> logger;
 
-    public DocumentService(
+    public DocumentsService(
         EmployeesDbContext dbContext,
         BlobServiceClient blobServiceClient,
         TimeProvider timeProvider,
-        ILogger<DocumentService> logger)
+        ILogger<DocumentsService> logger)
     {
         this.dbContext = dbContext;
         this.blobServiceClient = blobServiceClient;
@@ -144,12 +144,10 @@ public class DocumentService : IDocumentsService
         return ServiceResult.Success;
     }
 
-    private static (string BlobName, string ContainerName) BuildBlobAndContainerNames(string fileName, string employeeId)
-        => ($"{Guid.NewGuid()}{Path.GetExtension(fileName)}", $"documents-{employeeId}");
-
     private async Task<string?> UploadFileToBlobStorageAsync(byte[] fileContent, string fileName, string employeeId)
     {
-        var (blobName, containerName) = BuildBlobAndContainerNames(fileName, employeeId);
+        var containerName = $"documents-{employeeId}";
+        var blobName = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
         var contentType = MimeTypesMap.GetMimeType(blobName);
 
         try

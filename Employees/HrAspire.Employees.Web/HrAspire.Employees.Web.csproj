@@ -7,10 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\documents.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\documents.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\employees.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
+	<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="8.1.0" />
 	<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.1.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
 	<PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />

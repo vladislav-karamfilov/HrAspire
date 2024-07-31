@@ -22,12 +22,12 @@ public static class EmployeesEndpoints
             "/",
             async (Employees.EmployeesClient employeesClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10) =>
             {
-                var employeesResponse = await employeesClient.GetEmployeesPageAsync(
-                    new GetEmployeesPageRequest { PageNumber = pageNumber, PageSize = pageSize });
+                var employeesResponse = await employeesClient.GetEmployeesAsync(
+                    new GetEmployeesRequest { PageNumber = pageNumber, PageSize = pageSize });
 
                 var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
 
-                return new EmployeesPageResponseModel(employees, employeesResponse.Total);
+                return new EmployeesResponseModel(employees, employeesResponse.Total);
             });
 
         employeesGroup.MapPost(

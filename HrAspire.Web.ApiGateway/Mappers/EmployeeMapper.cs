@@ -11,9 +11,9 @@ using Riok.Mapperly.Abstractions;
 [Mapper]
 internal static partial class EmployeeMapper
 {
-    public static partial EmployeeResponseModel MapToResponseModel(this PageEmployee pageEmployee);
+    public static partial EmployeeResponseModel MapToResponseModel(this EmployeeModel employee);
 
-    public static partial EmployeeDetailsResponseModel MapToDetailsResponseModel(this EmployeeDetails employeeDetails);
+    public static partial EmployeeDetailsResponseModel MapToDetailsResponseModel(this EmployeeDetailsModel employee);
 
     private static DateTime TimestampToDateTime(Timestamp timestamp) => timestamp.ToDateTime();
 

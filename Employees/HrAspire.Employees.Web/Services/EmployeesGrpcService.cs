@@ -17,15 +17,15 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         this.employeesService = employeesService;
     }
 
-    public override async Task<GetEmployeesPageResponse> GetEmployeesPage(GetEmployeesPageRequest request, ServerCallContext context)
+    public override async Task<GetEmployeesResponse> GetEmployees(GetEmployeesRequest request, ServerCallContext context)
     {
-        var employees = await this.employeesService.GetEmployeesPageAsync(request.PageNumber, request.PageSize);
+        var employees = await this.employeesService.GetEmployeesAsync(request.PageNumber, request.PageSize);
         var total = await this.employeesService.GetEmployeesCountAsync();
 
-        var response = new GetEmployeesPageResponse { Total = total };
+        var response = new GetEmployeesResponse { Total = total };
         foreach (var employee in employees)
         {
-            response.Employees.Add(employee.MapToPageEmployee());
+            response.Employees.Add(employee.MapToEmployeeModel());
         }
 
         return response;

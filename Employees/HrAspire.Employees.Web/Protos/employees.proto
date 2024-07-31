@@ -8,14 +8,14 @@ import "google/protobuf/wrappers.proto";
 package employees;
 
 service Employees {
-	rpc GetEmployeesPage (GetEmployeesPageRequest) returns (GetEmployeesPageResponse);
-	rpc GetEmployee (GetEmployeeRequest) returns (GetEmployeeResponse);
+	rpc GetEmployees(GetEmployeesRequest) returns (GetEmployeesResponse);
+	rpc GetEmployee(GetEmployeeRequest) returns (GetEmployeeResponse);
 	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
 	rpc UpdateEmployee(UpdateEmployeeRequest) returns (UpdateEmployeeResponse);
 	rpc DeleteEmployee(DeleteEmployeeRequest) returns (DeleteEmployeeResponse);
 }
 
-message GetEmployeesPageRequest {
+message GetEmployeesRequest {
 	int32 pageNumber = 1;
 	int32 pageSize = 2;
 }
@@ -24,16 +24,16 @@ message GetEmployeeRequest {
 	string id = 1;
 }
 
-message GetEmployeesPageResponse {
-	repeated PageEmployee employees = 1;
+message GetEmployeesResponse {
+	repeated EmployeeModel employees = 1;
 	int32 total = 2;
 }
 
 message GetEmployeeResponse {
-	EmployeeDetails employee = 1;
+	EmployeeDetailsModel employee = 1;
 }
 
-message PageEmployee {
+message EmployeeModel {
 	string id = 1;
 	string email = 2;
 	string fullName = 3;
@@ -43,7 +43,7 @@ message PageEmployee {
 	google.protobuf.Timestamp createdOn = 7;
 }
 
-message EmployeeDetails {
+message EmployeeDetailsModel {
 	string id = 1;
 	string email = 2;
 	string fullName = 3;

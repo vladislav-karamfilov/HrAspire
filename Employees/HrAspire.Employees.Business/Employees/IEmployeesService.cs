@@ -4,7 +4,7 @@ using HrAspire.Business.Common;
 
 public interface IEmployeesService
 {
-    Task<IEnumerable<EmployeeServiceModel>> GetEmployeesPageAsync(int pageNumber, int pageSize);
+    Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(int pageNumber, int pageSize);
 
     Task<int> GetEmployeesCountAsync();
 

@@ -3,6 +3,7 @@
 @attribute [Authorize]
 
 @inject EmployeesApiClient EmployeesApiClient
+@inject DocumentsApiClient DocumentsApiClient
 @inject NavigationManager NavigationManager
 
 <h1>
@@ -82,6 +83,22 @@
             </div>
         </div>
     </div>
+
+    <h3 class="mt-5">
+        Documents
+        <a href="/document-create/@Id" class="btn btn-primary float-end">Create</a>
+    </h3>
+    <hr />
+
+    <QuickGrid ItemsProvider="GridDocumentsProvider" Pagination="DocumentsPagination" Class="table table-bordered table-striped">
+        <TemplateColumn Title="Full Name">
+            <a href="/documents/@Id/@context.Id">@context.Title</a>
+        </TemplateColumn>
+        <PropertyColumn Property="@(e => e.FileName)" />
+        <PropertyColumn Property="@(e => e.CreatedOn)" />
+    </QuickGrid>
+
+    <Paginator State="DocumentsPagination"></Paginator>
 }
 
 @code {
@@ -90,7 +107,12 @@
 
     private EmployeeDetailsResponseModel? Employee { get; set; }
 
+    private GridItemsProvider<DocumentResponseModel>? GridDocumentsProvider { get; set; }
+    private PaginationState DocumentsPagination { get; set; } = new() { ItemsPerPage = 10 };
+
     private string? ErrorMessage { get; set; }
+
+    protected override void OnInitialized() => this.GridDocumentsProvider = this.GetGridDocumentsAsync;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -116,5 +138,16 @@
         {
             this.ErrorMessage = errorMessage;
         }
+    }
+
+    private async ValueTask<GridItemsProviderResult<DocumentResponseModel>> GetGridDocumentsAsync(
+        GridItemsProviderRequest<DocumentResponseModel> request)
+    {
+        var pageNumber = request.StartIndex / this.DocumentsPagination.ItemsPerPage;
+
+        var data = await this.DocumentsApiClient.GetEmployeeDocumentsAsync(this.Id, pageNumber, this.DocumentsPagination.ItemsPerPage);
+
+        var result = new GridItemsProviderResult<DocumentResponseModel> { Items = data.Documents, TotalItemCount = data.Total, };
+        return result;
     }
 }

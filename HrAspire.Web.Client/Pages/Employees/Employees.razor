@@ -34,14 +34,9 @@
     {
         var pageNumber = request.StartIndex / this.Pagination.ItemsPerPage;
 
-        var employees = await this.EmployeesApiClient.GetEmployeesAsync(pageNumber, this.Pagination.ItemsPerPage);
+        var data = await this.EmployeesApiClient.GetEmployeesAsync(pageNumber, this.Pagination.ItemsPerPage);
 
-        var result = new GridItemsProviderResult<EmployeeResponseModel>
-        {
-            Items = employees.Employees,
-            TotalItemCount = employees.Total,
-        };
-
+        var result = new GridItemsProviderResult<EmployeeResponseModel> { Items = data.Employees, TotalItemCount = data.Total, };
         return result;
     }
 }

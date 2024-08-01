@@ -1,5 +1,6 @@
 using HrAspire.Web.Client.Services;
 using HrAspire.Web.Client.Services.Account;
+using HrAspire.Web.Client.Services.Documents;
 using HrAspire.Web.Client.Services.Employees;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,6 +22,10 @@ builder.Services
 
 builder.Services
     .AddHttpClient<EmployeesApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
+    .AddHttpMessageHandler<CookieHttpMessageHandler>();
+
+builder.Services
+    .AddHttpClient<DocumentsApiClient>(client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<CookieHttpMessageHandler>();
 
 await builder.Build().RunAsync();

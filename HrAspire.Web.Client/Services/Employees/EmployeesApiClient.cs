@@ -17,8 +17,16 @@ public class EmployeesApiClient
     public Task<EmployeesResponseModel> GetEmployeesAsync(int pageNumber, int pageSize)
         => this.httpClient.GetFromJsonAsync<EmployeesResponseModel>($"employees?pageNumber={pageNumber}&pageSize={pageSize}")!;
 
-    public Task<EmployeeDetailsResponseModel?> GetEmployeeAsync(string id)
-        => this.httpClient.GetFromJsonAsync<EmployeeDetailsResponseModel>($"employees/{id}");
+    public async Task<EmployeeDetailsResponseModel?> GetEmployeeAsync(string id)
+    {
+        var response = await this.httpClient.GetAsync($"employees/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<EmployeeDetailsResponseModel>();
+        }
+
+        return null;
+    }
 
     public async Task<(string? EmployeeId, string? ErrorMessage)> CreateEmployeeAsync(EmployeeCreateRequestModel request)
     {

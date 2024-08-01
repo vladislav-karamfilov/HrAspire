@@ -59,6 +59,7 @@ public static class DocumentsEndpoints
                     CreatedById = user.GetId()!,
                 });
 
+                // TODO: Handle the errors with exception handling (not found, bad request and internal server error handling)
                 if (string.IsNullOrWhiteSpace(createResponse.ErrorMessage))
                 {
                     return Results.Created(string.Empty, createResponse.Id);

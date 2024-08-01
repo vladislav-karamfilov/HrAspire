@@ -29,9 +29,8 @@
                         <label for="description" class="form-label">Description</label>
                         <ValidationMessage For="() => Input.Description" class="text-danger" />
                     </div>
-                    <div class="form-floating mb-3">
-                        <InputFile id="document-file-upload" OnChange="OnFileChangedAsync" class="form-control"></InputFile>
-                        <label for="document-file-upload" class="form-label">File</label>
+                    <div class="mb-3">
+                        <InputFile OnChange="OnFileChangedAsync" class="form-control form-control-lg" />
                     </div>
 
                     <div>

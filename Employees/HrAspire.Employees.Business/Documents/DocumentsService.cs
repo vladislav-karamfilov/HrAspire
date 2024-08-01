@@ -93,6 +93,7 @@ public class DocumentsService : IDocumentsService
         }
 
         return await this.dbContext.Documents
+            .Where(d => d.EmployeeId == employeeId)
             .OrderByDescending(d => d.CreatedOn)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)

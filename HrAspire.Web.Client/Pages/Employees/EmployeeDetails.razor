@@ -91,11 +91,11 @@
     <hr />
 
     <QuickGrid ItemsProvider="GridDocumentsProvider" Pagination="DocumentsPagination" Class="table table-bordered table-striped">
-        <TemplateColumn Title="Full Name">
+        <TemplateColumn Title="Title">
             <a href="/documents/@Id/@context.Id">@context.Title</a>
         </TemplateColumn>
-        <PropertyColumn Property="@(e => e.FileName)" />
-        <PropertyColumn Property="@(e => e.CreatedOn)" />
+        <PropertyColumn Property="@(e => e.FileName)" Title="File Name" />
+        <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created" Format="@Constants.DateTimeFormat" />
     </QuickGrid>
 
     <Paginator State="DocumentsPagination"></Paginator>

@@ -7,7 +7,7 @@
 
 <!-- TODO: add <PageTitle> to all pages -->
 
-<h1>Update Document - @Input?.Title</h1>
+<h1>Update Document</h1>
 <hr />
 
 @if (Input is not null)
@@ -35,9 +35,7 @@
                     </div>
 
                     <div>
-                        <button type="submit" class="w-100 btn btn-lg btn-primary" disabled="@(!string.IsNullOrEmpty(ErrorMessage))">
-                            Update
-                        </button>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Update</button>
                     </div>
                 </EditForm>
             </section>

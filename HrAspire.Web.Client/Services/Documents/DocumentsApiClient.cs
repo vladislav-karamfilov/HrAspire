@@ -54,7 +54,7 @@ public class DocumentsApiClient
 
     public async Task<string?> UpdateDocumentAsync(int id, string employeeId, DocumentUpdateRequestModel request)
     {
-        var response = await this.httpClient.PostAsJsonAsync($"employees/{employeeId}/documents/{id}", request);
+        var response = await this.httpClient.PutAsJsonAsync($"employees/{employeeId}/documents/{id}", request);
         if (response.IsSuccessStatusCode)
         {
             return null;

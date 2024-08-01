@@ -1,0 +1,106 @@
+﻿@page "/documents/{employeeId}/{id:int}"
+
+@attribute [Authorize]
+
+@inject DocumentsApiClient DocumentsApiClient
+@inject NavigationManager NavigationManager
+
+<h1>
+    Document - @Document?.Title
+
+    @if (Document is not null)
+    {
+        <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-document-modal">
+            Delete
+        </button>
+
+        <a href="/document-update/@EmployeeId/@Id" class="btn btn-primary float-end">Update</a>
+    }
+</h1>
+<hr />
+
+<StatusMessage IsError="true" Message="@ErrorMessage" />
+
+@if (Document is not null)
+{
+    <Modal Id="delete-document-modal"
+           Title="Delete Document"
+           Body="Are you sure you want to delete this document?"
+           Confirmed="DeleteDocumentAsync" />
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-product">
+                    <tbody>
+                        <tr>
+                            <td width="390">Title</td>
+                            <td>@Document.Title</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>@Document.Description</td>
+                        </tr>
+                        <tr>
+                            <td>File Name</td>
+                            <td>
+                                <a href="TODO" target="_blank">@Document.FileName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Created on</td>
+                            <td>@Document.CreatedOn.ToString(Constants.DateTimeFormat)</td>
+                        </tr>
+                        <tr>
+                            <td>Created by</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(Document.CreatedById))
+                                {
+                                    <a href="/employees/@Document.CreatedById">@Document.CreatedByFullName</a>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string EmployeeId { get; set; } = default!;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private DocumentDetailsResponseModel? Document { get; set; }
+
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        this.ErrorMessage = null;
+
+        this.Document = await this.DocumentsApiClient.GetDocumentAsync(this.Id, this.EmployeeId);
+        if (this.Document is null)
+        {
+            this.ErrorMessage = "No such document found.";
+        }
+    }
+
+    private async Task DeleteDocumentAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.DocumentsApiClient.DeleteDocumentAsync(this.Id, this.EmployeeId);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+}

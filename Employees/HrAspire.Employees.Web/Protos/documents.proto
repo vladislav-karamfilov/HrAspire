@@ -48,7 +48,8 @@ message DocumentDetailsModel {
 	google.protobuf.StringValue description = 3;
 	string fileName = 4;
 	google.protobuf.Timestamp createdOn = 5;
-	google.protobuf.StringValue createdByFullName = 6;
+	string createdById = 6;
+	string createdByFullName = 7;
 }
 
 message CreateDocumentRequest {

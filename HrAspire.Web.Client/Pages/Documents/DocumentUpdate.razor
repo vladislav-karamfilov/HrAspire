@@ -67,7 +67,7 @@
         var errorMessage = await this.DocumentsApiClient.UpdateDocumentAsync(this.Id, this.EmployeeId, this.Input!);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}/documents/{this.Id}");
+            this.NavigationManager.NavigateTo($"/documents/{this.EmployeeId}/{this.Id}");
         }
         else
         {

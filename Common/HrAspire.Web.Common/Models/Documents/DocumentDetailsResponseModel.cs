@@ -5,5 +5,6 @@ public record DocumentDetailsResponseModel(
     string Title,
     string? Description,
     string FileName,
+    string CreatedById,
     string CreatedByFullName,
     DateTime CreatedOn);

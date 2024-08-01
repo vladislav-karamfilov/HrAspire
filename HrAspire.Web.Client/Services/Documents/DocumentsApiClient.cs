@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http.Json;
 
 using HrAspire.Web.Common.Models.Documents;
-using HrAspire.Web.Common.Models.Employees;
 
 public class DocumentsApiClient
 {
@@ -64,6 +63,24 @@ public class DocumentsApiClient
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            errorMessage = problemDetails?.Detail;
+        }
+
+        return errorMessage ?? Constants.UnexpectedErrorMessage;
+    }
+
+    public async Task<string?> DeleteDocumentAsync(int id, string employeeId)
+    {
+        var response = await this.httpClient.DeleteAsync($"employees/{employeeId}/documents/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        string? errorMessage = null;
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
             var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
             errorMessage = problemDetails?.Detail;
         }

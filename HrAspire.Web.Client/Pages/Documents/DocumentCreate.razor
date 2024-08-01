@@ -55,7 +55,7 @@
         var (newDocumentId, errorMessage) = await this.DocumentsApiClient.CreateDocumentAsync(this.EmployeeId, this.Input);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}/documents/{newDocumentId}");
+            this.NavigationManager.NavigateTo($"/documents/{this.EmployeeId}/{newDocumentId}");
         }
         else
         {

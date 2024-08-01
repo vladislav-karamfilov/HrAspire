@@ -1,6 +1,8 @@
 ﻿namespace HrAspire.Employees.Data.Models;
 
-public class Document
+using HrAspire.Data.Common;
+
+public class Document : IDeletableEntity
 {
     public int Id { get; set; }
 

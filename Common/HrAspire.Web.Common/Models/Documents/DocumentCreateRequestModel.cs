@@ -1,8 +1,6 @@
-﻿namespace HrAspire.Web.Common.Models.Employees;
+﻿namespace HrAspire.Web.Common.Models.Documents;
 
 using System.ComponentModel.DataAnnotations;
-
-using Microsoft.AspNetCore.Http;
 
 public class DocumentCreateRequestModel
 {
@@ -12,5 +10,8 @@ public class DocumentCreateRequestModel
     public string? Description { get; set; }
 
     [Required]
-    public IFormFile File { get; set; } = default!;
+    public byte[] FileContent { get; set; } = default!;
+
+    [Required]
+    public string FileName { get; set; } = default!;
 }

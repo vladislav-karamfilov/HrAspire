@@ -1,0 +1,100 @@
+﻿@page "/document-create/{employeeId}"
+
+@attribute [Authorize]
+
+@inject DocumentsApiClient DocumentsApiClient
+@inject NavigationManager NavigationManager
+
+<!-- TODO: add <PageTitle> to all pages -->
+
+<h1>Create Document</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <StatusMessage Message="@ErrorMessage" IsError="true" />
+            <EditForm Model="Input" OnValidSubmit="CreateDocumentAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Title" class="form-control" aria-required="true" placeholder="title" />
+                    <label for="title" class="form-label">Title</label>
+                    <ValidationMessage For="() => Input.Title" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Description" class="form-control" placeholder="description" />
+                    <label for="description" class="form-label">Description</label>
+                    <ValidationMessage For="() => Input.Description" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputFile id="document-file-upload" OnChange="OnFileChangedAsync" class="form-control"></InputFile>
+                    <label for="document-file-upload" class="form-label">File</label>
+                </div>
+
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary" disabled="@(!string.IsNullOrEmpty(ErrorMessage))">
+                        Create
+                    </button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string EmployeeId { get; set; } = default!;
+
+    private DocumentCreateRequestModel Input { get; set; } = new();
+
+    private string? ErrorMessage { get; set; }
+
+    private async Task CreateDocumentAsync()
+    {
+        this.ErrorMessage = null;
+
+        var (newDocumentId, errorMessage) = await this.DocumentsApiClient.CreateDocumentAsync(this.EmployeeId, this.Input);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}/documents/{newDocumentId}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+
+    private async Task OnFileChangedAsync(InputFileChangeEventArgs ev)
+    {
+        this.ErrorMessage = null;
+
+        if (ev.File is null)
+        {
+            this.ErrorMessage = "Document file is required.";
+            return;
+        }
+
+        try
+        {
+
+            await using var memoryStream = new MemoryStream();
+            await ev.File.OpenReadStream(Constants.DocumentMaxFileSizeInB).CopyToAsync(memoryStream);
+            this.Input.FileContent = memoryStream.ToArray();
+        }
+        catch (Exception)
+        {
+            this.ErrorMessage = $"Max document file size is {Constants.DocumentMaxFileSizeInMB} MB.";
+            return;
+        }
+
+        if (this.Input.FileContent.Length > 0)
+        {
+            this.Input.FileName = ev.File.Name;
+        }
+        else
+        {
+            this.ErrorMessage = "Document file cannot be empty.";
+        }
+    }
+}

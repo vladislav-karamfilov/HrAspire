@@ -2,8 +2,6 @@
 
 using System.ComponentModel.DataAnnotations;
 
-using Microsoft.AspNetCore.Http;
-
 public class DocumentUpdateRequestModel
 {
     [Required]
@@ -11,5 +9,7 @@ public class DocumentUpdateRequestModel
 
     public string? Description { get; set; }
 
-    public IFormFile? File { get; set; }
+    public byte[]? FileContent { get; set; }
+
+    public string? FileName { get; set; }
 }

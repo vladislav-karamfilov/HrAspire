@@ -58,7 +58,7 @@ public class DocumentsService : IDocumentsService
             Description = description,
             Url = url,
             FileName = fileName,
-            CreatedOn = this.timeProvider.GetUtcNow().DateTime,
+            CreatedOn = this.timeProvider.GetUtcNow().UtcDateTime,
             CreatedById = createdById,
         };
 

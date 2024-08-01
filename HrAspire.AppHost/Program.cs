@@ -11,7 +11,7 @@ var vacationsDb = postgres.AddDatabase("vacations-db", "vacations");
 
 var azureStorage = builder
     .AddAzureStorage("azure-storage")
-    .RunAsEmulator(c => c.WithDataVolume("blob-data"));
+    .RunAsEmulator(c => c.WithDataVolume("blob-data").WithImageTag("3.31.0"));
 
 var blobs = azureStorage.AddBlobs("blobs");
 

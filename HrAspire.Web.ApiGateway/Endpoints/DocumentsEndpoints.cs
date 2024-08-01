@@ -4,13 +4,11 @@ using System.Net;
 using System.Security.Claims;
 
 using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 
 using HrAspire.Employees.Web;
 using HrAspire.Web.ApiGateway.Mappers;
 using HrAspire.Web.Common;
 using HrAspire.Web.Common.Models.Documents;
-using HrAspire.Web.Common.Models.Employees;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,23 +37,17 @@ public static class DocumentsEndpoints
             "/",
             async (Documents.DocumentsClient documentsClient,
                 [FromRoute] string employeeId,
-                [FromForm] DocumentCreateRequestModel model,
+                [FromBody] DocumentCreateRequestModel model,
                 ClaimsPrincipal user) =>
             {
-                ByteString fileContent;
-                using (var stream = model.File.OpenReadStream())
-                {
-                    fileContent = await ByteString.FromStreamAsync(stream);
-                }
-
                 // TODO: Make sure the model cannot come unvalidated!!!
                 var createResponse = await documentsClient.CreateDocumentAsync(new CreateDocumentRequest
                 {
                     EmployeeId = employeeId,
                     Title = model.Title,
                     Description = model.Description,
-                    FileContent = fileContent,
-                    FileName = model.File.FileName,
+                    FileContent = ByteString.CopyFrom(model.FileContent),
+                    FileName = model.FileName,
                     CreatedById = user.GetId()!,
                 });
 
@@ -90,7 +82,7 @@ public static class DocumentsEndpoints
             async (Documents.DocumentsClient documentsClient,
                 [FromRoute] string employeeId,
                 [FromRoute] int id,
-                [FromForm] DocumentUpdateRequestModel model) =>
+                [FromBody] DocumentUpdateRequestModel model) =>
             {
                 // TODO: Make sure the model cannot come unvalidated!!!
                 var updateResponse = await documentsClient.UpdateDocumentAsync(new UpdateDocumentRequest
@@ -99,6 +91,8 @@ public static class DocumentsEndpoints
                     Id = id,
                     Title = model.Title,
                     Description = model.Description,
+                    FileContent = model.FileContent is null ? null : ByteString.CopyFrom(model.FileContent),
+                    FileName = model.FileName,
                 });
 
                 if (string.IsNullOrWhiteSpace(updateResponse.ErrorMessage))

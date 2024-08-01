@@ -30,7 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\employees.proto" GrpcServices="Client" Link="Protos\employees.proto" />
+	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\documents.proto" GrpcServices="Client" Link="Protos\documents.proto" />
+	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\employees.proto" GrpcServices="Client" Link="Protos\employees.proto" />
   </ItemGroup>
 	
 </Project>

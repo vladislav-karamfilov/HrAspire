@@ -16,9 +16,9 @@ public static class EmployeesEndpoints
 {
     public static IEndpointConventionBuilder MapEmployeesEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var employeesGroup = endpoints.MapGroup("/Employees").RequireAuthorization();
+        var group = endpoints.MapGroup("/Employees").RequireAuthorization();
 
-        employeesGroup.MapGet(
+        group.MapGet(
             "/",
             async (Employees.EmployeesClient employeesClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10) =>
             {
@@ -30,7 +30,7 @@ public static class EmployeesEndpoints
                 return new EmployeesResponseModel(employees, employeesResponse.Total);
             });
 
-        employeesGroup.MapPost(
+        group.MapPost(
             "/",
             async (Employees.EmployeesClient employeesClient, [FromBody] EmployeeCreateRequestModel model, ClaimsPrincipal user) =>
             {
@@ -55,22 +55,22 @@ public static class EmployeesEndpoints
                 return Results.Problem(createResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
             });
 
-        employeesGroup.MapGet(
+        group.MapGet(
             "/{id}",
             async (Employees.EmployeesClient employeesClient, [FromRoute] string id) =>
             {
                 var employeeResponse = await employeesClient.GetEmployeeAsync(new GetEmployeeRequest { Id = id });
                 if (employeeResponse.Employee is null)
                 {
-                    return null;
+                    return Results.NotFound();
                 }
 
                 var employee = employeeResponse.Employee.MapToDetailsResponseModel();
 
-                return employee;
+                return Results.Ok(employee);
             });
 
-        employeesGroup.MapPut(
+        group.MapPut(
             "/{id}",
             async (Employees.EmployeesClient employeesClient, [FromRoute] string id, [FromBody] EmployeeUpdateRequestModel model) =>
             {
@@ -93,7 +93,7 @@ public static class EmployeesEndpoints
                 return Results.Problem(updateResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
             });
 
-        employeesGroup.MapDelete(
+        group.MapDelete(
             "/{id}",
             async (Employees.EmployeesClient employeesClient, [FromRoute] string id) =>
             {
@@ -106,6 +106,6 @@ public static class EmployeesEndpoints
                 return Results.Problem(deleteResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
             });
 
-        return employeesGroup;
+        return group;
     }
 }

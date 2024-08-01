@@ -29,6 +29,7 @@ builder.Services
         }));
 
 builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri("https://employees-service"));
+builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri("https://employees-service"));
 
 builder.Services.AddAuthorizationBuilder();
 
@@ -66,8 +67,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAccountEndpoints();
-
 app.MapEmployeesEndpoints();
+app.MapDocumentsEndpoints();
 
 app.MapDefaultEndpoints();
 

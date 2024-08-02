@@ -2,6 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "HrAspire.Employees.Web";
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
@@ -11,8 +12,8 @@ service Documents {
 	rpc GetEmployeeDocuments(GetEmployeeDocumentsRequest) returns (GetEmployeeDocumentsResponse);
 	rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
 	rpc CreateDocument(CreateDocumentRequest) returns (CreateDocumentResponse);
-	rpc UpdateDocument(UpdateDocumentRequest) returns (UpdateDocumentResponse);
-	rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse);
+	rpc UpdateDocument(UpdateDocumentRequest) returns (google.protobuf.Empty);
+	rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty);
 }
 
 message GetEmployeeDocumentsRequest {
@@ -62,8 +63,7 @@ message CreateDocumentRequest {
 }
 
 message CreateDocumentResponse {
- 	google.protobuf.Int32Value id = 1;
-	google.protobuf.StringValue errorMessage = 2;
+ 	int32 id = 1;
 }
 
 message UpdateDocumentRequest {
@@ -75,15 +75,7 @@ message UpdateDocumentRequest {
 	google.protobuf.StringValue fileName = 6;
 }
 
-message UpdateDocumentResponse {
-	google.protobuf.StringValue errorMessage = 1;
-}
-
 message DeleteDocumentRequest {
 	int32 id = 1;
 	string employeeId = 2;
-}
-
-message DeleteDocumentResponse {
-	google.protobuf.StringValue errorMessage = 1;
 }

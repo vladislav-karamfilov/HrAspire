@@ -1,6 +1,5 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
-using System.Net;
 using System.Security.Claims;
 
 using Google.Protobuf.WellKnownTypes;
@@ -20,91 +19,78 @@ public static class EmployeesEndpoints
 
         group.MapGet(
             "/",
-            async (Employees.EmployeesClient employeesClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10) =>
-            {
-                var employeesResponse = await employeesClient.GetEmployeesAsync(
-                    new GetEmployeesRequest { PageNumber = pageNumber, PageSize = pageSize });
+            (Employees.EmployeesClient employeesClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                {
+                    var employeesResponse = await employeesClient.GetEmployeesAsync(
+                        new GetEmployeesRequest { PageNumber = pageNumber, PageSize = pageSize });
 
-                var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
+                    var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
 
-                return new EmployeesResponseModel(employees, employeesResponse.Total);
-            });
+                    return Results.Ok(new EmployeesResponseModel(employees, employeesResponse.Total));
+                }));
 
         group.MapPost(
             "/",
-            async (Employees.EmployeesClient employeesClient, [FromBody] EmployeeCreateRequestModel model, ClaimsPrincipal user) =>
-            {
-                // TODO: Make sure the model cannot come unvalidated!!!
-                var createResponse = await employeesClient.CreateEmployeeAsync(new CreateEmployeeRequest
+            (Employees.EmployeesClient employeesClient, [FromBody] EmployeeCreateRequestModel model, ClaimsPrincipal user)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    Email = model.Email,
-                    FullName = model.FullName,
-                    Password = model.Password,
-                    Position = model.Position,
-                    DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
-                    Department = model.Department,
-                    ManagerId = model.ManagerId,
-                    CreatedById = user.GetId()!,
-                });
+                    // TODO: Make sure the model cannot come unvalidated!!!
+                    var createResponse = await employeesClient.CreateEmployeeAsync(new CreateEmployeeRequest
+                    {
+                        Email = model.Email,
+                        FullName = model.FullName,
+                        Password = model.Password,
+                        Position = model.Position,
+                        DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
+                        Department = model.Department,
+                        ManagerId = model.ManagerId,
+                        CreatedById = user.GetId()!,
+                    });
 
-                if (string.IsNullOrWhiteSpace(createResponse.ErrorMessage))
-                {
                     return Results.Created(string.Empty, createResponse.Id);
-                }
-
-                return Results.Problem(createResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
-            });
+                }));
 
         group.MapGet(
             "/{id}",
-            async (Employees.EmployeesClient employeesClient, [FromRoute] string id) =>
-            {
-                var employeeResponse = await employeesClient.GetEmployeeAsync(new GetEmployeeRequest { Id = id });
-                if (employeeResponse.Employee is null)
+            (Employees.EmployeesClient employeesClient, [FromRoute] string id)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    return Results.NotFound();
-                }
+                    var employeeResponse = await employeesClient.GetEmployeeAsync(new GetEmployeeRequest { Id = id });
 
-                var employee = employeeResponse.Employee.MapToDetailsResponseModel();
+                    var employee = employeeResponse.Employee.MapToDetailsResponseModel();
 
-                return Results.Ok(employee);
-            });
+                    return Results.Ok(employee);
+                }));
 
         group.MapPut(
             "/{id}",
-            async (Employees.EmployeesClient employeesClient, [FromRoute] string id, [FromBody] EmployeeUpdateRequestModel model) =>
-            {
-                // TODO: Make sure the model cannot come unvalidated!!!
-                var updateResponse = await employeesClient.UpdateEmployeeAsync(new UpdateEmployeeRequest
+            (Employees.EmployeesClient employeesClient, [FromRoute] string id, [FromBody] EmployeeUpdateRequestModel model)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    Id = id,
-                    FullName = model.FullName,
-                    Position = model.Position,
-                    DateOfBirth = model.DateOfBirth.ToTimestamp(),
-                    Department = model.Department,
-                    ManagerId = model.ManagerId,
-                });
+                    // TODO: Make sure the model cannot come unvalidated!!!
+                    await employeesClient.UpdateEmployeeAsync(new UpdateEmployeeRequest
+                    {
+                        Id = id,
+                        FullName = model.FullName,
+                        Position = model.Position,
+                        DateOfBirth = model.DateOfBirth.ToTimestamp(),
+                        Department = model.Department,
+                        ManagerId = model.ManagerId,
+                    });
 
-                if (string.IsNullOrWhiteSpace(updateResponse.ErrorMessage))
-                {
                     return Results.Ok();
-                }
-
-                return Results.Problem(updateResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
-            });
+                }));
 
         group.MapDelete(
             "/{id}",
-            async (Employees.EmployeesClient employeesClient, [FromRoute] string id) =>
-            {
-                var deleteResponse = await employeesClient.DeleteEmployeeAsync(new DeleteEmployeeRequest { Id = id });
-                if (string.IsNullOrWhiteSpace(deleteResponse.ErrorMessage))
+            (Employees.EmployeesClient employeesClient, [FromRoute] string id)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    return Results.Ok();
-                }
+                    await employeesClient.DeleteEmployeeAsync(new DeleteEmployeeRequest { Id = id });
 
-                return Results.Problem(deleteResponse.ErrorMessage, statusCode: (int)HttpStatusCode.BadRequest);
-            });
+                    return Results.Ok();
+                }));
 
         return group;
     }

@@ -2,10 +2,13 @@
 
 using System.Threading.Tasks;
 
+using Google.Protobuf.WellKnownTypes;
+
 using Grpc.Core;
 
 using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Web.Mappers;
+using HrAspire.Web.Common;
 
 public class DocumentsGrpcService : Documents.DocumentsBase
 {
@@ -35,9 +38,12 @@ public class DocumentsGrpcService : Documents.DocumentsBase
     public override async Task<GetDocumentResponse> GetDocument(GetDocumentRequest request, ServerCallContext context)
     {
         var document = await this.documentsService.GetDocumentAsync(request.Id, request.EmployeeId);
+        if (document is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
+        }
 
-        var response = new GetDocumentResponse { Document = document?.MapToDocumentDetails() };
-
+        var response = new GetDocumentResponse { Document = document.MapToDocumentDetails() };
         return response;
     }
 
@@ -51,10 +57,15 @@ public class DocumentsGrpcService : Documents.DocumentsBase
             request.FileName,
             request.CreatedById);
 
-        return new CreateDocumentResponse { Id = createResult.Data, ErrorMessage = createResult.ErrorMessage };
+        if (createResult.IsError)
+        {
+            throw createResult.ToRpcException();
+        }
+
+        return new CreateDocumentResponse { Id = createResult.Data };
     }
 
-    public override async Task<UpdateDocumentResponse> UpdateDocument(UpdateDocumentRequest request, ServerCallContext context)
+    public override async Task<Empty> UpdateDocument(UpdateDocumentRequest request, ServerCallContext context)
     {
         var updateResult = await this.documentsService.UpdateAsync(
             request.Id,
@@ -64,13 +75,22 @@ public class DocumentsGrpcService : Documents.DocumentsBase
             request.FileContent?.ToByteArray(),
             request.FileName);
 
-        return new UpdateDocumentResponse { ErrorMessage = updateResult.ErrorMessage };
+        if (updateResult.IsError)
+        {
+            throw updateResult.ToRpcException();
+        }
+
+        return new Empty();
     }
 
-    public override async Task<DeleteDocumentResponse> DeleteDocument(DeleteDocumentRequest request, ServerCallContext context)
+    public override async Task<Empty> DeleteDocument(DeleteDocumentRequest request, ServerCallContext context)
     {
         var deleteResult = await this.documentsService.DeleteAsync(request.Id, request.EmployeeId);
+        if (deleteResult.IsError)
+        {
+            throw deleteResult.ToRpcException();
+        }
 
-        return new DeleteDocumentResponse { ErrorMessage = deleteResult.ErrorMessage };
+        return new Empty();
     }
 }

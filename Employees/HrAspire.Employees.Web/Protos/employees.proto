@@ -2,6 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "HrAspire.Employees.Web";
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
@@ -11,8 +12,8 @@ service Employees {
 	rpc GetEmployees(GetEmployeesRequest) returns (GetEmployeesResponse);
 	rpc GetEmployee(GetEmployeeRequest) returns (GetEmployeeResponse);
 	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
-	rpc UpdateEmployee(UpdateEmployeeRequest) returns (UpdateEmployeeResponse);
-	rpc DeleteEmployee(DeleteEmployeeRequest) returns (DeleteEmployeeResponse);
+	rpc UpdateEmployee(UpdateEmployeeRequest) returns (google.protobuf.Empty);
+	rpc DeleteEmployee(DeleteEmployeeRequest) returns (google.protobuf.Empty);
 }
 
 message GetEmployeesRequest {
@@ -69,8 +70,7 @@ message CreateEmployeeRequest {
 }
 
 message CreateEmployeeResponse {
-	google.protobuf.StringValue id = 1;
-	google.protobuf.StringValue errorMessage = 2;
+	string id = 1;
 }
 
 message UpdateEmployeeRequest {
@@ -82,14 +82,6 @@ message UpdateEmployeeRequest {
 	google.protobuf.StringValue managerId = 6;
 }
 
-message UpdateEmployeeResponse {
-	google.protobuf.StringValue errorMessage = 1;
-}
-
 message DeleteEmployeeRequest {
 	string id = 1;
-}
-
-message DeleteEmployeeResponse {
-	google.protobuf.StringValue errorMessage = 1;
 }

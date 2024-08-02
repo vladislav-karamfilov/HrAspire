@@ -2,6 +2,8 @@
 
 using System.Threading.Tasks;
 
+using Google.Protobuf.WellKnownTypes;
+
 using Grpc.Core;
 
 using HrAspire.Employees.Business.Employees;
@@ -34,9 +36,12 @@ public class EmployeesGrpcService : Employees.EmployeesBase
     public override async Task<GetEmployeeResponse> GetEmployee(GetEmployeeRequest request, ServerCallContext context)
     {
         var employee = await this.employeesService.GetEmployeeAsync(request.Id);
+        if (employee is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
+        }
 
-        var response = new GetEmployeeResponse { Employee = employee?.MapToEmployeeDetails() };
-
+        var response = new GetEmployeeResponse { Employee = employee.MapToEmployeeDetails() };
         return response;
     }
 
@@ -52,10 +57,15 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.ManagerId,
             request.CreatedById);
 
-        return new CreateEmployeeResponse { Id = createResult.Data, ErrorMessage = createResult.ErrorMessage };
+        if (createResult.IsError)
+        {
+            throw createResult.ToRpcException();
+        }
+
+        return new CreateEmployeeResponse { Id = createResult.Data };
     }
 
-    public override async Task<UpdateEmployeeResponse> UpdateEmployee(UpdateEmployeeRequest request, ServerCallContext context)
+    public override async Task<Empty> UpdateEmployee(UpdateEmployeeRequest request, ServerCallContext context)
     {
         var updateResult = await this.employeesService.UpdateAsync(
             request.Id,
@@ -65,13 +75,22 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.Department,
             request.ManagerId);
 
-        return new UpdateEmployeeResponse { ErrorMessage = updateResult.ErrorMessage };
+        if (updateResult.IsError)
+        {
+            throw updateResult.ToRpcException();
+        }
+
+        return new Empty();
     }
 
-    public override async Task<DeleteEmployeeResponse> DeleteEmployee(DeleteEmployeeRequest request, ServerCallContext context)
+    public override async Task<Empty> DeleteEmployee(DeleteEmployeeRequest request, ServerCallContext context)
     {
         var deleteResult = await this.employeesService.DeleteAsync(request.Id);
+        if (deleteResult.IsError)
+        {
+            throw deleteResult.ToRpcException();
+        }
 
-        return new DeleteEmployeeResponse { ErrorMessage = deleteResult.ErrorMessage };
+        return new Empty();
     }
 }

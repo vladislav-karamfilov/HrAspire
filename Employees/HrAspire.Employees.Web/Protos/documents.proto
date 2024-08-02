@@ -11,6 +11,7 @@ package documents;
 service Documents {
 	rpc GetEmployeeDocuments(GetEmployeeDocumentsRequest) returns (GetEmployeeDocumentsResponse);
 	rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
+	rpc GetDocumentUrlAndFileName(GetDocumentUrlAndFileNameRequest) returns (GetDocumentUrlAndFileNameResponse);
 	rpc CreateDocument(CreateDocumentRequest) returns (CreateDocumentResponse);
 	rpc UpdateDocument(UpdateDocumentRequest) returns (google.protobuf.Empty);
 	rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty);
@@ -78,4 +79,15 @@ message UpdateDocumentRequest {
 message DeleteDocumentRequest {
 	int32 id = 1;
 	string employeeId = 2;
+}
+
+message GetDocumentUrlAndFileNameRequest {
+	int32 id = 1;
+	string employeeId = 2;
+}
+
+message GetDocumentUrlAndFileNameResponse {
+	int32 id = 1;
+	string url = 2;
+	string fileName = 3;
 }

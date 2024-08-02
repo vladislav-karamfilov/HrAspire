@@ -8,6 +8,8 @@ public interface IDocumentsService
 
     Task<int> GetEmployeeDocumentsCountAsync(string employeeId);
 
+    Task<DocumentUrlAndFileNameServiceModel?> GetDocumentUrlAndFileNameAsync(int id, string employeeId);
+
     Task<DocumentDetailsServiceModel?> GetDocumentAsync(int id, string employeeId);
 
     Task<ServiceResult<int>> CreateAsync(

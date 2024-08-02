@@ -44,7 +44,10 @@
                         <tr>
                             <td>File Name</td>
                             <td>
-                                <a href="TODO" target="_blank">@Document.FileName</a>
+                                <a href="@DownloadUrl" download target="_blank">
+                                    <i class="bi bi-download"></i>
+                                    @Document.FileName
+                                </a>
                             </td>
                         </tr>
                         <tr>
@@ -75,6 +78,8 @@
     public int Id { get; set; }
 
     private DocumentDetailsResponseModel? Document { get; set; }
+
+    private string DownloadUrl => this.DocumentsApiClient.GetDocumentDownloadUrl(this.Id, this.EmployeeId);
 
     private string? ErrorMessage { get; set; }
 

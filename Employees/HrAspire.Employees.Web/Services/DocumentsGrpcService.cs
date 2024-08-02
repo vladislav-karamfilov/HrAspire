@@ -47,6 +47,19 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         return response;
     }
 
+    public override async Task<GetDocumentUrlAndFileNameResponse> GetDocumentUrlAndFileName(
+        GetDocumentUrlAndFileNameRequest request,
+        ServerCallContext context)
+    {
+        var documentInfo = await this.documentsService.GetDocumentUrlAndFileNameAsync(request.Id, request.EmployeeId);
+        if (documentInfo is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
+        }
+
+        return new GetDocumentUrlAndFileNameResponse { Url = documentInfo.Url, FileName = documentInfo.FileName };
+    }
+
     public override async Task<CreateDocumentResponse> CreateDocument(CreateDocumentRequest request, ServerCallContext context)
     {
         var createResult = await this.documentsService.CreateAsync(

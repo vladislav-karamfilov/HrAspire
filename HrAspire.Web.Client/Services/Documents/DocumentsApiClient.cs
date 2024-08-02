@@ -87,4 +87,7 @@ public class DocumentsApiClient
 
         return errorMessage ?? Constants.UnexpectedErrorMessage;
     }
+
+    public string GetDocumentDownloadUrl(int id, string employeeId)
+        => $"{this.httpClient.BaseAddress}employees/{employeeId}/documents/{id}/content";
 }

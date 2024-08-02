@@ -110,6 +110,12 @@ public class DocumentsService : IDocumentsService
             .ProjectToDetailsServiceModel()
             .FirstOrDefaultAsync();
 
+    public Task<DocumentUrlAndFileNameServiceModel?> GetDocumentUrlAndFileNameAsync(int id, string employeeId)
+        => this.dbContext.Documents
+            .Where(d => d.Id == id && d.EmployeeId == employeeId)
+            .ProjectToUrlAndFileNameServiceModel()
+            .FirstOrDefaultAsync();
+
     public async Task<ServiceResult> UpdateAsync(
         int id,
         string employeeId,
@@ -164,7 +170,14 @@ public class DocumentsService : IDocumentsService
             return null;
         }
 
-        var uriBuilder = new UriBuilder(this.blobServiceClient.Uri) { Path = $"{containerName}/{blobName}", Port = -1 };
+        var baseUri = this.blobServiceClient.Uri;
+
+        var uriBuilder = new UriBuilder(baseUri)
+        {
+            Path = $"{containerName}/{blobName}",
+            Port = baseUri.Port is 80 or 443 ? -1 : baseUri.Port,
+        };
+
         return uriBuilder.ToString();
     }
 

@@ -1,5 +1,6 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
+using System.Net;
 using System.Security.Claims;
 
 using Google.Protobuf;
@@ -98,6 +99,30 @@ public static class DocumentsEndpoints
                     await documentsClient.DeleteDocumentAsync(new DeleteDocumentRequest { Id = id, EmployeeId = employeeId });
 
                     return Results.Ok();
+                }));
+
+        group.MapGet(
+            "/{id:int}/content",
+            (Documents.DocumentsClient documentsClient, HttpClient httpClient, [FromRoute] string employeeId, [FromRoute] int id)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                {
+                    var documentInfo = await documentsClient.GetDocumentUrlAndFileNameAsync(
+                        new GetDocumentUrlAndFileNameRequest { Id = id, EmployeeId = employeeId });
+
+                    var response = await httpClient.GetAsync(documentInfo.Url, HttpCompletionOption.ResponseHeadersRead);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return response.StatusCode == HttpStatusCode.NotFound
+                            ? Results.NotFound()
+                            : Results.BadRequest("Error downloading document. Please try again later.");
+                    }
+
+                    using var fileStream = await response.Content.ReadAsStreamAsync();
+                    return Results.File(
+                        fileStream,
+                        response.Content.Headers.ContentType?.ToString(),
+                        documentInfo.FileName,
+                        response.Content.Headers.LastModified);
                 }));
 
         return group;

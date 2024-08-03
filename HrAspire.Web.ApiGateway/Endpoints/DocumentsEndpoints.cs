@@ -11,6 +11,7 @@ using HrAspire.Web.Common;
 using HrAspire.Web.Common.Models.Documents;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 public static class DocumentsEndpoints
 {
@@ -103,27 +104,46 @@ public static class DocumentsEndpoints
 
         group.MapGet(
             "/{id:int}/content",
-            (Documents.DocumentsClient documentsClient, HttpClient httpClient, [FromRoute] string employeeId, [FromRoute] int id)
-                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-                {
-                    var documentInfo = await documentsClient.GetDocumentUrlAndFileNameAsync(
-                        new GetDocumentUrlAndFileNameRequest { Id = id, EmployeeId = employeeId });
-
-                    var response = await httpClient.GetAsync(documentInfo.Url, HttpCompletionOption.ResponseHeadersRead);
-                    if (!response.IsSuccessStatusCode)
+            (Documents.DocumentsClient documentsClient,
+                HttpClient httpClient,
+                HttpResponse response,
+                [FromRoute] string employeeId,
+                [FromRoute] int id)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(
+                    async () =>
                     {
-                        return response.StatusCode == HttpStatusCode.NotFound
-                            ? Results.NotFound()
-                            : Results.BadRequest("Error downloading document. Please try again later.");
-                    }
+                        var documentInfo = await documentsClient.GetDocumentUrlAndFileNameAsync(
+                            new GetDocumentUrlAndFileNameRequest { Id = id, EmployeeId = employeeId });
 
-                    using var fileStream = await response.Content.ReadAsStreamAsync();
-                    return Results.File(
-                        fileStream,
-                        response.Content.Headers.ContentType?.ToString(),
-                        documentInfo.FileName,
-                        response.Content.Headers.LastModified);
-                }));
+                        var documentContentResponse = await httpClient.GetAsync(documentInfo.Url, HttpCompletionOption.ResponseHeadersRead);
+                        if (!documentContentResponse.IsSuccessStatusCode)
+                        {
+                            if (documentContentResponse.StatusCode == HttpStatusCode.NotFound)
+                            {
+                                response.StatusCode = (int)HttpStatusCode.NotFound;
+                            }
+                            else
+                            {
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                await response.WriteAsync("Error downloading document. Please try again later.");
+                            }
+                        }
+                        else
+                        {
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.Headers.ContentLength = documentContentResponse.Content.Headers.ContentLength;
+                            response.Headers.LastModified = documentContentResponse.Content.Headers.LastModified?.ToString("R");
+                            response.Headers.ContentDisposition =
+                                new ContentDispositionHeaderValue("attachment") { FileName = documentInfo.FileName }.ToString();
+
+                            response.Headers.ContentType = documentContentResponse.Content.Headers.ContentType?.ToString()
+                                ?? "application/octet-stream";
+
+                            using var fileStream = await documentContentResponse.Content.ReadAsStreamAsync();
+                            await fileStream.CopyToAsync(response.Body);
+                        }
+                    },
+                    response));
 
         return group;
     }

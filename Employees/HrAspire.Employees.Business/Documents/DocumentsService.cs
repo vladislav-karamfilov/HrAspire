@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Azure.Storage.Sas;
 
 using HeyRed.Mime;
 
@@ -170,12 +171,15 @@ public class DocumentsService : IDocumentsService
             return null;
         }
 
-        var baseUri = this.blobServiceClient.Uri;
+        var sasUri = this.blobServiceClient.GenerateAccountSasUri(
+            AccountSasPermissions.Read,
+            DateTimeOffset.UtcNow.AddYears(10),
+            AccountSasResourceTypes.Object);
 
-        var uriBuilder = new UriBuilder(baseUri)
+        var uriBuilder = new UriBuilder(sasUri)
         {
-            Path = $"{containerName}/{blobName}",
-            Port = baseUri.Port is 80 or 443 ? -1 : baseUri.Port,
+            Path = $"{sasUri.LocalPath}/{containerName}/{blobName}",
+            Port = sasUri.Port is 80 or 443 ? -1 : sasUri.Port,
         };
 
         return uriBuilder.ToString();

@@ -93,7 +93,10 @@ public class EmployeesService : IEmployeesService
 
         if (currentRole != role)
         {
-            var identityResult = await this.userManager.RemoveFromRoleAsync(employee, role);
+            var identityResult = string.IsNullOrWhiteSpace(currentRole)
+                ? IdentityResult.Success
+                : await this.userManager.RemoveFromRoleAsync(employee, currentRole);
+
             if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
             {
                 identityResult = await this.userManager.AddToRoleAsync(employee, role);

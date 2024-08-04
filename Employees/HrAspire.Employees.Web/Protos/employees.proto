@@ -38,10 +38,9 @@ message EmployeeModel {
 	string id = 1;
 	string email = 2;
 	string fullName = 3;
-	google.protobuf.Timestamp dateOfBirth = 4;
-	google.protobuf.StringValue department = 5;
-	string position = 6;
-	google.protobuf.Timestamp createdOn = 7;
+	google.protobuf.StringValue department = 4;
+	string position = 5;
+	google.protobuf.Timestamp createdOn = 6;
 }
 
 message EmployeeDetailsModel {

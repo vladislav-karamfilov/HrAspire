@@ -15,4 +15,6 @@ public class EmployeeUpdateRequestModel
     public string? Department { get; set; }
 
     public string? ManagerId { get; set; }
+
+    public string? Role { get; set; }
 }

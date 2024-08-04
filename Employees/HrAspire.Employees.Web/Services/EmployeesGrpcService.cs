@@ -21,8 +21,8 @@ public class EmployeesGrpcService : Employees.EmployeesBase
 
     public override async Task<GetEmployeesResponse> GetEmployees(GetEmployeesRequest request, ServerCallContext context)
     {
-        var employees = await this.employeesService.GetEmployeesAsync(request.PageNumber, request.PageSize);
-        var total = await this.employeesService.GetEmployeesCountAsync();
+        var employees = await this.employeesService.GetEmployeesAsync(request.CurrentEmployeeId, request.PageNumber, request.PageSize);
+        var total = await this.employeesService.GetEmployeesCountAsync(request.CurrentEmployeeId);
 
         var response = new GetEmployeesResponse { Total = total };
         foreach (var employee in employees)
@@ -55,6 +55,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.Position,
             request.Department,
             request.ManagerId,
+            request.Role,
             request.CreatedById);
 
         if (createResult.IsError)
@@ -73,6 +74,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.DateOfBirth.ToDateOnly(),
             request.Position,
             request.Department,
+            request.Role,
             request.ManagerId);
 
         if (updateResult.IsError)

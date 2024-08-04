@@ -4,9 +4,11 @@ using HrAspire.Business.Common;
 
 public interface IEmployeesService
 {
-    Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(int pageNumber, int pageSize);
+    Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(string currentEmployeeId, int pageNumber, int pageSize);
 
-    Task<int> GetEmployeesCountAsync();
+    Task<IEnumerable<EmployeeServiceModel>> GetManagersAsync();
+
+    Task<int> GetEmployeesCountAsync(string currentEmployeeId);
 
     Task<EmployeeDetailsServiceModel?> GetEmployeeAsync(string id);
 
@@ -18,6 +20,7 @@ public interface IEmployeesService
         string position,
         string? department,
         string? managerId,
+        string role,
         string createdById);
 
     Task<ServiceResult> UpdateAsync(
@@ -26,6 +29,7 @@ public interface IEmployeesService
         DateOnly dateOfBirth,
         string position,
         string? department,
+        string role,
         string? managerId);
 
     Task<ServiceResult> DeleteAsync(string id);

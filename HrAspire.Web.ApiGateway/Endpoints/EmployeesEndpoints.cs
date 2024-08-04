@@ -17,39 +17,66 @@ public static class EmployeesEndpoints
     {
         var group = endpoints.MapGroup("/Employees").RequireAuthorization();
 
-        group.MapGet(
-            "/",
-            (Employees.EmployeesClient employeesClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10)
-                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-                {
-                    var employeesResponse = await employeesClient.GetEmployeesAsync(
-                        new GetEmployeesRequest { PageNumber = pageNumber, PageSize = pageSize });
-
-                    var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
-
-                    return Results.Ok(new EmployeesResponseModel(employees, employeesResponse.Total));
-                }));
-
-        group.MapPost(
-            "/",
-            (Employees.EmployeesClient employeesClient, [FromBody] EmployeeCreateRequestModel model, ClaimsPrincipal user)
-                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-                {
-                    // TODO: Make sure the model cannot come unvalidated!!!
-                    var createResponse = await employeesClient.CreateEmployeeAsync(new CreateEmployeeRequest
+        group
+            .MapGet(
+                "/",
+                (Employees.EmployeesClient employeesClient,
+                    ClaimsPrincipal user,
+                    [FromQuery] int pageNumber = 0,
+                    [FromQuery] int pageSize = 10)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        Email = model.Email,
-                        FullName = model.FullName,
-                        Password = model.Password,
-                        Position = model.Position,
-                        DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
-                        Department = model.Department,
-                        ManagerId = model.ManagerId,
-                        CreatedById = user.GetId()!,
-                    });
+                        var employeesResponse = await employeesClient.GetEmployeesAsync(
+                            new GetEmployeesRequest
+                            {
+                                CurrentEmployeeId = user.GetId()!,
+                                PageNumber = pageNumber,
+                                PageSize = pageSize
+                            });
 
-                    return Results.Created(string.Empty, createResponse.Id);
-                }));
+                        var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
+
+                        return Results.Ok(new EmployeesResponseModel(employees, employeesResponse.Total));
+                    }))
+            .RequireAuthorization(Constants.ManagerAuthPolicyName, Constants.HrManagerAuthPolicyName);
+
+        group
+            .MapGet(
+                "/managers",
+                (Employees.EmployeesClient employeesClient)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        var managersResponse = await employeesClient.GetManagersAsync(new Empty());
+
+                        var managers = managersResponse.Managers.Select(e => e.MapToResponseModel()).ToList();
+
+                        return Results.Ok(managers);
+                    }))
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
+
+        group
+            .MapPost(
+                "/",
+                (Employees.EmployeesClient employeesClient, [FromBody] EmployeeCreateRequestModel model, ClaimsPrincipal user)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        // TODO: Make sure the model cannot come unvalidated!!!
+                        var createResponse = await employeesClient.CreateEmployeeAsync(new CreateEmployeeRequest
+                        {
+                            Email = model.Email,
+                            FullName = model.FullName,
+                            Password = model.Password,
+                            Position = model.Position,
+                            DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
+                            Department = model.Department,
+                            ManagerId = model.ManagerId,
+                            Role = model.Role,
+                            CreatedById = user.GetId()!,
+                        });
+
+                        return Results.Created(string.Empty, createResponse.Id);
+                    }))
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
         group.MapGet(
             "/{id}",
@@ -63,34 +90,39 @@ public static class EmployeesEndpoints
                     return Results.Ok(employee);
                 }));
 
-        group.MapPut(
-            "/{id}",
-            (Employees.EmployeesClient employeesClient, [FromRoute] string id, [FromBody] EmployeeUpdateRequestModel model)
-                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-                {
-                    // TODO: Make sure the model cannot come unvalidated!!!
-                    await employeesClient.UpdateEmployeeAsync(new UpdateEmployeeRequest
+        group
+            .MapPut(
+                "/{id}",
+                (Employees.EmployeesClient employeesClient, [FromRoute] string id, [FromBody] EmployeeUpdateRequestModel model)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        Id = id,
-                        FullName = model.FullName,
-                        Position = model.Position,
-                        DateOfBirth = model.DateOfBirth.ToTimestamp(),
-                        Department = model.Department,
-                        ManagerId = model.ManagerId,
-                    });
+                        // TODO: Make sure the model cannot come unvalidated!!!
+                        await employeesClient.UpdateEmployeeAsync(new UpdateEmployeeRequest
+                        {
+                            Id = id,
+                            FullName = model.FullName,
+                            Position = model.Position,
+                            DateOfBirth = model.DateOfBirth.ToTimestamp(),
+                            Department = model.Department,
+                            ManagerId = model.ManagerId,
+                            Role = model.Role,
+                        });
 
-                    return Results.Ok();
-                }));
+                        return Results.Ok();
+                    }))
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
-        group.MapDelete(
-            "/{id}",
-            (Employees.EmployeesClient employeesClient, [FromRoute] string id)
-                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-                {
-                    await employeesClient.DeleteEmployeeAsync(new DeleteEmployeeRequest { Id = id });
+        group
+            .MapDelete(
+                "/{id}",
+                (Employees.EmployeesClient employeesClient, [FromRoute] string id)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        await employeesClient.DeleteEmployeeAsync(new DeleteEmployeeRequest { Id = id });
 
-                    return Results.Ok();
-                }));
+                        return Results.Ok();
+                    }))
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
         return group;
     }

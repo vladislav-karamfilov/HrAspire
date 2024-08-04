@@ -19,7 +19,6 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAuth
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        // TODO: Revalidate on 30 min. Think what should be the experience when cookie expires!
         try
         {
             var userInfo = await this.accountApiClient.GetUserInfoAsync();

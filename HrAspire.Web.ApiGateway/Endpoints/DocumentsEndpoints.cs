@@ -17,7 +17,9 @@ public static class DocumentsEndpoints
 {
     public static IEndpointConventionBuilder MapDocumentsEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/Employees/{employeeId}/Documents").RequireAuthorization();
+        var group = endpoints
+            .MapGroup("/Employees/{employeeId}/Documents")
+            .RequireAuthorization(Constants.ManagerAuthPolicyName, Constants.HrManagerAuthPolicyName);
 
         group.MapGet(
             "/",

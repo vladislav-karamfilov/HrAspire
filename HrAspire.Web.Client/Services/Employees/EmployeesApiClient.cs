@@ -83,4 +83,16 @@ public class EmployeesApiClient
 
         return errorMessage ?? Constants.UnexpectedErrorMessage;
     }
+
+    public async Task<IEnumerable<EmployeeResponseModel>> GetManagersAsync()
+    {
+        var response = await this.httpClient.GetAsync("employees/managers");
+        if (response.IsSuccessStatusCode)
+        {
+            var managers = await response.Content.ReadFromJsonAsync<IEnumerable<EmployeeResponseModel>>();
+            return managers!;
+        }
+
+        return [];
+    }
 }

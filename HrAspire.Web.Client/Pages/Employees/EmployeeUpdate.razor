@@ -39,10 +39,29 @@
                     </div>
                     <div class="form-floating mb-3">
                         <InputSelect @bind-Value="Input.ManagerId" class="form-control" placeholder="manager">
-                            <!-- TODO: populate dropdown options -->
+                            @foreach (var manager in Managers)
+                            {
+                                <option value="@manager.Id">
+                                    @manager.FullName
+
+                                    @if (!string.IsNullOrWhiteSpace(manager.Department))
+                                    {
+                                        <span> (from @manager.Department)</span>
+                                    }
+                                </option>
+                            }
                         </InputSelect>
                         <label for="manager" class="form-label">Manager</label>
                         <ValidationMessage For="() => Input.ManagerId" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputSelect @bind-Value="Input.Role" class="form-control" placeholder="role">
+                            <option value="">Employee</option>
+                            <option value="@BusinessConstants.ManagerRole">Manager</option>
+                            <option value="@BusinessConstants.HrManagerRole">HR Manager</option>
+                        </InputSelect>
+                        <label for="role" class="form-label">Role</label>
+                        <ValidationMessage For="() => Input.Role" class="text-danger" />
                     </div>
 
                     <div>
@@ -61,6 +80,10 @@
     private EmployeeUpdateRequestModel? Input { get; set; }
 
     private string? ErrorMessage { get; set; }
+
+    private IEnumerable<EmployeeResponseModel> Managers { get; set; } = [];
+
+    protected override async Task OnInitializedAsync() => this.Managers = await this.EmployeesApiClient.GetManagersAsync();
 
     protected override async Task OnParametersSetAsync()
     {

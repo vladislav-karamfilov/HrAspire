@@ -10,6 +10,7 @@ package employees;
 
 service Employees {
 	rpc GetEmployees(GetEmployeesRequest) returns (GetEmployeesResponse);
+	rpc GetManagers(google.protobuf.Empty) returns (GetManagersResponse);
 	rpc GetEmployee(GetEmployeeRequest) returns (GetEmployeeResponse);
 	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
 	rpc UpdateEmployee(UpdateEmployeeRequest) returns (google.protobuf.Empty);
@@ -17,8 +18,9 @@ service Employees {
 }
 
 message GetEmployeesRequest {
-	int32 pageNumber = 1;
-	int32 pageSize = 2;
+	string currentEmployeeId = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
 }
 
 message GetEmployeeRequest {
@@ -65,7 +67,8 @@ message CreateEmployeeRequest {
 	string position = 5;
 	google.protobuf.StringValue department = 6;
 	google.protobuf.StringValue managerId = 7;
-	string createdById = 8;
+	google.protobuf.StringValue role = 8;
+	string createdById = 9;
 }
 
 message CreateEmployeeResponse {
@@ -79,8 +82,13 @@ message UpdateEmployeeRequest {
 	string position = 4;
 	google.protobuf.StringValue department = 5;
 	google.protobuf.StringValue managerId = 6;
+	google.protobuf.StringValue role = 7;
 }
 
 message DeleteEmployeeRequest {
 	string id = 1;
+}
+
+message GetManagersResponse {
+	repeated EmployeeModel managers = 1;
 }

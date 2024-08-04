@@ -1,6 +1,8 @@
+using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web;
+using HrAspire.Web.ApiGateway;
 using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
 
@@ -31,7 +33,10 @@ builder.Services
 builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri("https://employees-service"));
 builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri("https://employees-service"));
 
-builder.Services.AddAuthorizationBuilder();
+builder.Services
+    .AddAuthorizationBuilder()
+    .AddPolicy(Constants.ManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.ManagerRole))
+    .AddPolicy(Constants.HrManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.HrManagerRole));
 
 builder.Services
     .AddIdentityCore<Employee>(options => options.Password.RequiredLength = AccountConstants.PasswordMinLength)

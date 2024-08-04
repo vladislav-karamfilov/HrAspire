@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 
 using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
@@ -32,6 +33,7 @@ public class EmployeesService : IEmployeesService
         string position,
         string? department,
         string? managerId,
+        string role,
         string createdById)
     {
         var employee = new Employee
@@ -47,14 +49,21 @@ public class EmployeesService : IEmployeesService
             CreatedOn = this.timeProvider.GetUtcNow().UtcDateTime,
         };
 
+        using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         var result = await this.userManager.CreateAsync(employee, password);
-        if (result.Succeeded)
+        if (result.Succeeded && !string.IsNullOrWhiteSpace(role))
         {
-            return ServiceResult<string>.Success(employee.Id);
+            result = await this.userManager.AddToRoleAsync(employee, role);
         }
 
-        var errorMessage = result.Errors.Select(e => e.Description).FirstOrDefault(e => !string.IsNullOrWhiteSpace(e))!;
-        return ServiceResult<string>.Error(errorMessage);
+        if (!result.Succeeded)
+        {
+            return ServiceResult<string>.Error(result.GetFirstError()!);
+        }
+
+        tx.Complete();
+
+        return ServiceResult<string>.Success(employee.Id);
     }
 
     public async Task<ServiceResult> UpdateAsync(
@@ -63,18 +72,42 @@ public class EmployeesService : IEmployeesService
         DateOnly dateOfBirth,
         string position,
         string? department,
+        string role,
         string? managerId)
     {
-        var updatedCount = await this.dbContext.Employees
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.FullName, fullName)
-                .SetProperty(e => e.DateOfBirth, dateOfBirth)
-                .SetProperty(e => e.Position, position)
-                .SetProperty(e => e.Department, department)
-                .SetProperty(e => e.ManagerId, managerId));
+        var employee = await this.dbContext.Employees.FirstOrDefaultAsync(e => e.Id == id);
+        if (employee is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
 
-        return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+        employee.FullName = fullName;
+        employee.DateOfBirth = dateOfBirth;
+        employee.Position = position;
+        employee.Department = department;
+        employee.ManagerId = managerId;
+
+        var currentRole = await this.dbContext.UserRoles.Where(ur => ur.UserId == id).Select(ur => ur.RoleId).FirstOrDefaultAsync();
+
+        using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+        if (currentRole != role)
+        {
+            var identityResult = await this.userManager.RemoveFromRoleAsync(employee, role);
+            if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
+            {
+                identityResult = await this.userManager.AddToRoleAsync(employee, role);
+            }
+
+            if (!identityResult.Succeeded)
+            {
+                return ServiceResult.Error(identityResult.GetFirstError()!);
+            }
+        }
+
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
     }
 
     public async Task<ServiceResult> DeleteAsync(string id)
@@ -91,9 +124,21 @@ public class EmployeesService : IEmployeesService
     public Task<EmployeeDetailsServiceModel?> GetEmployeeAsync(string id)
         => this.dbContext.Employees.Where(e => e.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
 
-    public Task<int> GetEmployeesCountAsync() => this.dbContext.Employees.CountAsync();
+    public async Task<int> GetEmployeesCountAsync(string currentEmployeeId)
+    {
+        var isHrManager = await this.dbContext.UserRoles.AnyAsync(
+            ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
 
-    public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(int pageNumber, int pageSize)
+        var query = this.dbContext.Employees.AsQueryable();
+        if (!isHrManager)
+        {
+            query = query.Where(e => e.ManagerId == currentEmployeeId);
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(string currentEmployeeId, int pageNumber, int pageSize)
     {
         pageNumber = Math.Max(pageNumber, 0);
 
@@ -106,11 +151,26 @@ public class EmployeesService : IEmployeesService
             pageSize = 100;
         }
 
-        return await this.dbContext.Employees
+        var isHrManager = await this.dbContext.UserRoles.AnyAsync(
+            ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
+
+        var query = this.dbContext.Employees.AsQueryable();
+        if (!isHrManager)
+        {
+            query = query.Where(e => e.ManagerId == currentEmployeeId);
+        }
+
+        return await query
             .OrderByDescending(e => e.CreatedOn)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ProjectToServiceModel()
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<EmployeeServiceModel>> GetManagersAsync()
+        => await this.dbContext.Employees
+            .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole))
+            .ProjectToServiceModel()
+            .ToListAsync();
 }

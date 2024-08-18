@@ -56,6 +56,8 @@ public static class GrpcToHttpHelper
     private static HttpStatusCode GrpcToHttpStatusCode(StatusCode grpcStatusCode)
         => grpcStatusCode switch
         {
+            StatusCode.OK => HttpStatusCode.OK,
+            StatusCode.InvalidArgument or StatusCode.OutOfRange or StatusCode.FailedPrecondition => HttpStatusCode.BadRequest,
             StatusCode.Unauthenticated => HttpStatusCode.Unauthorized,
             StatusCode.PermissionDenied => HttpStatusCode.Forbidden,
             StatusCode.NotFound => HttpStatusCode.NotFound,
@@ -65,7 +67,6 @@ public static class GrpcToHttpHelper
             StatusCode.Unimplemented => HttpStatusCode.NotImplemented,
             StatusCode.Unavailable => HttpStatusCode.ServiceUnavailable,
             StatusCode.Cancelled => (HttpStatusCode)499,
-            StatusCode.OK => HttpStatusCode.OK, // Should never happen
             _ => HttpStatusCode.InternalServerError,
         };
 }

@@ -51,6 +51,14 @@ using (var scope = app.Services.CreateScope())
 {
     using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
     await db.Database.EnsureCreatedAsync();
+
+    if (!db.Roles.Any())
+    {
+        db.Roles.Add(new IdentityRole { Id = BusinessConstants.ManagerRole, Name = BusinessConstants.ManagerRole });
+        db.Roles.Add(new IdentityRole { Id = BusinessConstants.HrManagerRole, Name = BusinessConstants.HrManagerRole });
+
+        await db.SaveChangesAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.

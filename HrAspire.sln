@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.ServiceDefaults", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Common", "Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj", "{FFA7D01B-1392-460F-AD29-F346C07E5A4A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Salaries.Web", "Salaries\HrAspire.Salaries.Web\HrAspire.Salaries.Web.csproj", "{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,10 @@ Global
 		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFA7D01B-1392-460F-AD29-F346C07E5A4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +128,7 @@ Global
 		{D33C36D7-4ED4-4DF9-8D08-83C003EC3DF3} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
 		{275A33C3-54A1-4D4D-9F55-74846A25044C} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
 		{FFA7D01B-1392-460F-AD29-F346C07E5A4A} = {70F819F6-FF81-4D9D-8FFC-DFC88A713DBE}
+		{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C} = {BCE16A81-EB57-49A4-A942-AC2346E632F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {442FA5B4-33D8-4BE0-AAC0-4E0895CEB4C7}

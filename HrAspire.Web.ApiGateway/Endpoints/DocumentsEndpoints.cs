@@ -19,7 +19,7 @@ public static class DocumentsEndpoints
     {
         var group = endpoints
             .MapGroup("/Employees/{employeeId}/Documents")
-            .RequireAuthorization(Constants.ManagerAuthPolicyName, Constants.HrManagerAuthPolicyName);
+            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
 
         group.MapGet(
             "/",
@@ -105,7 +105,7 @@ public static class DocumentsEndpoints
                 }));
 
         group.MapGet(
-            "/{id:int}/content",
+            "/{id:int}/Content",
             (Documents.DocumentsClient documentsClient,
                 HttpClient httpClient,
                 HttpResponse response,

@@ -36,7 +36,10 @@ builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new U
 builder.Services
     .AddAuthorizationBuilder()
     .AddPolicy(Constants.ManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.ManagerRole))
-    .AddPolicy(Constants.HrManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.HrManagerRole));
+    .AddPolicy(Constants.HrManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.HrManagerRole))
+    .AddPolicy(
+        Constants.ManagerOrHrManagerAuthPolicyName,
+        p => p.RequireRole(BusinessConstants.ManagerRole, BusinessConstants.HrManagerRole));
 
 builder.Services
     .AddIdentityCore<Employee>(options => options.Password.RequiredLength = AccountConstants.PasswordMinLength)

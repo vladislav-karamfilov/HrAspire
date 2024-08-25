@@ -38,11 +38,11 @@ public static class EmployeesEndpoints
 
                         return Results.Ok(new EmployeesResponseModel(employees, employeesResponse.Total));
                     }))
-            .RequireAuthorization(Constants.ManagerAuthPolicyName, Constants.HrManagerAuthPolicyName);
+            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
 
         group
             .MapGet(
-                "/managers",
+                "/Managers",
                 (Employees.EmployeesClient employeesClient)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {

@@ -108,6 +108,7 @@ public static class DocumentsEndpoints
             "/{id:int}/Content",
             (Documents.DocumentsClient documentsClient,
                 HttpClient httpClient,
+                HttpContext httpContext,
                 HttpResponse response,
                 [FromRoute] string employeeId,
                 [FromRoute] int id)
@@ -145,7 +146,7 @@ public static class DocumentsEndpoints
                             await fileStream.CopyToAsync(response.Body);
                         }
                     },
-                    response));
+                    httpContext));
 
         return group;
     }

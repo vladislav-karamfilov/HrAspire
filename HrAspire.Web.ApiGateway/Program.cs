@@ -36,7 +36,10 @@ builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new U
 builder.Services
     .AddAuthorizationBuilder()
     .AddPolicy(Constants.ManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.ManagerRole))
-    .AddPolicy(Constants.HrManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.HrManagerRole));
+    .AddPolicy(Constants.HrManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.HrManagerRole))
+    .AddPolicy(
+        Constants.ManagerOrHrManagerAuthPolicyName,
+        p => p.RequireRole(BusinessConstants.ManagerRole, BusinessConstants.HrManagerRole));
 
 builder.Services
     .AddIdentityCore<Employee>(options => options.Password.RequiredLength = AccountConstants.PasswordMinLength)
@@ -51,6 +54,14 @@ using (var scope = app.Services.CreateScope())
 {
     using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
     await db.Database.EnsureCreatedAsync();
+
+    if (!db.Roles.Any())
+    {
+        db.Roles.Add(new IdentityRole { Id = BusinessConstants.ManagerRole, Name = BusinessConstants.ManagerRole });
+        db.Roles.Add(new IdentityRole { Id = BusinessConstants.HrManagerRole, Name = BusinessConstants.HrManagerRole });
+
+        await db.SaveChangesAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.

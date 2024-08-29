@@ -5,7 +5,6 @@ using System.Net;
 using Grpc.Core;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 public static class GrpcToHttpHelper
 {
@@ -28,10 +27,10 @@ public static class GrpcToHttpHelper
         }
     }
 
-    public static async Task HandleGrpcCallAsync(Func<Task> handleGrpcCallFunc, HttpResponse httpResponse)
+    public static async Task HandleGrpcCallAsync(Func<Task> handleGrpcCallFunc, HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(handleGrpcCallFunc);
-        ArgumentNullException.ThrowIfNull(httpResponse);
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         try
         {
@@ -39,23 +38,20 @@ public static class GrpcToHttpHelper
         }
         catch (RpcException re) when (re.StatusCode is StatusCode.InvalidArgument or StatusCode.OutOfRange or StatusCode.FailedPrecondition)
         {
-            httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-            await httpResponse.WriteAsJsonAsync(new ProblemDetails
-            {
-                Detail = re.Status.Detail,
-                Status = (int)HttpStatusCode.BadRequest,
-            });
+            await Results.Problem(re.Status.Detail, statusCode: (int)HttpStatusCode.BadRequest).ExecuteAsync(httpContext);
         }
         catch (RpcException re)
         {
             var httpStatusCode = GrpcToHttpStatusCode(re.StatusCode);
-            httpResponse.StatusCode = (int)httpStatusCode;
+            await Results.StatusCode((int)httpStatusCode).ExecuteAsync(httpContext);
         }
     }
 
     private static HttpStatusCode GrpcToHttpStatusCode(StatusCode grpcStatusCode)
         => grpcStatusCode switch
         {
+            StatusCode.OK => HttpStatusCode.OK,
+            StatusCode.InvalidArgument or StatusCode.OutOfRange or StatusCode.FailedPrecondition => HttpStatusCode.BadRequest,
             StatusCode.Unauthenticated => HttpStatusCode.Unauthorized,
             StatusCode.PermissionDenied => HttpStatusCode.Forbidden,
             StatusCode.NotFound => HttpStatusCode.NotFound,
@@ -65,7 +61,6 @@ public static class GrpcToHttpHelper
             StatusCode.Unimplemented => HttpStatusCode.NotImplemented,
             StatusCode.Unavailable => HttpStatusCode.ServiceUnavailable,
             StatusCode.Cancelled => (HttpStatusCode)499,
-            StatusCode.OK => HttpStatusCode.OK, // Should never happen
             _ => HttpStatusCode.InternalServerError,
         };
 }

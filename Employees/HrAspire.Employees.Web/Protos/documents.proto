@@ -6,7 +6,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
-package documents;
+package employees;
 
 service Documents {
 	rpc GetEmployeeDocuments(GetEmployeeDocumentsRequest) returns (GetEmployeeDocumentsResponse);

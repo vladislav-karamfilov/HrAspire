@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.1.0" />
     <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="8.1.0" />
+    <PackageReference Include="Aspire.Hosting.Garnet" Version="8.1.0" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="8.1.0" />
   </ItemGroup>
 
@@ -20,6 +21,7 @@
     <ProjectReference Include="..\HrAspire.DataSeeder\HrAspire.DataSeeder.csproj" />
     <ProjectReference Include="..\HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj" />
     <ProjectReference Include="..\HrAspire.Web\HrAspire.Web.csproj" />
+    <ProjectReference Include="..\Salaries\HrAspire.Salaries.Web\HrAspire.Salaries.Web.csproj" />
   </ItemGroup>
 
 </Project>

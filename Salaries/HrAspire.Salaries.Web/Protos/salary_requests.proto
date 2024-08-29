@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+option csharp_namespace = "HrAspire.Salaries.Web";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+package salaries;
+
+service SalaryRequests {
+	rpc GetSalaryRequests(GetSalaryRequestsRequest) returns (GetSalaryRequestsResponse);
+	rpc GetSalaryRequest(GetSalaryRequestRequest) returns (GetSalaryRequestResponse);
+	rpc CreateSalaryRequest(CreateSalaryRequestRequest) returns (CreateSalaryRequestResponse);
+	rpc UpdateSalaryRequest(UpdateSalaryRequestRequest) returns (google.protobuf.Empty);
+	rpc DeleteSalaryRequest(DeleteSalaryRequestRequest) returns (google.protobuf.Empty);
+}
+
+message GetEmployeesRequest {
+	string currentEmployeeId = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
+}
+
+message GetEmployeeRequest {
+	string id = 1;
+}
+
+message GetEmployeesResponse {
+	repeated EmployeeModel employees = 1;
+	int32 total = 2;
+}
+
+message GetEmployeeResponse {
+	EmployeeDetailsModel employee = 1;
+}
+
+message EmployeeModel {
+	string id = 1;
+	string email = 2;
+	string fullName = 3;
+	google.protobuf.StringValue department = 4;
+	string position = 5;
+	google.protobuf.Timestamp createdOn = 6;
+}
+
+message EmployeeDetailsModel {
+	string id = 1;
+	string email = 2;
+	string fullName = 3;
+	google.protobuf.Timestamp dateOfBirth = 4;
+	google.protobuf.StringValue department = 5;
+	string position = 6;
+	google.protobuf.StringValue managerId = 7;
+	google.protobuf.StringValue managerFullName = 8;
+	google.protobuf.Timestamp createdOn = 9;
+	google.protobuf.StringValue createdById = 10;
+	google.protobuf.StringValue createdByFullName = 11;
+}
+
+message CreateEmployeeRequest {
+	string email = 1;
+	string password = 2;
+	string fullName = 3;
+	google.protobuf.Timestamp dateOfBirth = 4;
+	string position = 5;
+	google.protobuf.StringValue department = 6;
+	google.protobuf.StringValue managerId = 7;
+	google.protobuf.StringValue role = 8;
+	string createdById = 9;
+}
+
+message CreateEmployeeResponse {
+	string id = 1;
+}
+
+message UpdateEmployeeRequest {
+	string id = 1;
+	string fullName = 2;
+	google.protobuf.Timestamp dateOfBirth = 3;
+	string position = 4;
+	google.protobuf.StringValue department = 5;
+	google.protobuf.StringValue managerId = 6;
+	google.protobuf.StringValue role = 7;
+}
+
+message DeleteEmployeeRequest {
+	string id = 1;
+}
+
+message GetManagersResponse {
+	repeated EmployeeModel managers = 1;
+}

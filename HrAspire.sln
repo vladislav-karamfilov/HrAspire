@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.ServiceDefaults", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Web.Common", "Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj", "{FFA7D01B-1392-460F-AD29-F346C07E5A4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrAspire.Salaries.Web", "Salaries\HrAspire.Salaries.Web\HrAspire.Salaries.Web.csproj", "{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.Salaries.Web", "Salaries\HrAspire.Salaries.Web\HrAspire.Salaries.Web.csproj", "{3B6A2340-6CE4-4BD5-82AF-00FF7FBFB21C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HrAspire.DataSeeder", "HrAspire.DataSeeder\HrAspire.DataSeeder.csproj", "{515A99D8-CBD3-4E2A-A0FA-E1CC56954EE4}"
 EndProject

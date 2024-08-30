@@ -1,2 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+using HrAspire.DataSeeder;
+
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddHostedService<DataSeederWorker>();
+
+var host = builder.Build();
+host.Run();

@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -48,21 +47,6 @@ builder.Services
     .AddApiEndpoints();
 
 var app = builder.Build();
-
-// TODO: Extract to another service - console app for seeding data if on dev env
-using (var scope = app.Services.CreateScope())
-{
-    using var db = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
-    await db.Database.EnsureCreatedAsync();
-
-    if (!db.Roles.Any())
-    {
-        db.Roles.Add(new IdentityRole { Id = BusinessConstants.ManagerRole, Name = BusinessConstants.ManagerRole });
-        db.Roles.Add(new IdentityRole { Id = BusinessConstants.HrManagerRole, Name = BusinessConstants.HrManagerRole });
-
-        await db.SaveChangesAsync();
-    }
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

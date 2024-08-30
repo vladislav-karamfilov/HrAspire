@@ -18,6 +18,8 @@ public class SalaryRequest : IDeletableEntity
 
     public string? StatusChangedById { get; set; }
 
+    public DateTime? StatusChangedOn { get; set; }
+
     public string CreatedById { get; set; } = default!;
 
     public DateTime CreatedOn { get; set; }

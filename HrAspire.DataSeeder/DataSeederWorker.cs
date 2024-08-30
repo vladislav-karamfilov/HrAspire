@@ -12,10 +12,11 @@ public class DataSeederWorker : BackgroundService
         this.hostApplicationLifetime = hostApplicationLifetime;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // TODO: this.hostApplicationLifetime.StopApplication();
+        // TODO: migrate and seed data
+        await Task.CompletedTask;
 
-        return Task.CompletedTask;
+        this.hostApplicationLifetime.StopApplication();
     }
 }

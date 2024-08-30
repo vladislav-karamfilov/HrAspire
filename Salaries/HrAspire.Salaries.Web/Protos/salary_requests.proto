@@ -16,78 +16,82 @@ service SalaryRequests {
 	rpc DeleteSalaryRequest(DeleteSalaryRequestRequest) returns (google.protobuf.Empty);
 }
 
-message GetEmployeesRequest {
-	string currentEmployeeId = 1;
-	int32 pageNumber = 2;
-	int32 pageSize = 3;
+message GetSalaryRequestsRequest {
+	int32 pageNumber = 1;
+	int32 pageSize = 2;
 }
 
-message GetEmployeeRequest {
-	string id = 1;
+message GetSalaryRequestRequest {
+	int32 id = 1;
 }
 
-message GetEmployeesResponse {
-	repeated EmployeeModel employees = 1;
+message GetSalaryRequestsResponse {
+	repeated SalaryRequestModel salaryRequests = 1;
 	int32 total = 2;
 }
 
-message GetEmployeeResponse {
-	EmployeeDetailsModel employee = 1;
+message GetSalaryRequestResponse {
+	SalaryRequestDetailsModel employee = 1;
 }
 
-message EmployeeModel {
-	string id = 1;
-	string email = 2;
-	string fullName = 3;
-	google.protobuf.StringValue department = 4;
-	string position = 5;
+message SalaryRequestModel {
+	int32 id = 1;
+	string employeeId = 2;
+	string employeeFullName = 3;
+	DecimalValue newSalary = 4;
+	SalaryRequestStatus status = 5;
 	google.protobuf.Timestamp createdOn = 6;
 }
 
-message EmployeeDetailsModel {
-	string id = 1;
-	string email = 2;
-	string fullName = 3;
-	google.protobuf.Timestamp dateOfBirth = 4;
-	google.protobuf.StringValue department = 5;
-	string position = 6;
-	google.protobuf.StringValue managerId = 7;
-	google.protobuf.StringValue managerFullName = 8;
-	google.protobuf.Timestamp createdOn = 9;
-	google.protobuf.StringValue createdById = 10;
-	google.protobuf.StringValue createdByFullName = 11;
+enum SalaryRequestStatus
+{
+	Pending = 0;
+	Approved = 1;
+	Rejected = 3;
 }
 
-message CreateEmployeeRequest {
-	string email = 1;
-	string password = 2;
-	string fullName = 3;
-	google.protobuf.Timestamp dateOfBirth = 4;
-	string position = 5;
-	google.protobuf.StringValue department = 6;
-	google.protobuf.StringValue managerId = 7;
-	google.protobuf.StringValue role = 8;
-	string createdById = 9;
+message SalaryRequestDetailsModel {
+	int32 id = 1;
+	string employeeId = 2;
+	string employeeFullName = 3;
+	DecimalValue newSalary = 4;
+	google.protobuf.StringValue notes = 5;
+	SalaryRequestStatus status = 6;
+	google.protobuf.Timestamp statusChangedOn = 7;
+	google.protobuf.StringValue statusChangedById = 8;
+	google.protobuf.StringValue statusChangedByFullName = 9;
+	google.protobuf.Timestamp createdOn = 10;
+	string createdById = 11;
+	string createdByFullName = 12;
 }
 
-message CreateEmployeeResponse {
-	string id = 1;
+message CreateSalaryRequestRequest {
+	string employeeId = 1;
+	DecimalValue newSalary = 2;
+	google.protobuf.StringValue notes = 3;
+	string createdById = 4;
 }
 
-message UpdateEmployeeRequest {
-	string id = 1;
-	string fullName = 2;
-	google.protobuf.Timestamp dateOfBirth = 3;
-	string position = 4;
-	google.protobuf.StringValue department = 5;
-	google.protobuf.StringValue managerId = 6;
-	google.protobuf.StringValue role = 7;
+message CreateSalaryRequestResponse {
+	int32 id = 1;
 }
 
-message DeleteEmployeeRequest {
-	string id = 1;
+message UpdateSalaryRequestRequest {
+	int32 id = 1;
+	string employeeId = 2;
+	DecimalValue newSalary = 3;
+	google.protobuf.StringValue notes = 4;
 }
 
-message GetManagersResponse {
-	repeated EmployeeModel managers = 1;
+message DeleteSalaryRequestRequest {
+	int32 id = 1;
+}
+
+message DecimalValue {
+    // Whole units part of the amount
+    int64 units = 1;
+
+    // Nano units of the amount (10^-9)
+    // Must be same sign as units
+    sfixed32 nanos = 2;
 }

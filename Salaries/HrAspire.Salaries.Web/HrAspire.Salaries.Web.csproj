@@ -11,10 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
+	<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.1.0" />
+	<PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
+	<PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\HrAspire.Salaries.Business\HrAspire.Salaries.Business.csproj" />
   </ItemGroup>
 

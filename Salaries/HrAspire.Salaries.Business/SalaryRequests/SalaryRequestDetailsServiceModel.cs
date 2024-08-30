@@ -9,6 +9,7 @@ public record SalaryRequestDetailsServiceModel(
     decimal NewSalary,
     string? Notes,
     SalaryRequestStatus Status,
+    DateTime? StatusChangedOn,
     string? StatusChangedById,
     string? StatusChangedByFullName,
     DateTime CreatedOn,

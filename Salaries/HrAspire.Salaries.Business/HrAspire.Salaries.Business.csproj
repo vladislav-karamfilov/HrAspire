@@ -10,4 +10,8 @@
     <ProjectReference Include="..\HrAspire.Salaries.Data\HrAspire.Salaries.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Mappers\" />
+  </ItemGroup>
+
 </Project>

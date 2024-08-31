@@ -50,6 +50,7 @@ public class EmployeesService : IEmployeesService
         };
 
         using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
         var result = await this.userManager.CreateAsync(employee, password);
         if (result.Succeeded && !string.IsNullOrWhiteSpace(role))
         {

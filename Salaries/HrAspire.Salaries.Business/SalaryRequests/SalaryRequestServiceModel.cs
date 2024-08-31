@@ -2,10 +2,17 @@
 
 using HrAspire.Salaries.Data.Models;
 
-public record SalaryRequestServiceModel(
-    int Id,
-    string EmployeeId,
-    string EmployeeFullName,
-    decimal NewSalary,
-    SalaryRequestStatus Status,
-    DateTime CreatedOn);
+public class SalaryRequestServiceModel
+{
+    public int Id { get; set; }
+
+    public string EmployeeId { get; set; } = default!;
+
+    public string EmployeeFullName { get; set; } = default!;
+
+    public decimal NewSalary { get; set; }
+
+    public SalaryRequestStatus Status { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+}

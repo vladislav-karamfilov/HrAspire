@@ -173,7 +173,7 @@ public class DocumentsService : IDocumentsService
 
         var sasUri = this.blobServiceClient.GenerateAccountSasUri(
             AccountSasPermissions.Read,
-            DateTimeOffset.UtcNow.AddYears(10),
+            this.timeProvider.GetUtcNow().AddYears(10),
             AccountSasResourceTypes.Object);
 
         var uriBuilder = new UriBuilder(sasUri)

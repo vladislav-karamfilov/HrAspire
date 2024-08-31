@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HrAspire.Salaries.Data\HrAspire.Salaries.Data.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
+    <PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mappers\" />
+    <ProjectReference Include="..\..\Common\HrAspire.Business.Common\HrAspire.Business.Common.csproj" />
+    <ProjectReference Include="..\HrAspire.Salaries.Data\HrAspire.Salaries.Data.csproj" />
   </ItemGroup>
 
 </Project>

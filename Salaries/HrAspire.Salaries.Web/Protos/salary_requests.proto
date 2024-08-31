@@ -47,7 +47,7 @@ enum SalaryRequestStatus
 {
 	Pending = 0;
 	Approved = 1;
-	Rejected = 3;
+	Rejected = 2;
 }
 
 message SalaryRequestDetailsModel {
@@ -78,9 +78,8 @@ message CreateSalaryRequestResponse {
 
 message UpdateSalaryRequestRequest {
 	int32 id = 1;
-	string employeeId = 2;
-	DecimalValue newSalary = 3;
-	google.protobuf.StringValue notes = 4;
+	DecimalValue newSalary = 2;
+	google.protobuf.StringValue notes = 3;
 }
 
 message DeleteSalaryRequestRequest {

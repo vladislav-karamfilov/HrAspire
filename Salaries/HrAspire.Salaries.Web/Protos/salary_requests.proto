@@ -31,7 +31,7 @@ message GetSalaryRequestsResponse {
 }
 
 message GetSalaryRequestResponse {
-	SalaryRequestDetailsModel employee = 1;
+	SalaryRequestDetailsModel salaryRequest = 1;
 }
 
 message SalaryRequestModel {

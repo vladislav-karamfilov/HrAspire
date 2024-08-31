@@ -2,6 +2,7 @@ using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web;
+using HrAspire.Salaries.Web;
 using HrAspire.Web.ApiGateway;
 using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
@@ -11,12 +12,12 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.AddServiceDefaults();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors();
-
-builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 
@@ -31,6 +32,7 @@ builder.Services
 
 builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri("https://employees-service"));
 builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri("https://employees-service"));
+builder.Services.AddGrpcClient<SalaryRequests.SalaryRequestsClient>(o => o.Address = new Uri("https://salaries-service"));
 
 builder.Services
     .AddAuthorizationBuilder()
@@ -69,6 +71,7 @@ app.UseAuthorization();
 app.MapAccountEndpoints();
 app.MapEmployeesEndpoints();
 app.MapDocumentsEndpoints();
+app.MapSalaryRequestsEndpoints();
 
 app.MapDefaultEndpoints();
 

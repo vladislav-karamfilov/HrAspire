@@ -16,4 +16,8 @@
     <ProjectReference Include="..\HrAspire.Business.Common\HrAspire.Business.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\Salaries\HrAspire.Salaries.Data\Models\SalaryRequestStatus.cs" Link="Models\SalaryRequests\SalaryRequestStatus.cs" />
+  </ItemGroup>
+
 </Project>

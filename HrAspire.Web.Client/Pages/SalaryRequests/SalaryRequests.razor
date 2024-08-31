@@ -1,0 +1,42 @@
+﻿@page "/salary-requests"
+
+@attribute [Authorize]
+
+@inject SalaryRequestsApiClient SalaryRequestsApiClient
+
+<h1>
+    SalaryRequests
+    <a href="/salary-request-create" class="btn btn-primary float-end">Create</a>
+</h1>
+<hr />
+
+<QuickGrid ItemsProvider="GridSalaryRequestsProvider" Pagination="Pagination" Class="table table-bordered table-striped">
+    <TemplateColumn Title="Employee">
+        <a href="/employees/@context.EmployeeId">@context.EmployeeFullName</a>
+    </TemplateColumn>
+    <TemplateColumn Title="New Salary">
+        <a href="/salary-requests/@context.Id">@context.NewSalary</a>
+    </TemplateColumn>
+    <PropertyColumn Property="@(e => e.Status)" />
+    <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created" Format="@Constants.DateTimeFormat" />
+</QuickGrid>
+
+<Paginator State="Pagination"></Paginator>
+
+@code {
+    private GridItemsProvider<SalaryRequestResponseModel>? GridSalaryRequestsProvider { get; set; }
+    private PaginationState Pagination { get; set; } = new() { ItemsPerPage = 10 };
+
+    protected override void OnInitialized() => this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
+
+    private async ValueTask<GridItemsProviderResult<SalaryRequestResponseModel>> GetGridSalaryRequestsAsync(
+        GridItemsProviderRequest<SalaryRequestResponseModel> request)
+    {
+        var pageNumber = request.StartIndex / this.Pagination.ItemsPerPage;
+
+        var data = await this.SalaryRequestsApiClient.GetSalaryRequestsAsync(pageNumber, this.Pagination.ItemsPerPage);
+
+        var result = new GridItemsProviderResult<SalaryRequestResponseModel> { Items = data.SalaryRequests, TotalItemCount = data.Total, };
+        return result;
+    }
+}

@@ -27,7 +27,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         var response = new GetEmployeesResponse { Total = total };
         foreach (var employee in employees)
         {
-            response.Employees.Add(employee.MapToEmployeeModel());
+            response.Employees.Add(employee.MapToEmployeeGrpcModel());
         }
 
         return response;
@@ -41,7 +41,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
         }
 
-        var response = new GetEmployeeResponse { Employee = employee.MapToEmployeeDetails() };
+        var response = new GetEmployeeResponse { Employee = employee.MapToEmployeeDetailsGrpcModel() };
         return response;
     }
 

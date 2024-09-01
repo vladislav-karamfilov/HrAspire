@@ -10,9 +10,9 @@ using Riok.Mapperly.Abstractions;
 [Mapper]
 internal static partial class DocumentMapper
 {
-    public static partial DocumentModel MapToDocumentModel(this DocumentServiceModel document);
+    public static partial DocumentModel MapToDocumentGrpcModel(this DocumentServiceModel document);
 
-    public static partial DocumentDetailsModel MapToDocumentDetails(this DocumentDetailsServiceModel document);
+    public static partial DocumentDetailsModel MapToDocumentDetailsGrpcModel(this DocumentDetailsServiceModel document);
 
     private static Timestamp DateTimeToTimestamp(DateTime dateTime) => dateTime.ToTimestamp();
 }

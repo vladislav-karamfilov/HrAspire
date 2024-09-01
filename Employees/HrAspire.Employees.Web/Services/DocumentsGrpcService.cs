@@ -29,7 +29,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         var response = new GetEmployeeDocumentsResponse { Total = total };
         foreach (var document in documents)
         {
-            response.Documents.Add(document.MapToDocumentModel());
+            response.Documents.Add(document.MapToDocumentGrpcModel());
         }
 
         return response;
@@ -43,7 +43,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
         }
 
-        var response = new GetDocumentResponse { Document = document.MapToDocumentDetails() };
+        var response = new GetDocumentResponse { Document = document.MapToDocumentDetailsGrpcModel() };
         return response;
     }
 

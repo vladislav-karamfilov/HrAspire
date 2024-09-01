@@ -52,10 +52,10 @@ public class SalaryRequestsService : ISalaryRequestsService
         return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
 
-    public Task<SalaryRequestDetailsServiceModel?> GetSalaryRequestAsync(int id)
+    public Task<SalaryRequestDetailsServiceModel?> GetAsync(int id)
         => this.dbContext.SalaryRequests.Where(r => r.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
 
-    public async Task<IEnumerable<SalaryRequestServiceModel>> GetSalaryRequestsAsync(int pageNumber, int pageSize)
+    public async Task<IEnumerable<SalaryRequestServiceModel>> ListAsync(int pageNumber, int pageSize)
     {
         pageNumber = Math.Max(pageNumber, 0);
 
@@ -76,7 +76,7 @@ public class SalaryRequestsService : ISalaryRequestsService
             .ToListAsync();
     }
 
-    public Task<int> GetSalaryRequestsCountAsync() => this.dbContext.SalaryRequests.CountAsync();
+    public Task<int> GetCountAsync() => this.dbContext.SalaryRequests.CountAsync();
 
     public async Task<ServiceResult> UpdateAsync(int id, decimal newSalary, string? notes)
     {
@@ -87,5 +87,60 @@ public class SalaryRequestsService : ISalaryRequestsService
                 .SetProperty(e => e.Notes, notes));
 
         return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+    }
+
+    public async Task<ServiceResult> ApproveAsync(int id, string approvedById)
+    {
+        var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (salaryRequest is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
+
+        if (salaryRequest.Status == SalaryRequestStatus.Approved)
+        {
+            return ServiceResult.Success;
+        }
+
+        if (salaryRequest.Status == SalaryRequestStatus.Rejected)
+        {
+            return ServiceResult.Error("Salary request has already been rejected.");
+        }
+
+        salaryRequest.Status = SalaryRequestStatus.Approved;
+        salaryRequest.StatusChangedOn = this.timeProvider.GetUtcNow().UtcDateTime;
+        salaryRequest.StatusChangedById = approvedById;
+
+        // TODO: add outbox message
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
+    }
+
+    public async Task<ServiceResult> RejectAsync(int id, string rejectedById)
+    {
+        var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (salaryRequest is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
+
+        if (salaryRequest.Status == SalaryRequestStatus.Rejected)
+        {
+            return ServiceResult.Success;
+        }
+
+        if (salaryRequest.Status == SalaryRequestStatus.Approved)
+        {
+            return ServiceResult.Error("Salary request has already been approved.");
+        }
+
+        salaryRequest.Status = SalaryRequestStatus.Rejected;
+        salaryRequest.StatusChangedOn = this.timeProvider.GetUtcNow().UtcDateTime;
+        salaryRequest.StatusChangedById = rejectedById;
+
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
     }
 }

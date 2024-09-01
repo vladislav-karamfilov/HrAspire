@@ -21,13 +21,13 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
 
     public override async Task<GetSalaryRequestsResponse> GetSalaryRequests(GetSalaryRequestsRequest request, ServerCallContext context)
     {
-        var salaryRequests = await this.salaryRequestsService.GetSalaryRequestsAsync(request.PageNumber, request.PageSize);
-        var total = await this.salaryRequestsService.GetSalaryRequestsCountAsync();
+        var salaryRequests = await this.salaryRequestsService.ListAsync(request.PageNumber, request.PageSize);
+        var total = await this.salaryRequestsService.GetCountAsync();
 
         var response = new GetSalaryRequestsResponse { Total = total };
         foreach (var salaryRequest in salaryRequests)
         {
-            response.SalaryRequests.Add(salaryRequest.MapToSalaryRequestModel());
+            response.SalaryRequests.Add(salaryRequest.MapToSalaryRequestGrpcModel());
         }
 
         return response;
@@ -35,13 +35,13 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
 
     public override async Task<GetSalaryRequestResponse> GetSalaryRequest(GetSalaryRequestRequest request, ServerCallContext context)
     {
-        var salaryRequest = await this.salaryRequestsService.GetSalaryRequestAsync(request.Id);
+        var salaryRequest = await this.salaryRequestsService.GetAsync(request.Id);
         if (salaryRequest is null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
         }
 
-        var response = new GetSalaryRequestResponse { SalaryRequest = salaryRequest.MapToSalaryRequestDetails() };
+        var response = new GetSalaryRequestResponse { SalaryRequest = salaryRequest.MapToSalaryRequestDetailsGrpcModel() };
         return response;
     }
 

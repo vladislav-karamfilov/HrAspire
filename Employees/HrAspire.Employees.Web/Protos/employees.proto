@@ -9,15 +9,15 @@ import "google/protobuf/wrappers.proto";
 package employees;
 
 service Employees {
-	rpc GetEmployees(GetEmployeesRequest) returns (GetEmployeesResponse);
-	rpc GetManagers(google.protobuf.Empty) returns (GetManagersResponse);
-	rpc GetEmployee(GetEmployeeRequest) returns (GetEmployeeResponse);
-	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
-	rpc UpdateEmployee(UpdateEmployeeRequest) returns (google.protobuf.Empty);
-	rpc DeleteEmployee(DeleteEmployeeRequest) returns (google.protobuf.Empty);
+	rpc List(ListEmployeesRequest) returns (ListEmployeesResponse);
+	rpc ListManagers(google.protobuf.Empty) returns (ListManagersResponse);
+	rpc Get(GetEmployeeRequest) returns (GetEmployeeResponse);
+	rpc Create(CreateEmployeeRequest) returns (CreateEmployeeResponse);
+	rpc Update(UpdateEmployeeRequest) returns (google.protobuf.Empty);
+	rpc Delete(DeleteEmployeeRequest) returns (google.protobuf.Empty);
 }
 
-message GetEmployeesRequest {
+message ListEmployeesRequest {
 	string currentEmployeeId = 1;
 	int32 pageNumber = 2;
 	int32 pageSize = 3;
@@ -27,7 +27,7 @@ message GetEmployeeRequest {
 	string id = 1;
 }
 
-message GetEmployeesResponse {
+message ListEmployeesResponse {
 	repeated EmployeeModel employees = 1;
 	int32 total = 2;
 }
@@ -89,6 +89,6 @@ message DeleteEmployeeRequest {
 	string id = 1;
 }
 
-message GetManagersResponse {
+message ListManagersResponse {
 	repeated EmployeeModel managers = 1;
 }

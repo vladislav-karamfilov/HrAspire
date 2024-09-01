@@ -69,10 +69,10 @@ public class DocumentsService : IDocumentsService
         return ServiceResult<int>.Success(document.Id);
     }
 
-    public async Task<ServiceResult> DeleteAsync(int id, string employeeId)
+    public async Task<ServiceResult> DeleteAsync(int id)
     {
         var deletedCount = await this.dbContext.Documents
-            .Where(d => d.Id == id && d.EmployeeId == employeeId)
+            .Where(d => d.Id == id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(e => e.IsDeleted, true)
                 .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
@@ -80,18 +80,9 @@ public class DocumentsService : IDocumentsService
         return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
 
-    public async Task<IEnumerable<DocumentServiceModel>> GetEmployeeDocumentsAsync(string employeeId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<DocumentServiceModel>> ListEmployeeDocumentsAsync(string employeeId, int pageNumber, int pageSize)
     {
-        pageNumber = Math.Max(pageNumber, 0);
-
-        if (pageSize <= 0)
-        {
-            pageSize = 10;
-        }
-        else if (pageSize > 100)
-        {
-            pageSize = 100;
-        }
+        PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
         return await this.dbContext.Documents
             .Where(d => d.EmployeeId == employeeId)
@@ -105,27 +96,20 @@ public class DocumentsService : IDocumentsService
     public Task<int> GetEmployeeDocumentsCountAsync(string employeeId)
         => this.dbContext.Documents.CountAsync(d => d.EmployeeId == employeeId);
 
-    public Task<DocumentDetailsServiceModel?> GetDocumentAsync(int id, string employeeId)
-        => this.dbContext.Documents
-            .Where(d => d.Id == id && d.EmployeeId == employeeId)
-            .ProjectToDetailsServiceModel()
-            .FirstOrDefaultAsync();
+    public Task<DocumentDetailsServiceModel?> GetAsync(int id)
+        => this.dbContext.Documents.Where(d => d.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
 
-    public Task<DocumentUrlAndFileNameServiceModel?> GetDocumentUrlAndFileNameAsync(int id, string employeeId)
-        => this.dbContext.Documents
-            .Where(d => d.Id == id && d.EmployeeId == employeeId)
-            .ProjectToUrlAndFileNameServiceModel()
-            .FirstOrDefaultAsync();
+    public Task<DocumentUrlAndFileNameServiceModel?> GetUrlAndFileNameAsync(int id)
+        => this.dbContext.Documents.Where(d => d.Id == id).ProjectToUrlAndFileNameServiceModel().FirstOrDefaultAsync();
 
     public async Task<ServiceResult> UpdateAsync(
         int id,
-        string employeeId,
         string title,
         string? description,
         byte[]? fileContent,
         string? fileName)
     {
-        var document = await this.dbContext.Documents.FirstOrDefaultAsync(d => d.Id == id && d.EmployeeId == employeeId);
+        var document = await this.dbContext.Documents.FirstOrDefaultAsync(d => d.Id == id);
         if (document is null)
         {
             return ServiceResult.ErrorNotFound;

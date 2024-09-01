@@ -125,10 +125,10 @@ public class EmployeesService : IEmployeesService
         return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
 
-    public Task<EmployeeDetailsServiceModel?> GetEmployeeAsync(string id)
+    public Task<EmployeeDetailsServiceModel?> GetAsync(string id)
         => this.dbContext.Employees.Where(e => e.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
 
-    public async Task<int> GetEmployeesCountAsync(string currentEmployeeId)
+    public async Task<int> GetCountAsync(string currentEmployeeId)
     {
         var isHrManager = await this.dbContext.UserRoles.AnyAsync(
             ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
@@ -142,18 +142,9 @@ public class EmployeesService : IEmployeesService
         return await query.CountAsync();
     }
 
-    public async Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(string currentEmployeeId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<EmployeeServiceModel>> ListAsync(string currentEmployeeId, int pageNumber, int pageSize)
     {
-        pageNumber = Math.Max(pageNumber, 0);
-
-        if (pageSize <= 0)
-        {
-            pageSize = 10;
-        }
-        else if (pageSize > 100)
-        {
-            pageSize = 100;
-        }
+        PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
         var isHrManager = await this.dbContext.UserRoles.AnyAsync(
             ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
@@ -172,7 +163,7 @@ public class EmployeesService : IEmployeesService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<EmployeeServiceModel>> GetManagersAsync()
+    public async Task<IEnumerable<EmployeeServiceModel>> ListManagersAsync()
         => await this.dbContext.Employees
             .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole))
             .ProjectToServiceModel()

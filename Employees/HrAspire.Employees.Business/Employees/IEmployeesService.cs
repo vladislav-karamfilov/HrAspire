@@ -4,13 +4,13 @@ using HrAspire.Business.Common;
 
 public interface IEmployeesService
 {
-    Task<IEnumerable<EmployeeServiceModel>> GetEmployeesAsync(string currentEmployeeId, int pageNumber, int pageSize);
+    Task<IEnumerable<EmployeeServiceModel>> ListAsync(string currentEmployeeId, int pageNumber, int pageSize);
 
-    Task<IEnumerable<EmployeeServiceModel>> GetManagersAsync();
+    Task<IEnumerable<EmployeeServiceModel>> ListManagersAsync();
 
-    Task<int> GetEmployeesCountAsync(string currentEmployeeId);
+    Task<int> GetCountAsync(string currentEmployeeId);
 
-    Task<EmployeeDetailsServiceModel?> GetEmployeeAsync(string id);
+    Task<EmployeeDetailsServiceModel?> GetAsync(string id);
 
     Task<ServiceResult<string>> CreateAsync(
         string email,

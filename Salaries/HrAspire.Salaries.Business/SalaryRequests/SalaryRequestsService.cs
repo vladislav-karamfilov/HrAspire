@@ -57,16 +57,7 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     public async Task<IEnumerable<SalaryRequestServiceModel>> ListAsync(int pageNumber, int pageSize)
     {
-        pageNumber = Math.Max(pageNumber, 0);
-
-        if (pageSize <= 0)
-        {
-            pageSize = 10;
-        }
-        else if (pageSize > 100)
-        {
-            pageSize = 100;
-        }
+        PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
         return await this.dbContext.SalaryRequests
             .OrderByDescending(d => d.CreatedOn)

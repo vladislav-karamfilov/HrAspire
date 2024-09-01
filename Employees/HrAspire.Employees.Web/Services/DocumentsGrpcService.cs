@@ -23,7 +23,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         GetEmployeeDocumentsRequest request,
         ServerCallContext context)
     {
-        var documents = await this.documentsService.GetEmployeeDocumentsAsync(request.EmployeeId, request.PageNumber, request.PageSize);
+        var documents = await this.documentsService.ListEmployeeDocumentsAsync(request.EmployeeId, request.PageNumber, request.PageSize);
         var total = await this.documentsService.GetEmployeeDocumentsCountAsync(request.EmployeeId);
 
         var response = new GetEmployeeDocumentsResponse { Total = total };
@@ -37,7 +37,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
 
     public override async Task<GetDocumentResponse> GetDocument(GetDocumentRequest request, ServerCallContext context)
     {
-        var document = await this.documentsService.GetDocumentAsync(request.Id, request.EmployeeId);
+        var document = await this.documentsService.GetAsync(request.Id);
         if (document is null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
@@ -51,7 +51,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         GetDocumentUrlAndFileNameRequest request,
         ServerCallContext context)
     {
-        var documentInfo = await this.documentsService.GetDocumentUrlAndFileNameAsync(request.Id, request.EmployeeId);
+        var documentInfo = await this.documentsService.GetUrlAndFileNameAsync(request.Id);
         if (documentInfo is null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
@@ -82,7 +82,6 @@ public class DocumentsGrpcService : Documents.DocumentsBase
     {
         var updateResult = await this.documentsService.UpdateAsync(
             request.Id,
-            request.EmployeeId,
             request.Title,
             request.Description,
             request.FileContent?.ToByteArray(),
@@ -98,7 +97,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
 
     public override async Task<Empty> DeleteDocument(DeleteDocumentRequest request, ServerCallContext context)
     {
-        var deleteResult = await this.documentsService.DeleteAsync(request.Id, request.EmployeeId);
+        var deleteResult = await this.documentsService.DeleteAsync(request.Id);
         if (deleteResult.IsError)
         {
             throw deleteResult.ToRpcException();

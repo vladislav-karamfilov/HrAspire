@@ -26,8 +26,8 @@ public static class EmployeesEndpoints
                     [FromQuery] int pageSize = 10)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        var employeesResponse = await employeesClient.GetEmployeesAsync(
-                            new GetEmployeesRequest
+                        var employeesResponse = await employeesClient.ListAsync(
+                            new ListEmployeesRequest
                             {
                                 CurrentEmployeeId = user.GetId()!,
                                 PageNumber = pageNumber,
@@ -46,7 +46,7 @@ public static class EmployeesEndpoints
                 (Employees.EmployeesClient employeesClient)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        var managersResponse = await employeesClient.GetManagersAsync(new Empty());
+                        var managersResponse = await employeesClient.ListManagersAsync(new Empty());
 
                         var managers = managersResponse.Managers.Select(e => e.MapToResponseModel()).ToList();
 
@@ -61,7 +61,7 @@ public static class EmployeesEndpoints
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
                         // TODO: Make sure the model cannot come unvalidated!!!
-                        var createResponse = await employeesClient.CreateEmployeeAsync(new CreateEmployeeRequest
+                        var createResponse = await employeesClient.CreateAsync(new CreateEmployeeRequest
                         {
                             Email = model.Email,
                             FullName = model.FullName,
@@ -83,7 +83,7 @@ public static class EmployeesEndpoints
             (Employees.EmployeesClient employeesClient, [FromRoute] string id)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    var employeeResponse = await employeesClient.GetEmployeeAsync(new GetEmployeeRequest { Id = id });
+                    var employeeResponse = await employeesClient.GetAsync(new GetEmployeeRequest { Id = id });
 
                     var employee = employeeResponse.Employee.MapToDetailsResponseModel();
 
@@ -97,7 +97,7 @@ public static class EmployeesEndpoints
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
                         // TODO: Make sure the model cannot come unvalidated!!!
-                        await employeesClient.UpdateEmployeeAsync(new UpdateEmployeeRequest
+                        await employeesClient.UpdateAsync(new UpdateEmployeeRequest
                         {
                             Id = id,
                             FullName = model.FullName,
@@ -118,7 +118,7 @@ public static class EmployeesEndpoints
                 (Employees.EmployeesClient employeesClient, [FromRoute] string id)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        await employeesClient.DeleteEmployeeAsync(new DeleteEmployeeRequest { Id = id });
+                        await employeesClient.DeleteAsync(new DeleteEmployeeRequest { Id = id });
 
                         return Results.Ok();
                     }))

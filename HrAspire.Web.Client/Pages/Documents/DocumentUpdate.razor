@@ -1,4 +1,4 @@
-﻿@page "/document-update/{employeeId}/{id:int}"
+﻿@page "/document-update/{id:int}"
 
 @attribute [Authorize]
 
@@ -44,9 +44,6 @@
 
 @code {
     [Parameter]
-    public string EmployeeId { get; set; } = default!;
-
-    [Parameter]
     public int Id { get; set; }
 
     private DocumentUpdateRequestModel? Input { get; set; }
@@ -55,7 +52,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var document = await this.DocumentsApiClient.GetDocumentAsync(this.Id, this.EmployeeId);
+        var document = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
         this.Input = document?.ToUpdateRequestModel();
     }
 
@@ -63,10 +60,10 @@
     {
         this.ErrorMessage = null;
 
-        var errorMessage = await this.DocumentsApiClient.UpdateDocumentAsync(this.Id, this.EmployeeId, this.Input!);
+        var errorMessage = await this.DocumentsApiClient.UpdateDocumentAsync(this.Id, this.Input!);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/documents/{this.EmployeeId}/{this.Id}");
+            this.NavigationManager.NavigateTo($"/documents/{this.Id}");
         }
         else
         {

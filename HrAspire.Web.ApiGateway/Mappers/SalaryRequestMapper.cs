@@ -15,6 +15,4 @@ internal static partial class SalaryRequestMapper
     //public static partial EmployeeDetailsResponseModel MapToDetailsResponseModel(this EmployeeDetailsModel employee);
 
     private static DateTime TimestampToDateTime(Timestamp timestamp) => timestamp.ToDateTime();
-
-    //private static DateOnly TimestampToDateOnly(Timestamp timestamp) => timestamp.ToDateOnly();
 }

@@ -1,4 +1,4 @@
-﻿@page "/documents/{employeeId}/{id:int}"
+﻿@page "/documents/{id:int}"
 
 @attribute [Authorize]
 
@@ -14,7 +14,7 @@
             Delete
         </button>
 
-        <a href="/document-update/@EmployeeId/@Id" class="btn btn-primary float-end">Update</a>
+        <a href="/document-update/@Id" class="btn btn-primary float-end">Update</a>
     }
 </h1>
 <hr />
@@ -72,14 +72,11 @@
 
 @code {
     [Parameter]
-    public string EmployeeId { get; set; } = default!;
-
-    [Parameter]
     public int Id { get; set; }
 
     private DocumentDetailsResponseModel? Document { get; set; }
 
-    private string DownloadUrl => this.DocumentsApiClient.GetDocumentDownloadUrl(this.Id, this.EmployeeId);
+    private string DownloadUrl => this.DocumentsApiClient.GetDocumentDownloadUrl(this.Id);
 
     private string? ErrorMessage { get; set; }
 
@@ -87,7 +84,7 @@
     {
         this.ErrorMessage = null;
 
-        this.Document = await this.DocumentsApiClient.GetDocumentAsync(this.Id, this.EmployeeId);
+        this.Document = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
         if (this.Document is null)
         {
             this.ErrorMessage = "No such document found.";
@@ -98,10 +95,10 @@
     {
         this.ErrorMessage = null;
 
-        var errorMessage = await this.DocumentsApiClient.DeleteDocumentAsync(this.Id, this.EmployeeId);
+        var errorMessage = await this.DocumentsApiClient.DeleteDocumentAsync(this.Id);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}");
+            this.NavigationManager.NavigateTo($"/employees/{this.Document?.EmployeeId}");
         }
         else
         {

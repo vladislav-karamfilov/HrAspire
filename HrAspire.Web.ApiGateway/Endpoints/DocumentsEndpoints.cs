@@ -17,20 +17,18 @@ public static class DocumentsEndpoints
 {
     public static IEndpointConventionBuilder MapDocumentsEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints
-            .MapGroup("/Employees/{employeeId}/Documents")
-            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
+        var group = endpoints.MapGroup("/").RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
 
         group.MapGet(
-            "/",
+            "/Employees/{employeeId}/Documents",
             (Documents.DocumentsClient documentsClient,
                 [FromRoute] string employeeId,
                 [FromQuery] int pageNumber = 0,
                 [FromQuery] int pageSize = 10)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    var documentsResponse = await documentsClient.GetEmployeeDocumentsAsync(
-                        new GetEmployeeDocumentsRequest { EmployeeId = employeeId, PageNumber = pageNumber, PageSize = pageSize, });
+                    var documentsResponse = await documentsClient.ListEmployeeDocumentsAsync(
+                        new ListEmployeeDocumentsRequest { EmployeeId = employeeId, PageNumber = pageNumber, PageSize = pageSize, });
 
                     var documents = documentsResponse.Documents.Select(e => e.MapToResponseModel()).ToList();
 
@@ -38,7 +36,7 @@ public static class DocumentsEndpoints
                 }));
 
         group.MapPost(
-            "/",
+            "/Employees/{employeeId}/Documents",
             (Documents.DocumentsClient documentsClient,
                 [FromRoute] string employeeId,
                 [FromBody] DocumentCreateRequestModel model,
@@ -46,7 +44,7 @@ public static class DocumentsEndpoints
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
                     // TODO: Make sure the model cannot come unvalidated!!!
-                    var createResponse = await documentsClient.CreateDocumentAsync(new CreateDocumentRequest
+                    var createResponse = await documentsClient.CreateAsync(new CreateDocumentRequest
                     {
                         EmployeeId = employeeId,
                         Title = model.Title,
@@ -60,12 +58,11 @@ public static class DocumentsEndpoints
                 }));
 
         group.MapGet(
-            "/{id:int}",
-            (Documents.DocumentsClient documentsClient, [FromRoute] string employeeId, [FromRoute] int id)
+            "/Documents/{id:int}",
+            (Documents.DocumentsClient documentsClient, [FromRoute] int id)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    var documentResponse = await documentsClient.GetDocumentAsync(
-                        new GetDocumentRequest { Id = id, EmployeeId = employeeId });
+                    var documentResponse = await documentsClient.GetAsync(new GetDocumentRequest { Id = id });
 
                     var document = documentResponse.Document.MapToDetailsResponseModel();
 
@@ -73,17 +70,13 @@ public static class DocumentsEndpoints
                 }));
 
         group.MapPut(
-            "/{id:int}",
-            (Documents.DocumentsClient documentsClient,
-                [FromRoute] string employeeId,
-                [FromRoute] int id,
-                [FromBody] DocumentUpdateRequestModel model)
+            "/Documents/{id:int}",
+            (Documents.DocumentsClient documentsClient, [FromRoute] int id, [FromBody] DocumentUpdateRequestModel model)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
                     // TODO: Make sure the model cannot come unvalidated!!!
-                    await documentsClient.UpdateDocumentAsync(new UpdateDocumentRequest
+                    await documentsClient.UpdateAsync(new UpdateDocumentRequest
                     {
-                        EmployeeId = employeeId,
                         Id = id,
                         Title = model.Title,
                         Description = model.Description,
@@ -95,28 +88,27 @@ public static class DocumentsEndpoints
                 }));
 
         group.MapDelete(
-            "/{id:int}",
-            (Documents.DocumentsClient documentsClient, [FromRoute] string employeeId, [FromRoute] int id)
+            "/Documents/{id:int}",
+            (Documents.DocumentsClient documentsClient, [FromRoute] int id)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    await documentsClient.DeleteDocumentAsync(new DeleteDocumentRequest { Id = id, EmployeeId = employeeId });
+                    await documentsClient.DeleteAsync(new DeleteDocumentRequest { Id = id });
 
                     return Results.Ok();
                 }));
 
         group.MapGet(
-            "/{id:int}/Content",
+            "/Documents/{id:int}/Content",
             (Documents.DocumentsClient documentsClient,
                 HttpClient httpClient,
                 HttpContext httpContext,
                 HttpResponse response,
-                [FromRoute] string employeeId,
                 [FromRoute] int id)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(
                     async () =>
                     {
-                        var documentInfo = await documentsClient.GetDocumentUrlAndFileNameAsync(
-                            new GetDocumentUrlAndFileNameRequest { Id = id, EmployeeId = employeeId });
+                        var documentInfo = await documentsClient.GetUrlAndFileNameAsync(
+                            new GetDocumentUrlAndFileNameRequest { Id = id });
 
                         var documentContentResponse = await httpClient.GetAsync(documentInfo.Url, HttpCompletionOption.ResponseHeadersRead);
                         if (!documentContentResponse.IsSuccessStatusCode)

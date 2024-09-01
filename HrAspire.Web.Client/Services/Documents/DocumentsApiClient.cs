@@ -18,9 +18,9 @@ public class DocumentsApiClient
         => this.httpClient.GetFromJsonAsync<DocumentsResponseModel>(
             $"employees/{employeeId}/documents?pageNumber={pageNumber}&pageSize={pageSize}")!;
 
-    public async Task<DocumentDetailsResponseModel?> GetDocumentAsync(int id, string employeeId)
+    public async Task<DocumentDetailsResponseModel?> GetDocumentAsync(int id)
     {
-        var response = await this.httpClient.GetAsync($"employees/{employeeId}/documents/{id}");
+        var response = await this.httpClient.GetAsync($"documents/{id}");
         if (response.IsSuccessStatusCode)
         {
             return await response.Content.ReadFromJsonAsync<DocumentDetailsResponseModel>();
@@ -51,9 +51,9 @@ public class DocumentsApiClient
         return (null, errorMessage ?? Constants.UnexpectedErrorMessage);
     }
 
-    public async Task<string?> UpdateDocumentAsync(int id, string employeeId, DocumentUpdateRequestModel request)
+    public async Task<string?> UpdateDocumentAsync(int id, DocumentUpdateRequestModel request)
     {
-        var response = await this.httpClient.PutAsJsonAsync($"employees/{employeeId}/documents/{id}", request);
+        var response = await this.httpClient.PutAsJsonAsync($"documents/{id}", request);
         if (response.IsSuccessStatusCode)
         {
             return null;
@@ -70,9 +70,9 @@ public class DocumentsApiClient
         return errorMessage ?? Constants.UnexpectedErrorMessage;
     }
 
-    public async Task<string?> DeleteDocumentAsync(int id, string employeeId)
+    public async Task<string?> DeleteDocumentAsync(int id)
     {
-        var response = await this.httpClient.DeleteAsync($"employees/{employeeId}/documents/{id}");
+        var response = await this.httpClient.DeleteAsync($"documents/{id}");
         if (response.IsSuccessStatusCode)
         {
             return null;
@@ -88,6 +88,5 @@ public class DocumentsApiClient
         return errorMessage ?? Constants.UnexpectedErrorMessage;
     }
 
-    public string GetDocumentDownloadUrl(int id, string employeeId)
-        => $"{this.httpClient.BaseAddress}employees/{employeeId}/documents/{id}/content";
+    public string GetDocumentDownloadUrl(int id) => $"{this.httpClient.BaseAddress}documents/{id}/content";
 }

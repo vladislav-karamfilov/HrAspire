@@ -2,6 +2,7 @@
 
 public record DocumentDetailsResponseModel(
     int Id,
+    string EmployeeId,
     string Title,
     string? Description,
     string FileName,

@@ -9,15 +9,15 @@ import "google/protobuf/wrappers.proto";
 package employees;
 
 service Documents {
-	rpc GetEmployeeDocuments(GetEmployeeDocumentsRequest) returns (GetEmployeeDocumentsResponse);
-	rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
-	rpc GetDocumentUrlAndFileName(GetDocumentUrlAndFileNameRequest) returns (GetDocumentUrlAndFileNameResponse);
-	rpc CreateDocument(CreateDocumentRequest) returns (CreateDocumentResponse);
-	rpc UpdateDocument(UpdateDocumentRequest) returns (google.protobuf.Empty);
-	rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty);
+	rpc ListEmployeeDocuments(ListEmployeeDocumentsRequest) returns (ListEmployeeDocumentsResponse);
+	rpc Get(GetDocumentRequest) returns (GetDocumentResponse);
+	rpc GetUrlAndFileName(GetDocumentUrlAndFileNameRequest) returns (GetDocumentUrlAndFileNameResponse);
+	rpc Create(CreateDocumentRequest) returns (CreateDocumentResponse);
+	rpc Update(UpdateDocumentRequest) returns (google.protobuf.Empty);
+	rpc Delete(DeleteDocumentRequest) returns (google.protobuf.Empty);
 }
 
-message GetEmployeeDocumentsRequest {
+message ListEmployeeDocumentsRequest {
 	string employeeId = 1;
 	int32 pageNumber = 2;
 	int32 pageSize = 3;
@@ -25,10 +25,9 @@ message GetEmployeeDocumentsRequest {
 
 message GetDocumentRequest {
 	int32 id = 1;
-	string employeeId = 2;
 }
 
-message GetEmployeeDocumentsResponse {
+message ListEmployeeDocumentsResponse {
 	repeated DocumentModel documents = 1;
 	int32 total = 2;
 }
@@ -46,12 +45,13 @@ message DocumentModel {
 
 message DocumentDetailsModel {
 	int32 id = 1;
-	string title = 2;
-	google.protobuf.StringValue description = 3;
-	string fileName = 4;
-	google.protobuf.Timestamp createdOn = 5;
-	string createdById = 6;
-	string createdByFullName = 7;
+	string employeeId = 2;
+	string title = 3;
+	google.protobuf.StringValue description = 4;
+	string fileName = 5;
+	google.protobuf.Timestamp createdOn = 6;
+	string createdById = 7;
+	string createdByFullName = 8;
 }
 
 message CreateDocumentRequest {
@@ -69,25 +69,21 @@ message CreateDocumentResponse {
 
 message UpdateDocumentRequest {
 	int32 id = 1;
-	string employeeId = 2;
-	string title = 3;
-	google.protobuf.StringValue description = 4;
-	google.protobuf.BytesValue fileContent = 5;
-	google.protobuf.StringValue fileName = 6;
+	string title = 2;
+	google.protobuf.StringValue description = 3;
+	google.protobuf.BytesValue fileContent = 4;
+	google.protobuf.StringValue fileName = 5;
 }
 
 message DeleteDocumentRequest {
 	int32 id = 1;
-	string employeeId = 2;
 }
 
 message GetDocumentUrlAndFileNameRequest {
 	int32 id = 1;
-	string employeeId = 2;
 }
 
 message GetDocumentUrlAndFileNameResponse {
-	int32 id = 1;
-	string url = 2;
-	string fileName = 3;
+	string url = 1;
+	string fileName = 2;
 }

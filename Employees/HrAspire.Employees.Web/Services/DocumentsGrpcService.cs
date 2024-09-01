@@ -19,14 +19,14 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         this.documentsService = documentsService;
     }
 
-    public override async Task<GetEmployeeDocumentsResponse> GetEmployeeDocuments(
-        GetEmployeeDocumentsRequest request,
+    public override async Task<ListEmployeeDocumentsResponse> ListEmployeeDocuments(
+        ListEmployeeDocumentsRequest request,
         ServerCallContext context)
     {
         var documents = await this.documentsService.ListEmployeeDocumentsAsync(request.EmployeeId, request.PageNumber, request.PageSize);
         var total = await this.documentsService.GetEmployeeDocumentsCountAsync(request.EmployeeId);
 
-        var response = new GetEmployeeDocumentsResponse { Total = total };
+        var response = new ListEmployeeDocumentsResponse { Total = total };
         foreach (var document in documents)
         {
             response.Documents.Add(document.MapToDocumentGrpcModel());
@@ -35,7 +35,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         return response;
     }
 
-    public override async Task<GetDocumentResponse> GetDocument(GetDocumentRequest request, ServerCallContext context)
+    public override async Task<GetDocumentResponse> Get(GetDocumentRequest request, ServerCallContext context)
     {
         var document = await this.documentsService.GetAsync(request.Id);
         if (document is null)
@@ -47,7 +47,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         return response;
     }
 
-    public override async Task<GetDocumentUrlAndFileNameResponse> GetDocumentUrlAndFileName(
+    public override async Task<GetDocumentUrlAndFileNameResponse> GetUrlAndFileName(
         GetDocumentUrlAndFileNameRequest request,
         ServerCallContext context)
     {
@@ -60,7 +60,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         return new GetDocumentUrlAndFileNameResponse { Url = documentInfo.Url, FileName = documentInfo.FileName };
     }
 
-    public override async Task<CreateDocumentResponse> CreateDocument(CreateDocumentRequest request, ServerCallContext context)
+    public override async Task<CreateDocumentResponse> Create(CreateDocumentRequest request, ServerCallContext context)
     {
         var createResult = await this.documentsService.CreateAsync(
             request.EmployeeId,
@@ -78,7 +78,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         return new CreateDocumentResponse { Id = createResult.Data };
     }
 
-    public override async Task<Empty> UpdateDocument(UpdateDocumentRequest request, ServerCallContext context)
+    public override async Task<Empty> Update(UpdateDocumentRequest request, ServerCallContext context)
     {
         var updateResult = await this.documentsService.UpdateAsync(
             request.Id,
@@ -95,7 +95,7 @@ public class DocumentsGrpcService : Documents.DocumentsBase
         return new Empty();
     }
 
-    public override async Task<Empty> DeleteDocument(DeleteDocumentRequest request, ServerCallContext context)
+    public override async Task<Empty> Delete(DeleteDocumentRequest request, ServerCallContext context)
     {
         var deleteResult = await this.documentsService.DeleteAsync(request.Id);
         if (deleteResult.IsError)

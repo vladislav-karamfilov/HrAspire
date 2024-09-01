@@ -2,6 +2,7 @@
 
 public record DocumentDetailsServiceModel(
     int Id,
+    string EmployeeId,
     string Title,
     string? Description,
     string FileName,

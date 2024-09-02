@@ -38,6 +38,7 @@ public class DocumentsService : IDocumentsService
         this.logger = logger;
     }
 
+    // TODO: Validate file allowed using file extension
     public async Task<ServiceResult<int>> CreateAsync(
         string employeeId,
         string title,
@@ -102,6 +103,7 @@ public class DocumentsService : IDocumentsService
     public Task<DocumentUrlAndFileNameServiceModel?> GetUrlAndFileNameAsync(int id)
         => this.dbContext.Documents.Where(d => d.Id == id).ProjectToUrlAndFileNameServiceModel().FirstOrDefaultAsync();
 
+    // TODO: Validate file allowed using file extension
     public async Task<ServiceResult> UpdateAsync(
         int id,
         string title,

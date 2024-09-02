@@ -51,10 +51,10 @@
     {
         this.ErrorMessage = null;
 
-        var (newDocumentId, errorMessage) = await this.DocumentsApiClient.CreateDocumentAsync(this.EmployeeId, this.Input);
+        var (_, errorMessage) = await this.DocumentsApiClient.CreateDocumentAsync(this.EmployeeId, this.Input);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/documents/{this.EmployeeId}/{newDocumentId}");
+            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}");
         }
         else
         {
@@ -62,6 +62,7 @@
         }
     }
 
+    // TODO: Validate file allowed using file extension
     private async Task OnFileChangedAsync(InputFileChangeEventArgs ev)
     {
         this.ErrorMessage = null;

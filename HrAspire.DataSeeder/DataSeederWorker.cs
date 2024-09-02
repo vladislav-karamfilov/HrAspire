@@ -53,8 +53,21 @@ public class DataSeederWorker : BackgroundService
         // TODO: extract to separate method and seed more data - employees, documents(?)
         if (!dbContext.Roles.Any())
         {
-            dbContext.Roles.Add(new IdentityRole { Id = BusinessConstants.ManagerRole, Name = BusinessConstants.ManagerRole });
-            dbContext.Roles.Add(new IdentityRole { Id = BusinessConstants.HrManagerRole, Name = BusinessConstants.HrManagerRole });
+            dbContext.Roles.Add(new IdentityRole
+            {
+                Id = BusinessConstants.ManagerRole,
+                Name = BusinessConstants.ManagerRole,
+                NormalizedName = BusinessConstants.ManagerRole.ToUpperInvariant(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+            });
+
+            dbContext.Roles.Add(new IdentityRole
+            {
+                Id = BusinessConstants.HrManagerRole,
+                Name = BusinessConstants.HrManagerRole,
+                NormalizedName = BusinessConstants.HrManagerRole.ToUpperInvariant(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+            });
 
             await dbContext.SaveChangesAsync();
         }

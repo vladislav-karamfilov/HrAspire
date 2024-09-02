@@ -215,4 +215,7 @@ public class EmployeesService : IEmployeesService
             .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole))
             .ProjectToServiceModel()
             .ToListAsync();
+
+    public async Task<IEnumerable<EmployeeServiceModel>> ListManagedEmployeesAsync(string managerId)
+        => await this.dbContext.Employees.Where(e => e.ManagerId == managerId).ProjectToServiceModel().ToListAsync();
 }

@@ -9,11 +9,11 @@ import "google/protobuf/wrappers.proto";
 package salaries;
 
 service SalaryRequests {
-	rpc GetSalaryRequests(GetSalaryRequestsRequest) returns (GetSalaryRequestsResponse);
-	rpc GetSalaryRequest(GetSalaryRequestRequest) returns (GetSalaryRequestResponse);
-	rpc CreateSalaryRequest(CreateSalaryRequestRequest) returns (CreateSalaryRequestResponse);
-	rpc UpdateSalaryRequest(UpdateSalaryRequestRequest) returns (google.protobuf.Empty);
-	rpc DeleteSalaryRequest(DeleteSalaryRequestRequest) returns (google.protobuf.Empty);
+	rpc List(GetSalaryRequestsRequest) returns (GetSalaryRequestsResponse);
+	rpc Get(GetSalaryRequestRequest) returns (GetSalaryRequestResponse);
+	rpc Create(CreateSalaryRequestRequest) returns (CreateSalaryRequestResponse);
+	rpc Update(UpdateSalaryRequestRequest) returns (google.protobuf.Empty);
+	rpc Delete(DeleteSalaryRequestRequest) returns (google.protobuf.Empty);
 }
 
 message GetSalaryRequestsRequest {

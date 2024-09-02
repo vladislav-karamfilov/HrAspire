@@ -19,7 +19,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         this.salaryRequestsService = salaryRequestsService;
     }
 
-    public override async Task<GetSalaryRequestsResponse> GetSalaryRequests(GetSalaryRequestsRequest request, ServerCallContext context)
+    public override async Task<GetSalaryRequestsResponse> List(GetSalaryRequestsRequest request, ServerCallContext context)
     {
         var salaryRequests = await this.salaryRequestsService.ListAsync(request.PageNumber, request.PageSize);
         var total = await this.salaryRequestsService.GetCountAsync();
@@ -33,7 +33,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         return response;
     }
 
-    public override async Task<GetSalaryRequestResponse> GetSalaryRequest(GetSalaryRequestRequest request, ServerCallContext context)
+    public override async Task<GetSalaryRequestResponse> Get(GetSalaryRequestRequest request, ServerCallContext context)
     {
         var salaryRequest = await this.salaryRequestsService.GetAsync(request.Id);
         if (salaryRequest is null)
@@ -45,9 +45,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         return response;
     }
 
-    public override async Task<CreateSalaryRequestResponse> CreateSalaryRequest(
-        CreateSalaryRequestRequest request,
-        ServerCallContext context)
+    public override async Task<CreateSalaryRequestResponse> Create(CreateSalaryRequestRequest request, ServerCallContext context)
     {
         var createResult = await this.salaryRequestsService.CreateAsync(
             request.EmployeeId,
@@ -63,7 +61,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         return new CreateSalaryRequestResponse { Id = createResult.Data };
     }
 
-    public override async Task<Empty> UpdateSalaryRequest(UpdateSalaryRequestRequest request, ServerCallContext context)
+    public override async Task<Empty> Update(UpdateSalaryRequestRequest request, ServerCallContext context)
     {
         var updateResult = await this.salaryRequestsService.UpdateAsync(request.Id, request.NewSalary, request.Notes);
         if (updateResult.IsError)
@@ -74,7 +72,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         return new Empty();
     }
 
-    public override async Task<Empty> DeleteSalaryRequest(DeleteSalaryRequestRequest request, ServerCallContext context)
+    public override async Task<Empty> Delete(DeleteSalaryRequestRequest request, ServerCallContext context)
     {
         var deleteResult = await this.salaryRequestsService.DeleteAsync(request.Id);
         if (deleteResult.IsError)

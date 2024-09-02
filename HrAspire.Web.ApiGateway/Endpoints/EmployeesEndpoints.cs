@@ -48,11 +48,26 @@ public static class EmployeesEndpoints
                     {
                         var managersResponse = await employeesClient.ListManagersAsync(new Empty());
 
-                        var managers = managersResponse.Managers.Select(e => e.MapToResponseModel()).ToList();
+                        var managers = managersResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
 
                         return Results.Ok(managers);
                     }))
             .RequireAuthorization(Constants.HrManagerAuthPolicyName);
+
+        group
+            .MapGet(
+                "/Managed",
+                (Employees.EmployeesClient employeesClient, ClaimsPrincipal user)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        var managersResponse = await employeesClient.ListManagedEmployeesAsync(
+                            new ListManagedEmployeesRequest { ManagerId = user.GetId()! });
+
+                        var employees = managersResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
+
+                        return Results.Ok(employees);
+                    }))
+            .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapPost(

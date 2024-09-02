@@ -33,14 +33,29 @@ public class EmployeesGrpcService : Employees.EmployeesBase
         return response;
     }
 
-    public override async Task<ListManagersResponse> ListManagers(Empty request, ServerCallContext context)
+    public override async Task<ListEmployeesResponse> ListManagers(Empty request, ServerCallContext context)
     {
         var managers = await this.employeesService.ListManagersAsync();
 
-        var response = new ListManagersResponse();
+        var response = new ListEmployeesResponse();
         foreach (var manager in managers)
         {
-            response.Managers.Add(manager.MapToEmployeeGrpcModel());
+            response.Employees.Add(manager.MapToEmployeeGrpcModel());
+            response.Total++;
+        }
+
+        return response;
+    }
+
+    public override async Task<ListEmployeesResponse> ListManagedEmployees(ListManagedEmployeesRequest request, ServerCallContext context)
+    {
+        var managedEmployees = await this.employeesService.ListManagedEmployeesAsync(request.ManagerId);
+
+        var response = new ListEmployeesResponse();
+        foreach (var manager in managedEmployees)
+        {
+            response.Employees.Add(manager.MapToEmployeeGrpcModel());
+            response.Total++;
         }
 
         return response;

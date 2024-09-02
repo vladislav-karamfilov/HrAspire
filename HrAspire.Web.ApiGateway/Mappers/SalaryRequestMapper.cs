@@ -12,7 +12,7 @@ internal static partial class SalaryRequestMapper
 {
     public static partial SalaryRequestResponseModel MapToResponseModel(this SalaryRequestModel salaryRequest);
 
-    //public static partial EmployeeDetailsResponseModel MapToDetailsResponseModel(this EmployeeDetailsModel employee);
+    public static partial SalaryRequestDetailsResponseModel MapToDetailsResponseModel(this SalaryRequestDetailsModel salaryRequest);
 
     private static DateTime TimestampToDateTime(Timestamp timestamp) => timestamp.ToDateTime();
 }

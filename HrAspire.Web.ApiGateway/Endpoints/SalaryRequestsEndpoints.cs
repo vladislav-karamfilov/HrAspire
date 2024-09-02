@@ -15,7 +15,6 @@ public static class SalaryRequestsEndpoints
     {
         var group = endpoints.MapGroup("/").RequireAuthorization();
 
-        // TODO: add managerId param to GRPC method (like employees endpoint)
         group
             .MapGet(
                 "/SalaryRequests",
@@ -31,7 +30,22 @@ public static class SalaryRequestsEndpoints
 
                         return Results.Ok(new SalaryRequestsResponseModel(salaryRequests, salaryRequestsResponse.Total));
                     }))
-            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
+
+        group
+            .MapGet(
+                "/Employees/{employeeId}/SalaryRequests",
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
+                    [FromRoute] string employeeId,
+                    [FromQuery] int pageNumber = 0,
+                    [FromQuery] int pageSize = 10)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        await Task.CompletedTask;
+
+                        throw new NotImplementedException();
+                    }));
+        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapPost(
@@ -54,6 +68,72 @@ public static class SalaryRequestsEndpoints
                         return Results.Created(string.Empty, createResponse.Id);
                     }));
         // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+
+        group
+            .MapGet(
+                "/SalaryRequests/{id:int}",
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        var salaryRequestResponse = await salaryRequestsClient.GetAsync(new GetSalaryRequestRequest { Id = id });
+
+                        var salaryRequest = salaryRequestResponse.SalaryRequest.MapToDetailsResponseModel();
+
+                        return Results.Ok(salaryRequest);
+                    }))
+            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
+
+        group
+            .MapPut(
+                "/SalaryRequests/{id:int}",
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
+                    [FromRoute] int id,
+                    [FromBody] SalaryRequestUpdateRequestModel model)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        // TODO: Make sure the model cannot come unvalidated!!!
+                        var updateResponse = await salaryRequestsClient.UpdateAsync(
+                            new UpdateSalaryRequestRequest { Id = id, NewSalary = model.NewSalary, Notes = model.Notes, });
+
+                        return Results.Ok();
+                    }));
+        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+
+        group
+            .MapDelete(
+                "/SalaryRequests/{id:int}",
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        await salaryRequestsClient.DeleteAsync(new DeleteSalaryRequestRequest { Id = id });
+
+                        return Results.Ok();
+                    }));
+        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+
+        group
+            .MapPost(
+                "/SalaryRequests/{id:int}/Approval",
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        await Task.CompletedTask;
+
+                        throw new NotImplementedException();
+                    }))
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
+
+        group
+            .MapPost(
+                "/SalaryRequests/{id:int}/Rejection",
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                    {
+                        await Task.CompletedTask;
+
+                        throw new NotImplementedException();
+                    }))
+            .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
         return group;
     }

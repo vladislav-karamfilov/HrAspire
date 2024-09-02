@@ -3,7 +3,6 @@
 @attribute [Authorize]
 
 @inject SalaryRequestsApiClient SalaryRequestsApiClient
-@inject EmployeesApiClient EmployeesApiClient
 @inject NavigationManager NavigationManager
 
 <h1>Create Salary Request</h1>
@@ -22,12 +21,12 @@
                                  class="form-control"
                                  aria-required="true"
                                  placeholder="5000.00" />
-                    <label for="email" class="form-label">New Salary</label>
+                    <label for="new-salary" class="form-label">New Salary</label>
                     <ValidationMessage For="() => Input.NewSalary" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
                     <InputTextArea @bind-Value="Input.Notes" class="form-control" placeholder="notes" />
-                    <label for="description" class="form-label">Notes</label>
+                    <label for="notes" class="form-label">Notes</label>
                     <ValidationMessage For="() => Input.Notes" class="text-danger" />
                 </div>
 
@@ -46,10 +45,6 @@
     private SalaryRequestCreateRequestModel Input { get; set; } = new();
 
     private string? ErrorMessage { get; set; }
-
-    private IEnumerable<EmployeeResponseModel> ManagedEmployees { get; set; } = [];
-
-    protected override async Task OnInitializedAsync() => this.ManagedEmployees = await this.EmployeesApiClient.GetManagersAsync();
 
     private async Task CreateSalaryRequestAsync()
     {

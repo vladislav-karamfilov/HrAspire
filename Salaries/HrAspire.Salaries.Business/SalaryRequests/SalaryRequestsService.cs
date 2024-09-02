@@ -37,10 +37,11 @@ public class SalaryRequestsService : ISalaryRequestsService
             return ServiceResult<int>.Error("Employee to create salary request for doesn't exist.");
         }
 
-        if (!await this.EmployeeExistsAsync(createdById))
-        {
-            return ServiceResult<int>.Error("Salary request creator employee doesn't exist.");
-        }
+        // TODO:
+        //if (!await this.EmployeeExistsAsync(createdById))
+        //{
+        //    return ServiceResult<int>.Error("Salary request creator employee doesn't exist.");
+        //}
 
         var salaryRequest = new SalaryRequest
         {
@@ -69,8 +70,23 @@ public class SalaryRequestsService : ISalaryRequestsService
         return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
 
-    public Task<SalaryRequestDetailsServiceModel?> GetAsync(int id)
-        => this.dbContext.SalaryRequests.Where(r => r.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
+    public async Task<SalaryRequestDetailsServiceModel?> GetAsync(int id)
+    {
+        var salaryRequest = await this.dbContext.SalaryRequests
+            .Where(r => r.Id == id)
+            .ProjectToDetailsServiceModel()
+            .FirstOrDefaultAsync();
+
+        if (salaryRequest is null)
+        {
+            return null;
+        }
+
+        salaryRequest.EmployeeFullName = (await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId))[0] ?? string.Empty;
+        salaryRequest.CreatedByFullName = (await this.GetEmployeeNamesAsync(salaryRequest.CreatedById))[0] ?? string.Empty;
+
+        return salaryRequest;
+    }
 
     public async Task<IEnumerable<SalaryRequestServiceModel>> ListAsync(int pageNumber, int pageSize)
     {
@@ -164,4 +180,12 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     private Task<bool> EmployeeExistsAsync(string employeeId)
         => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
+
+    private async Task<string[]> GetEmployeeNamesAsync(params string[] employeeIds)
+    {
+        await Task.CompletedTask;
+
+        // TODO:
+        return new string[] { "test" };
+    }
 }

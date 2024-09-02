@@ -1,33 +1,33 @@
-﻿@page "/salary-requests/{id}"
+﻿@page "/salary-requests/{id:int}"
 
 @attribute [Authorize]
 
-@inject EmployeesApiClient EmployeesApiClient
-@inject DocumentsApiClient DocumentsApiClient
+@inject SalaryRequestsApiClient SalaryRequestsApiClient
 @inject NavigationManager NavigationManager
 
 <h1>
-    Employee - @Employee?.FullName
+    Salary Request - @SalaryRequest?.EmployeeFullName
 
-    @if (Employee is not null)
+    @* TODO: *@
+    @* @if (SalaryRequest is not null)
     {
         <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-employee-modal">
             Delete
         </button>
 
         <a href="/employee-update/@Employee.Id" class="btn btn-primary float-end">Update</a>
-    }
+    } *@
 </h1>
 <hr />
 
 <StatusMessage IsError="true" Message="@ErrorMessage" />
 
-@if (Employee is not null)
+@if (SalaryRequest is not null)
 {
-    <Modal Id="delete-employee-modal"
-           Title="Delete Employee"
-           Body="Are you sure you want to delete this employee?"
-           Confirmed="DeleteEmployeeAsync" />
+    <Modal Id="delete-salary-request-modal"
+           Title="Delete Salary Request"
+           Body="Are you sure you want to delete this salary request?"
+           Confirmed="DeleteSalaryRequestAsync" />
 
     <div class="card">
         <div class="card-body">
@@ -35,46 +35,46 @@
                 <table class="table table-striped table-product">
                     <tbody>
                         <tr>
-                            <td width="390">Full Name</td>
-                            <td>@Employee.FullName</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
+                            <td width="390">Employee</td>
                             <td>
-                                <a href="mailto:@Employee.Email">@Employee.Email</a>
+                                <a href="/employees/@SalaryRequest.EmployeeId">@SalaryRequest.EmployeeFullName</a>
                             </td>
                         </tr>
                         <tr>
-                            <td>Date of Birth</td>
-                            <td>@Employee.DateOfBirth.ToString(Constants.DateFormat)</td>
+                            <td>New Salary</td>
+                            <td>@SalaryRequest.NewSalary.ToString("n2")</td>
                         </tr>
                         <tr>
-                            <td>Position</td>
-                            <td>@Employee.Position</td>
+                            <td>Notes</td>
+                            <td>@SalaryRequest.Notes</td>
                         </tr>
                         <tr>
-                            <td>Department</td>
-                            <td>@Employee.Department</td>
+                            <td>Status</td>
+                            <td>@SalaryRequest.Status</td>
                         </tr>
                         <tr>
-                            <td>Manager</td>
+                            <td>Status on</td>
+                            <td>@SalaryRequest.StatusChangedOn?.ToString(Constants.DateTimeFormat)</td>
+                        </tr>
+                        <tr>
+                            <td>Status by</td>
                             <td>
-                                @if (!string.IsNullOrWhiteSpace(Employee.ManagerId))
+                                @if (!string.IsNullOrWhiteSpace(SalaryRequest.StatusChangedById))
                                 {
-                                    <a href="/employees/@Employee.ManagerId">@Employee.ManagerFullName</a>
+                                    <a href="/employees/@SalaryRequest.StatusChangedById">@SalaryRequest.StatusChangedByFullName</a>
                                 }
                             </td>
                         </tr>
                         <tr>
                             <td>Created on</td>
-                            <td>@Employee.CreatedOn.ToString(Constants.DateTimeFormat)</td>
+                            <td>@SalaryRequest.CreatedOn.ToString(Constants.DateTimeFormat)</td>
                         </tr>
                         <tr>
                             <td>Created by</td>
                             <td>
-                                @if (!string.IsNullOrWhiteSpace(Employee.CreatedById))
+                                @if (!string.IsNullOrWhiteSpace(SalaryRequest.CreatedById))
                                 {
-                                    <a href="/employees/@Employee.CreatedById">@Employee.CreatedByFullName</a>
+                                    <a href="/employees/@SalaryRequest.CreatedById">@SalaryRequest.CreatedByFullName</a>
                                 }
                             </td>
                         </tr>
@@ -83,71 +83,39 @@
             </div>
         </div>
     </div>
-
-    <h3 class="mt-5">
-        Documents
-        <a href="/document-create/@Id" class="btn btn-primary float-end">Create</a>
-    </h3>
-    <hr />
-
-    <QuickGrid ItemsProvider="GridDocumentsProvider" Pagination="DocumentsPagination" Class="table table-bordered table-striped">
-        <TemplateColumn Title="Title">
-            <a href="/documents/@Id/@context.Id">@context.Title</a>
-        </TemplateColumn>
-        <PropertyColumn Property="@(e => e.FileName)" Title="File Name" />
-        <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created" Format="@Constants.DateTimeFormat" />
-    </QuickGrid>
-
-    <Paginator State="DocumentsPagination"></Paginator>
 }
 
 @code {
     [Parameter]
-    public string Id { get; set; } = default!;
+    public int Id { get; set; }
 
-    private EmployeeDetailsResponseModel? Employee { get; set; }
-
-    private GridItemsProvider<DocumentResponseModel>? GridDocumentsProvider { get; set; }
-    private PaginationState DocumentsPagination { get; set; } = new() { ItemsPerPage = 10 };
+    private SalaryRequestDetailsResponseModel? SalaryRequest { get; set; }
 
     private string? ErrorMessage { get; set; }
-
-    protected override void OnInitialized() => this.GridDocumentsProvider = this.GetGridDocumentsAsync;
 
     protected override async Task OnParametersSetAsync()
     {
         this.ErrorMessage = null;
 
-        this.Employee = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
-        if (this.Employee is null)
+        this.SalaryRequest = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
+        if (this.SalaryRequest is null)
         {
-            this.ErrorMessage = "No such employee found.";
+            this.ErrorMessage = "No such salary request found.";
         }
     }
 
-    private async Task DeleteEmployeeAsync()
+    private async Task DeleteSalaryRequestAsync()
     {
         this.ErrorMessage = null;
 
-        var errorMessage = await this.EmployeesApiClient.DeleteEmployeeAsync(this.Id);
+        var errorMessage = await this.SalaryRequestsApiClient.DeleteSalaryRequestAsync(this.Id);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo("/employees");
+            this.NavigationManager.NavigateTo($"/employees/{this.SalaryRequest?.EmployeeId}");
         }
         else
         {
             this.ErrorMessage = errorMessage;
         }
-    }
-
-    private async ValueTask<GridItemsProviderResult<DocumentResponseModel>> GetGridDocumentsAsync(
-        GridItemsProviderRequest<DocumentResponseModel> request)
-    {
-        var pageNumber = request.StartIndex / this.DocumentsPagination.ItemsPerPage;
-
-        var data = await this.DocumentsApiClient.GetEmployeeDocumentsAsync(this.Id, pageNumber, this.DocumentsPagination.ItemsPerPage);
-
-        var result = new GridItemsProviderResult<DocumentResponseModel> { Items = data.Documents, TotalItemCount = data.Total, };
-        return result;
     }
 }

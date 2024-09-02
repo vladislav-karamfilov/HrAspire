@@ -49,22 +49,32 @@ public class EmployeesService : IEmployeesService
             CreatedOn = this.timeProvider.GetUtcNow().UtcDateTime,
         };
 
-        using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        string? errorMessage = null;
 
-        var result = await this.userManager.CreateAsync(employee, password);
-        if (result.Succeeded && !string.IsNullOrWhiteSpace(role))
+        await this.dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
         {
-            result = await this.userManager.AddToRoleAsync(employee, role);
-        }
+            await using var tx = await this.dbContext.Database.BeginTransactionAsync();
 
-        if (!result.Succeeded)
-        {
-            return ServiceResult<string>.Error(result.GetFirstError()!);
-        }
+            var result = await this.userManager.CreateAsync(employee, password);
+            if (result.Succeeded && !string.IsNullOrWhiteSpace(role))
+            {
+                result = await this.userManager.AddToRoleAsync(employee, role);
+            }
 
-        tx.Complete();
+            if (!result.Succeeded)
+            {
+                errorMessage = result.GetFirstError();
+                return;
+            }
 
-        return ServiceResult<string>.Success(employee.Id);
+            await tx.CommitAsync();
+        });
+
+        var result = string.IsNullOrWhiteSpace(errorMessage)
+            ? ServiceResult<string>.Success(employee.Id)
+            : ServiceResult<string>.Error(errorMessage);
+
+        return result;
     }
 
     public async Task<ServiceResult> UpdateAsync(
@@ -90,28 +100,38 @@ public class EmployeesService : IEmployeesService
 
         var currentRole = await this.dbContext.UserRoles.Where(ur => ur.UserId == id).Select(ur => ur.RoleId).FirstOrDefaultAsync();
 
-        using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        string? errorMessage = null;
 
-        if (currentRole != role)
+        await this.dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
         {
-            var identityResult = string.IsNullOrWhiteSpace(currentRole)
-                ? IdentityResult.Success
-                : await this.userManager.RemoveFromRoleAsync(employee, currentRole);
+            await using var tx = await this.dbContext.Database.BeginTransactionAsync();
 
-            if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
+            if (currentRole != role)
             {
-                identityResult = await this.userManager.AddToRoleAsync(employee, role);
+                var identityResult = string.IsNullOrWhiteSpace(currentRole)
+                    ? IdentityResult.Success
+                    : await this.userManager.RemoveFromRoleAsync(employee, currentRole);
+
+                if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
+                {
+                    identityResult = await this.userManager.AddToRoleAsync(employee, role);
+                }
+
+                if (!identityResult.Succeeded)
+                {
+                    errorMessage = identityResult.GetFirstError();
+                    return;
+                }
             }
 
-            if (!identityResult.Succeeded)
-            {
-                return ServiceResult.Error(identityResult.GetFirstError()!);
-            }
-        }
+            await tx.CommitAsync();
+        });
 
-        await this.dbContext.SaveChangesAsync();
+        var result = string.IsNullOrWhiteSpace(errorMessage)
+            ? ServiceResult.Success
+            : ServiceResult.Error(errorMessage);
 
-        return ServiceResult.Success;
+        return result;
     }
 
     public async Task<ServiceResult> DeleteAsync(string id)

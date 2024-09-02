@@ -49,14 +49,15 @@ message EmployeeDetailsModel {
 	string id = 1;
 	string email = 2;
 	string fullName = 3;
-	google.protobuf.Timestamp dateOfBirth = 4;
-	google.protobuf.StringValue department = 5;
-	string position = 6;
-	google.protobuf.StringValue managerId = 7;
-	google.protobuf.StringValue managerFullName = 8;
-	google.protobuf.Timestamp createdOn = 9;
-	google.protobuf.StringValue createdById = 10;
-	google.protobuf.StringValue createdByFullName = 11;
+	google.protobuf.StringValue role = 4;
+	google.protobuf.Timestamp dateOfBirth = 5;
+	google.protobuf.StringValue department = 6;
+	string position = 7;
+	google.protobuf.StringValue managerId = 8;
+	google.protobuf.StringValue managerFullName = 9;
+	google.protobuf.Timestamp createdOn = 10;
+	google.protobuf.StringValue createdById = 11;
+	google.protobuf.StringValue createdByFullName = 12;
 }
 
 message CreateEmployeeRequest {

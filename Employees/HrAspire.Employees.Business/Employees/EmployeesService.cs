@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Transactions;
 
 using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
@@ -124,6 +123,8 @@ public class EmployeesService : IEmployeesService
                 }
             }
 
+            await this.dbContext.SaveChangesAsync();
+
             await tx.CommitAsync();
         });
 
@@ -184,12 +185,8 @@ public class EmployeesService : IEmployeesService
     }
 
     public async Task<IEnumerable<EmployeeServiceModel>> ListManagersAsync()
-    {
-        var managerEmployeeIds = await this.dbContext.UserRoles
-            .Where(ur => ur.RoleId == BusinessConstants.ManagerRole)
-            .Select(ur => ur.UserId)
+        => await this.dbContext.Employees
+            .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole))
+            .ProjectToServiceModel()
             .ToListAsync();
-
-        return await this.dbContext.Employees.Where(e => managerEmployeeIds.Contains(e.Id)).ProjectToServiceModel().ToListAsync();
-    }
 }

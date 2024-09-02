@@ -21,10 +21,13 @@ public class EmployeesDbContext : IdentityDbContext<Employee>
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Employee>().ToTable("Employees");
-        builder.Entity<Employee>().HasMany(e => e.Documents).WithOne(d => d.Employee);
-        builder.Entity<Employee>().HasMany(e => e.CreatedDocuments).WithOne(d => d.CreatedBy);
-        builder.Entity<Employee>().HasOne(e => e.CreatedBy).WithMany(e => e.CreatedEmployees);
+        var employeeBuilder = builder.Entity<Employee>();
+
+        employeeBuilder.ToTable("Employees");
+        employeeBuilder.HasMany(e => e.Documents).WithOne(d => d.Employee);
+        employeeBuilder.HasMany(e => e.CreatedDocuments).WithOne(d => d.CreatedBy);
+        employeeBuilder.HasOne(e => e.CreatedBy).WithMany(e => e.CreatedEmployees);
+        employeeBuilder.HasMany(e => e.Roles).WithOne().HasForeignKey(ur => ur.UserId);
 
         builder
             .SetUtcKindToDateTimeProperties()

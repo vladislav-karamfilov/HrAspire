@@ -368,7 +368,7 @@ namespace HrAspire.DataSeeder.Migrations
                         .IsRequired();
 
                     b.HasOne("HrAspire.Employees.Data.Models.Employee", null)
-                        .WithMany()
+                        .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -390,6 +390,8 @@ namespace HrAspire.DataSeeder.Migrations
                     b.Navigation("CreatedEmployees");
 
                     b.Navigation("Documents");
+
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

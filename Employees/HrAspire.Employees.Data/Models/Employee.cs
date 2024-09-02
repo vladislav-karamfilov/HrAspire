@@ -35,4 +35,6 @@ public class Employee : IdentityUser, IDeletableEntity
     public ICollection<Document> CreatedDocuments { get; set; } = [];
 
     public ICollection<Employee> CreatedEmployees { get; set; } = [];
+
+    public ICollection<IdentityUserRole<string>> Roles { get; set; } = [];
 }

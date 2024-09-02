@@ -6,6 +6,7 @@ public record EmployeeDetailsResponseModel(
     string Id,
     string Email,
     string FullName,
+    string? Role,
     DateOnly DateOfBirth,
     string? Department,
     string Position,

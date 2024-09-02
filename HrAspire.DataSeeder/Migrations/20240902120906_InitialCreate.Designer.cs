@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HrAspire.DataSeeder.Migrations
 {
     [DbContext(typeof(EmployeesDbContext))]
-    [Migration("20240902090416_RemoveDirectEmployeeRoleRelation")]
-    partial class RemoveDirectEmployeeRoleRelation
+    [Migration("20240902120906_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,7 +371,7 @@ namespace HrAspire.DataSeeder.Migrations
                         .IsRequired();
 
                     b.HasOne("HrAspire.Employees.Data.Models.Employee", null)
-                        .WithMany()
+                        .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -393,6 +393,8 @@ namespace HrAspire.DataSeeder.Migrations
                     b.Navigation("CreatedEmployees");
 
                     b.Navigation("Documents");
+
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+// TODO: extract resource names into a constants class in ServiceDefaults
 var postgres = builder.AddPostgres("postgres").WithDataVolume("db-data").WithPgAdmin();
 var employeesDb = postgres.AddDatabase("employees-db", "employees");
 var salariesDb = postgres.AddDatabase("salaries-db", "salaries");
@@ -7,7 +8,7 @@ var vacationsDb = postgres.AddDatabase("vacations-db", "vacations");
 
 var azureStorage = builder
     .AddAzureStorage("azure-storage")
-    .RunAsEmulator(c => c.WithDataVolume("blob-data").WithImageTag("3.31.0"));
+    .RunAsEmulator(c => c.WithDataVolume("blob-data").WithImageTag("3.31.0")); // TODO: Remove tag specification at some point
 
 var blobs = azureStorage.AddBlobs("blobs");
 

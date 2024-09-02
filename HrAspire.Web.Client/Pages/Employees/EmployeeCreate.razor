@@ -66,10 +66,12 @@
                 </div>
                 <div class="form-floating mb-3">
                     <InputSelect @bind-Value="Input.ManagerId" class="form-control" placeholder="manager">
+                        <option value="">(None)</option>
+
                         @foreach (var manager in Managers)
                         {
                             <option value="@manager.Id">
-                                @manager.FullName
+                                @manager.Email [@manager.FullName]
 
                                 @if (!string.IsNullOrWhiteSpace(manager.Department))
                                 {

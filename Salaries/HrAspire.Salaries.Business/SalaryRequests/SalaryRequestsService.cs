@@ -10,20 +10,37 @@ using HrAspire.Salaries.Data.Models;
 
 using Microsoft.EntityFrameworkCore;
 
+using StackExchange.Redis;
+
 public class SalaryRequestsService : ISalaryRequestsService
 {
     private readonly SalariesDbContext dbContext;
+    private readonly IConnectionMultiplexer cacheConnectionMultiplexer;
     private readonly TimeProvider timeProvider;
 
-    public SalaryRequestsService(SalariesDbContext dbContext, TimeProvider timeProvider)
+    public SalaryRequestsService(
+        SalariesDbContext dbContext,
+        IConnectionMultiplexer cacheConnectionMultiplexer,
+        TimeProvider timeProvider)
     {
         this.dbContext = dbContext;
+        this.cacheConnectionMultiplexer = cacheConnectionMultiplexer;
         this.timeProvider = timeProvider;
     }
 
+    private IDatabase CacheDatabase => this.cacheConnectionMultiplexer.GetDatabase();
+
     public async Task<ServiceResult<int>> CreateAsync(string employeeId, decimal newSalary, string? notes, string createdById)
     {
-        // TODO: validate that employee is present
+        if (!await this.EmployeeExistsAsync(employeeId))
+        {
+            return ServiceResult<int>.Error("Employee to create salary request for doesn't exist.");
+        }
+
+        if (!await this.EmployeeExistsAsync(createdById))
+        {
+            return ServiceResult<int>.Error("Salary request creator employee doesn't exist.");
+        }
 
         var salaryRequest = new SalaryRequest
         {
@@ -82,6 +99,11 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     public async Task<ServiceResult> ApproveAsync(int id, string approvedById)
     {
+        if (!await this.EmployeeExistsAsync(approvedById))
+        {
+            return ServiceResult<int>.Error("Salary request approving employee doesn't exist.");
+        }
+
         var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
         if (salaryRequest is null)
         {
@@ -110,6 +132,11 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     public async Task<ServiceResult> RejectAsync(int id, string rejectedById)
     {
+        if (!await this.EmployeeExistsAsync(rejectedById))
+        {
+            return ServiceResult<int>.Error("Salary request rejecting employee doesn't exist.");
+        }
+
         var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
         if (salaryRequest is null)
         {
@@ -134,4 +161,7 @@ public class SalaryRequestsService : ISalaryRequestsService
 
         return ServiceResult.Success;
     }
+
+    private Task<bool> EmployeeExistsAsync(string employeeId)
+        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 }

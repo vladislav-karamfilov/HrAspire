@@ -18,6 +18,8 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 
 builder.AddAzureBlobClient("blobs");
 
+builder.AddRedisClient("cache");
+
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 builder.Services.AddScoped<IDocumentsService, DocumentsService>();
 

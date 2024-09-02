@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using HrAspire.Business.Common;
@@ -11,18 +12,28 @@ using HrAspire.Employees.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using StackExchange.Redis;
+
 public class EmployeesService : IEmployeesService
 {
     private readonly EmployeesDbContext dbContext;
     private readonly UserManager<Employee> userManager;
+    private readonly IConnectionMultiplexer cacheConnectionMultiplexer;
     private readonly TimeProvider timeProvider;
 
-    public EmployeesService(EmployeesDbContext dbContext, UserManager<Employee> userManager, TimeProvider timeProvider)
+    public EmployeesService(
+        EmployeesDbContext dbContext,
+        UserManager<Employee> userManager,
+        IConnectionMultiplexer cacheConnectionMultiplexer,
+        TimeProvider timeProvider)
     {
         this.dbContext = dbContext;
         this.userManager = userManager;
+        this.cacheConnectionMultiplexer = cacheConnectionMultiplexer;
         this.timeProvider = timeProvider;
     }
+
+    private IDatabase CacheDatabase => this.cacheConnectionMultiplexer.GetDatabase();
 
     public async Task<ServiceResult<string>> CreateAsync(
         string email,
@@ -54,20 +65,25 @@ public class EmployeesService : IEmployeesService
         {
             await using var tx = await this.dbContext.Database.BeginTransactionAsync();
 
-            var result = await this.userManager.CreateAsync(employee, password);
-            if (result.Succeeded && !string.IsNullOrWhiteSpace(role))
+            var identityResult = await this.userManager.CreateAsync(employee, password);
+            if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
             {
-                result = await this.userManager.AddToRoleAsync(employee, role);
+                identityResult = await this.userManager.AddToRoleAsync(employee, role);
             }
 
-            if (!result.Succeeded)
+            if (!identityResult.Succeeded)
             {
-                errorMessage = result.GetFirstError();
+                errorMessage = identityResult.GetFirstError();
                 return;
             }
 
             await tx.CommitAsync();
         });
+
+        await this.CacheDatabase.HashSetAsync(
+            BusinessConstants.EmployeesCacheSetName,
+            employee.Id,
+            JsonSerializer.Serialize(employee.MapToCacheModel()));
 
         var result = string.IsNullOrWhiteSpace(errorMessage)
             ? ServiceResult<string>.Success(employee.Id)
@@ -89,6 +105,11 @@ public class EmployeesService : IEmployeesService
         if (employee is null)
         {
             return ServiceResult.ErrorNotFound;
+        }
+
+        if (id == managerId)
+        {
+            return ServiceResult.Error("Employee cannot be manager of themselves.");
         }
 
         employee.FullName = fullName;
@@ -127,6 +148,11 @@ public class EmployeesService : IEmployeesService
 
             await tx.CommitAsync();
         });
+
+        await this.CacheDatabase.HashSetAsync(
+            BusinessConstants.EmployeesCacheSetName,
+            employee.Id,
+            JsonSerializer.Serialize(employee.MapToCacheModel()));
 
         var result = string.IsNullOrWhiteSpace(errorMessage)
             ? ServiceResult.Success

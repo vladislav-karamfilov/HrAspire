@@ -11,6 +11,8 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<SalariesDbContext>("salaries-db");
 
+builder.AddRedisClient("cache");
+
 builder.Services.AddScoped<ISalaryRequestsService, SalaryRequestsService>();
 
 var app = builder.Build();

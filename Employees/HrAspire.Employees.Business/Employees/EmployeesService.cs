@@ -58,34 +58,29 @@ public class EmployeesService : IEmployeesService
             CreatedOn = this.timeProvider.GetUtcNow().UtcDateTime,
         };
 
-        string? errorMessage = null;
-
-        await this.dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        if (!string.IsNullOrWhiteSpace(role))
         {
-            await using var tx = await this.dbContext.Database.BeginTransactionAsync();
+            employee.Roles.Add(new IdentityUserRole<string> { RoleId = role, UserId = employee.Id });
+        }
 
-            var identityResult = await this.userManager.CreateAsync(employee, password);
-            if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
+        await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, employee.FullName);
+
+        var identityResult = await this.userManager.CreateAsync(employee, password);
+        if (!identityResult.Succeeded)
+        {
+            try
             {
-                identityResult = await this.userManager.AddToRoleAsync(employee, role);
+                await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id);
+            }
+            catch
+            {
+                // It's not crucial to delete the hash key from cache so ignore exceptions here
             }
 
-            if (!identityResult.Succeeded)
-            {
-                errorMessage = identityResult.GetFirstError();
-                return;
-            }
+            return ServiceResult<string>.Error(identityResult.GetFirstError()!);
+        }
 
-            await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, employee.FullName);
-
-            await tx.CommitAsync();
-        });
-
-        var result = string.IsNullOrWhiteSpace(errorMessage)
-            ? ServiceResult<string>.Success(employee.Id)
-            : ServiceResult<string>.Error(errorMessage);
-
-        return result;
+        return ServiceResult<string>.Success(employee.Id);
     }
 
     public async Task<ServiceResult> UpdateAsync(
@@ -150,7 +145,7 @@ public class EmployeesService : IEmployeesService
                 await tx.CommitAsync();
             });
         }
-        catch (Exception ex) when (ex is not RedisException or RedisTimeoutException)
+        catch (Exception ex) when (ex is not RedisException)
         {
             await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, oldEmployeeFullName);
         }

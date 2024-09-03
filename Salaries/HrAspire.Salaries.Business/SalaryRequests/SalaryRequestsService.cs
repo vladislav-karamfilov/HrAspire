@@ -37,11 +37,10 @@ public class SalaryRequestsService : ISalaryRequestsService
             return ServiceResult<int>.Error("Employee to create salary request for doesn't exist.");
         }
 
-        // TODO:
-        //if (!await this.EmployeeExistsAsync(createdById))
-        //{
-        //    return ServiceResult<int>.Error("Salary request creator employee doesn't exist.");
-        //}
+        if (!await this.EmployeeExistsAsync(createdById))
+        {
+            return ServiceResult<int>.Error("Salary request creator employee doesn't exist.");
+        }
 
         var salaryRequest = new SalaryRequest
         {

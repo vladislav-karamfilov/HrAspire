@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 using HrAspire.Business.Common;
@@ -48,7 +47,7 @@ public class EmployeesService : IEmployeesService
     {
         var employee = new Employee
         {
-            UserName = Guid.NewGuid().ToString(),
+            UserName = Guid.NewGuid().ToString("N"),
             Email = email,
             FullName = fullName,
             DateOfBirth = dateOfBirth,
@@ -77,13 +76,10 @@ public class EmployeesService : IEmployeesService
                 return;
             }
 
+            await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, employee.FullName);
+
             await tx.CommitAsync();
         });
-
-        await this.CacheDatabase.HashSetAsync(
-            BusinessConstants.EmployeesCacheSetName,
-            employee.Id,
-            JsonSerializer.Serialize(employee.MapToCacheModel()));
 
         var result = string.IsNullOrWhiteSpace(errorMessage)
             ? ServiceResult<string>.Success(employee.Id)
@@ -112,6 +108,7 @@ public class EmployeesService : IEmployeesService
             return ServiceResult.Error("Employee cannot be manager of themselves.");
         }
 
+        var oldEmployeeFullName = employee.FullName;
         employee.FullName = fullName;
         employee.DateOfBirth = dateOfBirth;
         employee.Position = position;
@@ -122,37 +119,41 @@ public class EmployeesService : IEmployeesService
 
         string? errorMessage = null;
 
-        await this.dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        try
         {
-            await using var tx = await this.dbContext.Database.BeginTransactionAsync();
-
-            if (currentRole != role)
+            await this.dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
             {
-                var identityResult = string.IsNullOrWhiteSpace(currentRole)
-                    ? IdentityResult.Success
-                    : await this.userManager.RemoveFromRoleAsync(employee, currentRole);
+                await using var tx = await this.dbContext.Database.BeginTransactionAsync();
 
-                if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
+                if (currentRole != role)
                 {
-                    identityResult = await this.userManager.AddToRoleAsync(employee, role);
+                    var identityResult = string.IsNullOrWhiteSpace(currentRole)
+                        ? IdentityResult.Success
+                        : await this.userManager.RemoveFromRoleAsync(employee, currentRole);
+
+                    if (identityResult.Succeeded && !string.IsNullOrWhiteSpace(role))
+                    {
+                        identityResult = await this.userManager.AddToRoleAsync(employee, role);
+                    }
+
+                    if (!identityResult.Succeeded)
+                    {
+                        errorMessage = identityResult.GetFirstError();
+                        return;
+                    }
                 }
 
-                if (!identityResult.Succeeded)
-                {
-                    errorMessage = identityResult.GetFirstError();
-                    return;
-                }
-            }
+                await this.dbContext.SaveChangesAsync();
 
-            await this.dbContext.SaveChangesAsync();
+                await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, employee.FullName);
 
-            await tx.CommitAsync();
-        });
-
-        await this.CacheDatabase.HashSetAsync(
-            BusinessConstants.EmployeesCacheSetName,
-            employee.Id,
-            JsonSerializer.Serialize(employee.MapToCacheModel()));
+                await tx.CommitAsync();
+            });
+        }
+        catch (Exception ex) when (ex is not RedisException or RedisTimeoutException)
+        {
+            await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, oldEmployeeFullName);
+        }
 
         var result = string.IsNullOrWhiteSpace(errorMessage)
             ? ServiceResult.Success

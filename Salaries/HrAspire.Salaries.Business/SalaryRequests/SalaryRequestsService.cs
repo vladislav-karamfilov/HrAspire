@@ -89,7 +89,7 @@ public class SalaryRequestsService : ISalaryRequestsService
 
         salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
         salaryRequest.CreatedByFullName = employeeNames[1] ?? string.Empty;
-        salaryRequest.CreatedByFullName = employeeNames[2];
+        salaryRequest.StatusChangedByFullName = employeeNames[2];
 
         return salaryRequest;
     }
@@ -220,13 +220,14 @@ public class SalaryRequestsService : ISalaryRequestsService
     }
 
     private Task<bool> EmployeeExistsAsync(string employeeId)
-        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
+        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeeNamesCacheSetName, employeeId);
 
-    private async Task<string[]> GetEmployeeNamesAsync(params string?[] employeeIds)
+    private async Task<string?[]> GetEmployeeNamesAsync(params string?[] employeeIds)
     {
-        await Task.CompletedTask;
+        var employeeNames = await this.CacheDatabase.HashGetAsync(
+            BusinessConstants.EmployeeNamesCacheSetName,
+            employeeIds.Select(e => (RedisValue)(e ?? string.Empty)).ToArray());
 
-        // TODO:
-        return employeeIds.Select(_ => "TODO").ToArray();
+        return employeeNames.Select(n => n == RedisValue.Null ? null : (string?)n).ToArray();
     }
 }

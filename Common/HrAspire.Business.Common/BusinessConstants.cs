@@ -5,5 +5,5 @@ public static class BusinessConstants
     public const string ManagerRole = "Manager";
     public const string HrManagerRole = "HrManager";
 
-    public const string EmployeesCacheSetName = "employees";
+    public const string EmployeeNamesCacheSetName = "employee-names";
 }

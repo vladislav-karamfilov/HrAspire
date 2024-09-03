@@ -17,7 +17,9 @@
     <PropertyColumn Property="@(e => e.Email)" />
     <PropertyColumn Property="@(e => e.Position)" />
     <PropertyColumn Property="@(e => e.Department)" />
-    <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created on" Format="@Constants.DateTimeFormat" />
+    <TemplateColumn Title="Created on">
+        @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
+    </TemplateColumn>
 </QuickGrid>
 
 <Paginator State="Pagination"></Paginator>

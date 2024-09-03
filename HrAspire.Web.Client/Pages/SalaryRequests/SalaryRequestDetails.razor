@@ -14,18 +14,30 @@
         {
             if (SalaryRequest.Status == SalaryRequestStatus.Pending)
             {
-                <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#reject-salary-request-modal">
+                <button type="button"
+                        class="btn btn-danger float-end ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reject-salary-request-modal">
+
                     Reject
                 </button>
 
-                <button type="button" class="btn btn-primary float-end ms-2" data-bs-toggle="modal" data-bs-target="#approve-salary-request-modal">
+                <button type="button"
+                        class="btn btn-primary float-end ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#approve-salary-request-modal">
+
                     Approve
                 </button>
             }
         }
         else
         {
-            <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-salary-request-modal">
+            <button type="button"
+                    class="btn btn-danger float-end ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#delete-salary-request-modal">
+
                 Delete
             </button>
 
@@ -81,7 +93,7 @@
                         </tr>
                         <tr>
                             <td>Status on</td>
-                            <td>@SalaryRequest.StatusChangedOn?.ToString(Constants.DateTimeFormat)</td>
+                            <td>@SalaryRequest.StatusChangedOn?.ToLocalTime().ToString(Constants.DateTimeFormat)</td>
                         </tr>
                         <tr>
                             <td>Status by</td>
@@ -94,15 +106,12 @@
                         </tr>
                         <tr>
                             <td>Created on</td>
-                            <td>@SalaryRequest.CreatedOn.ToString(Constants.DateTimeFormat)</td>
+                            <td>@SalaryRequest.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)</td>
                         </tr>
                         <tr>
                             <td>Created by</td>
                             <td>
-                                @if (!string.IsNullOrWhiteSpace(SalaryRequest.CreatedById))
-                                {
-                                    <a href="/employees/@SalaryRequest.CreatedById">@SalaryRequest.CreatedByFullName</a>
-                                }
+                                <a href="/employees/@SalaryRequest.CreatedById">@SalaryRequest.CreatedByFullName</a>
                             </td>
                         </tr>
                     </tbody>

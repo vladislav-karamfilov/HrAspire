@@ -52,7 +52,7 @@
                         </tr>
                         <tr>
                             <td>Created on</td>
-                            <td>@Document.CreatedOn.ToString(Constants.DateTimeFormat)</td>
+                            <td>@Document.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)</td>
                         </tr>
                         <tr>
                             <td>Created by</td>

@@ -102,4 +102,26 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
 
         return new Empty();
     }
+
+    public override async Task<Empty> Approve(ChangeStatusOfSalaryRequestRequest request, ServerCallContext context)
+    {
+        var result = await this.salaryRequestsService.ApproveAsync(request.Id, request.CurrentEmployeeId);
+        if (result.IsError)
+        {
+            throw result.ToRpcException();
+        }
+
+        return new Empty();
+    }
+
+    public override async Task<Empty> Reject(ChangeStatusOfSalaryRequestRequest request, ServerCallContext context)
+    {
+        var result = await this.salaryRequestsService.RejectAsync(request.Id, request.CurrentEmployeeId);
+        if (result.IsError)
+        {
+            throw result.ToRpcException();
+        }
+
+        return new Empty();
+    }
 }

@@ -122,24 +122,26 @@ public static class SalaryRequestsEndpoints
         group
             .MapPost(
                 "/SalaryRequests/{id:int}/Approval",
-                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id, ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        await Task.CompletedTask;
+                        await salaryRequestsClient.ApproveAsync(
+                            new ChangeStatusOfSalaryRequestRequest { Id = id, CurrentEmployeeId = user.GetId()! });
 
-                        throw new NotImplementedException();
+                        return Results.Ok();
                     }))
             .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
         group
             .MapPost(
                 "/SalaryRequests/{id:int}/Rejection",
-                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id, ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        await Task.CompletedTask;
+                        await salaryRequestsClient.RejectAsync(
+                            new ChangeStatusOfSalaryRequestRequest { Id = id, CurrentEmployeeId = user.GetId()! });
 
-                        throw new NotImplementedException();
+                        return Results.Ok();
                     }))
             .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 

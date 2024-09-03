@@ -15,6 +15,8 @@ service SalaryRequests {
 	rpc Create(CreateSalaryRequestRequest) returns (CreateSalaryRequestResponse);
 	rpc Update(UpdateSalaryRequestRequest) returns (google.protobuf.Empty);
 	rpc Delete(DeleteSalaryRequestRequest) returns (google.protobuf.Empty);
+	rpc Approve(ChangeStatusOfSalaryRequestRequest) returns (google.protobuf.Empty);
+	rpc Reject(ChangeStatusOfSalaryRequestRequest) returns (google.protobuf.Empty);
 }
 
 message ListSalaryRequestsRequest {
@@ -91,6 +93,11 @@ message UpdateSalaryRequestRequest {
 
 message DeleteSalaryRequestRequest {
 	int32 id = 1;
+}
+
+message ChangeStatusOfSalaryRequestRequest {
+	int32 id = 1;
+	string currentEmployeeId = 2;
 }
 
 message DecimalValue {

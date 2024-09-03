@@ -1,6 +1,6 @@
 ﻿@page "/salary-requests/{id:int}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
 
 @inject SalaryRequestsApiClient SalaryRequestsApiClient
 @inject NavigationManager NavigationManager
@@ -8,15 +8,30 @@
 <h1>
     Salary Request - @SalaryRequest?.EmployeeFullName
 
-    @* TODO: *@
-    @* @if (SalaryRequest is not null)
+    @if (SalaryRequest is not null)
     {
-        <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-employee-modal">
-            Delete
-        </button>
+        if (IsUserHrManager)
+        {
+            if (SalaryRequest.Status == SalaryRequestStatus.Pending)
+            {
+                <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#reject-salary-request-modal">
+                    Reject
+                </button>
 
-        <a href="/employee-update/@Employee.Id" class="btn btn-primary float-end">Update</a>
-    } *@
+                <button type="button" class="btn btn-primary float-end ms-2" data-bs-toggle="modal" data-bs-target="#approve-salary-request-modal">
+                    Approve
+                </button>
+            }
+        }
+        else
+        {
+            <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-salary-request-modal">
+                Delete
+            </button>
+
+            <a href="/salary-request-update/@SalaryRequest.Id" class="btn btn-primary float-end">Update</a>
+        }
+    }
 </h1>
 <hr />
 
@@ -24,6 +39,16 @@
 
 @if (SalaryRequest is not null)
 {
+    <Modal Id="approve-salary-request-modal"
+           Title="Approve Salary Request"
+           Body="Are you sure you want to approve this salary request?"
+           Confirmed="ApproveSalaryRequestAsync" />
+
+    <Modal Id="reject-salary-request-modal"
+           Title="Reject Salary Request"
+           Body="Are you sure you want to reject this salary request?"
+           Confirmed="RejectSalaryRequestAsync" />
+
     <Modal Id="delete-salary-request-modal"
            Title="Delete Salary Request"
            Body="Are you sure you want to delete this salary request?"
@@ -50,7 +75,9 @@
                         </tr>
                         <tr>
                             <td>Status</td>
-                            <td>@SalaryRequest.Status</td>
+                            <td>
+                                <span class="@StatusCssClass">@SalaryRequest.Status</span>
+                            </td>
                         </tr>
                         <tr>
                             <td>Status on</td>
@@ -89,11 +116,32 @@
     [Parameter]
     public int Id { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    private bool IsUserHrManager { get; set; }
+
     private SalaryRequestDetailsResponseModel? SalaryRequest { get; set; }
 
     private string? ErrorMessage { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    private string? StatusCssClass
+        => SalaryRequest?.Status switch
+        {
+            SalaryRequestStatus.Approved => "badge bg-success",
+            SalaryRequestStatus.Rejected => "badge bg-danger",
+            _ => "badge bg-secondary",
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
+    }
+
+    protected override Task OnParametersSetAsync() => this.LoadSalaryRequestAsync();
+
+    private async Task LoadSalaryRequestAsync()
     {
         this.ErrorMessage = null;
 
@@ -101,6 +149,36 @@
         if (this.SalaryRequest is null)
         {
             this.ErrorMessage = "No such salary request found.";
+        }
+    }
+
+    private async Task ApproveSalaryRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.SalaryRequestsApiClient.ApproveSalaryRequestAsync(this.Id);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            await this.LoadSalaryRequestAsync();
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+
+    private async Task RejectSalaryRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.SalaryRequestsApiClient.RejectSalaryRequestAsync(this.Id);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            await this.LoadSalaryRequestAsync();
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
         }
     }
 

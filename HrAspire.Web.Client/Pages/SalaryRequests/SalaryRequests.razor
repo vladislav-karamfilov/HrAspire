@@ -17,7 +17,7 @@
         <a href="/salary-requests/@context.Id">@context.NewSalary</a>
     </TemplateColumn>
     <PropertyColumn Property="@(e => e.Status)" />
-    <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created" Format="@Constants.DateTimeFormat" />
+    <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created on" Format="@Constants.DateTimeFormat" />
 </QuickGrid>
 
 <Paginator State="Pagination"></Paginator>
@@ -35,7 +35,6 @@
 
         var data = await this.SalaryRequestsApiClient.GetSalaryRequestsAsync(pageNumber, this.Pagination.ItemsPerPage);
 
-        var result = new GridItemsProviderResult<SalaryRequestResponseModel> { Items = data.SalaryRequests, TotalItemCount = data.Total, };
-        return result;
+        return new GridItemsProviderResult<SalaryRequestResponseModel> { Items = data.SalaryRequests, TotalItemCount = data.Total, };
     }
 }

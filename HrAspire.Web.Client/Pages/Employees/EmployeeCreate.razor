@@ -71,7 +71,7 @@
                         @foreach (var manager in Managers)
                         {
                             <option value="@manager.Id">
-                                @manager.Email [@manager.FullName]
+                                @manager.Email - @manager.FullName
 
                                 @if (!string.IsNullOrWhiteSpace(manager.Department))
                                 {

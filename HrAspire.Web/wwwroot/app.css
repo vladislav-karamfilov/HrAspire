@@ -50,6 +50,6 @@ h1:focus {
     border-color: #929292;
 }
 
-textarea {
-    height: 100px;
+.floating-label-textarea {
+    height: 100px !important;
 }

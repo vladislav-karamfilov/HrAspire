@@ -4,6 +4,7 @@
 
 @inject EmployeesApiClient EmployeesApiClient
 @inject DocumentsApiClient DocumentsApiClient
+@inject SalaryRequestsApiClient SalaryRequestsApiClient
 @inject NavigationManager NavigationManager
 
 <h1>
@@ -99,10 +100,26 @@
             <a href="/documents/@context.Id">@context.Title</a>
         </TemplateColumn>
         <PropertyColumn Property="@(e => e.FileName)" Title="File Name" />
-        <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created" Format="@Constants.DateTimeFormat" />
+        <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created on" Format="@Constants.DateTimeFormat" />
     </QuickGrid>
 
     <Paginator State="DocumentsPagination"></Paginator>
+
+    <h3 class="mt-5">
+        Salary Requests
+        <a href="/salary-request-create/@Id" class="btn btn-primary float-end">Create</a>
+    </h3>
+    <hr />
+
+    <QuickGrid ItemsProvider="GridSalaryRequestsProvider" Pagination="SalaryRequestsPagination" Class="table table-bordered table-striped">
+        <TemplateColumn Title="New Salary">
+            <a href="/salary-requests/@context.Id">@context.NewSalary</a>
+        </TemplateColumn>
+        <PropertyColumn Property="@(e => e.Status)" />
+        <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created on" Format="@Constants.DateTimeFormat" />
+    </QuickGrid>
+
+    <Paginator State="SalaryRequestsPagination"></Paginator>
 }
 
 @code {
@@ -114,9 +131,16 @@
     private GridItemsProvider<DocumentResponseModel>? GridDocumentsProvider { get; set; }
     private PaginationState DocumentsPagination { get; set; } = new() { ItemsPerPage = 5 };
 
+    private GridItemsProvider<SalaryRequestResponseModel>? GridSalaryRequestsProvider { get; set; }
+    private PaginationState SalaryRequestsPagination { get; set; } = new() { ItemsPerPage = 5 };
+
     private string? ErrorMessage { get; set; }
 
-    protected override void OnInitialized() => this.GridDocumentsProvider = this.GetGridDocumentsAsync;
+    protected override void OnInitialized()
+    {
+        this.GridDocumentsProvider = this.GetGridDocumentsAsync;
+        this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -151,7 +175,19 @@
 
         var data = await this.DocumentsApiClient.GetEmployeeDocumentsAsync(this.Id, pageNumber, this.DocumentsPagination.ItemsPerPage);
 
-        var result = new GridItemsProviderResult<DocumentResponseModel> { Items = data.Documents, TotalItemCount = data.Total, };
-        return result;
+        return new GridItemsProviderResult<DocumentResponseModel> { Items = data.Documents, TotalItemCount = data.Total, };
+    }
+
+    private async ValueTask<GridItemsProviderResult<SalaryRequestResponseModel>> GetGridSalaryRequestsAsync(
+        GridItemsProviderRequest<SalaryRequestResponseModel> request)
+    {
+        var pageNumber = request.StartIndex / this.SalaryRequestsPagination.ItemsPerPage;
+
+        var data = await this.SalaryRequestsApiClient.GetEmployeeSalaryRequestsAsync(
+            this.Id,
+            pageNumber,
+            this.SalaryRequestsPagination.ItemsPerPage);
+
+        return new GridItemsProviderResult<SalaryRequestResponseModel> { Items = data.SalaryRequests, TotalItemCount = data.Total, };
     }
 }

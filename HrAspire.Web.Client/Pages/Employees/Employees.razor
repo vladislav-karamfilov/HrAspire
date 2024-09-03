@@ -17,7 +17,7 @@
     <PropertyColumn Property="@(e => e.Email)" />
     <PropertyColumn Property="@(e => e.Position)" />
     <PropertyColumn Property="@(e => e.Department)" />
-    <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created" Format="@Constants.DateTimeFormat" />
+    <PropertyColumn Property="@(e => e.CreatedOn)" Title="Created on" Format="@Constants.DateTimeFormat" />
 </QuickGrid>
 
 <Paginator State="Pagination"></Paginator>
@@ -35,7 +35,6 @@
 
         var data = await this.EmployeesApiClient.GetEmployeesAsync(pageNumber, this.Pagination.ItemsPerPage);
 
-        var result = new GridItemsProviderResult<EmployeeResponseModel> { Items = data.Employees, TotalItemCount = data.Total, };
-        return result;
+        return new GridItemsProviderResult<EmployeeResponseModel> { Items = data.Employees, TotalItemCount = data.Total, };
     }
 }

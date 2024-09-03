@@ -19,12 +19,32 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         this.salaryRequestsService = salaryRequestsService;
     }
 
-    public override async Task<GetSalaryRequestsResponse> List(GetSalaryRequestsRequest request, ServerCallContext context)
+    public override async Task<ListSalaryRequestsResponse> List(ListSalaryRequestsRequest request, ServerCallContext context)
     {
         var salaryRequests = await this.salaryRequestsService.ListAsync(request.PageNumber, request.PageSize);
         var total = await this.salaryRequestsService.GetCountAsync();
 
-        var response = new GetSalaryRequestsResponse { Total = total };
+        var response = new ListSalaryRequestsResponse { Total = total };
+        foreach (var salaryRequest in salaryRequests)
+        {
+            response.SalaryRequests.Add(salaryRequest.MapToSalaryRequestGrpcModel());
+        }
+
+        return response;
+    }
+
+    public override async Task<ListSalaryRequestsResponse> ListEmployeeSalaryRequests(
+        ListEmployeeSalaryRequestsRequest request,
+        ServerCallContext context)
+    {
+        var salaryRequests = await this.salaryRequestsService.ListEmployeeSalaryRequestsAsync(
+            request.EmployeeId,
+            request.PageNumber,
+            request.PageSize);
+
+        var total = await this.salaryRequestsService.GetEmployeeSalaryRequestsCountAsync(request.EmployeeId);
+
+        var response = new ListSalaryRequestsResponse { Total = total };
         foreach (var salaryRequest in salaryRequests)
         {
             response.SalaryRequests.Add(salaryRequest.MapToSalaryRequestGrpcModel());

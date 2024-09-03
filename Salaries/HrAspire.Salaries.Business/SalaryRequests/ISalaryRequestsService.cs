@@ -6,7 +6,11 @@ public interface ISalaryRequestsService
 {
     Task<IEnumerable<SalaryRequestServiceModel>> ListAsync(int pageNumber, int pageSize);
 
+    Task<IEnumerable<SalaryRequestServiceModel>> ListEmployeeSalaryRequestsAsync(string employeeId, int pageNumber, int pageSize);
+
     Task<int> GetCountAsync();
+
+    Task<int> GetEmployeeSalaryRequestsCountAsync(string employeeId);
 
     Task<SalaryRequestDetailsServiceModel?> GetAsync(int id);
 

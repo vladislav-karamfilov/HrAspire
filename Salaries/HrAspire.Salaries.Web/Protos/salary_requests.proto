@@ -9,23 +9,30 @@ import "google/protobuf/wrappers.proto";
 package salaries;
 
 service SalaryRequests {
-	rpc List(GetSalaryRequestsRequest) returns (GetSalaryRequestsResponse);
+	rpc List(ListSalaryRequestsRequest) returns (ListSalaryRequestsResponse);
+	rpc ListEmployeeSalaryRequests(ListEmployeeSalaryRequestsRequest) returns (ListSalaryRequestsResponse);
 	rpc Get(GetSalaryRequestRequest) returns (GetSalaryRequestResponse);
 	rpc Create(CreateSalaryRequestRequest) returns (CreateSalaryRequestResponse);
 	rpc Update(UpdateSalaryRequestRequest) returns (google.protobuf.Empty);
 	rpc Delete(DeleteSalaryRequestRequest) returns (google.protobuf.Empty);
 }
 
-message GetSalaryRequestsRequest {
+message ListSalaryRequestsRequest {
 	int32 pageNumber = 1;
 	int32 pageSize = 2;
+}
+
+message ListEmployeeSalaryRequestsRequest {
+	string employeeId = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
 }
 
 message GetSalaryRequestRequest {
 	int32 id = 1;
 }
 
-message GetSalaryRequestsResponse {
+message ListSalaryRequestsResponse {
 	repeated SalaryRequestModel salaryRequests = 1;
 	int32 total = 2;
 }

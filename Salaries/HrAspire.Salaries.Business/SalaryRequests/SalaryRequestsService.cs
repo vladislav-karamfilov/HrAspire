@@ -82,8 +82,14 @@ public class SalaryRequestsService : ISalaryRequestsService
             return null;
         }
 
-        salaryRequest.EmployeeFullName = (await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId))[0] ?? string.Empty;
-        salaryRequest.CreatedByFullName = (await this.GetEmployeeNamesAsync(salaryRequest.CreatedById))[0] ?? string.Empty;
+        var employeeNames = await this.GetEmployeeNamesAsync(
+            salaryRequest.EmployeeId,
+            salaryRequest.CreatedById,
+            salaryRequest.StatusChangedById);
+
+        salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
+        salaryRequest.CreatedByFullName = employeeNames[1] ?? string.Empty;
+        salaryRequest.CreatedByFullName = employeeNames[2];
 
         return salaryRequest;
     }
@@ -92,13 +98,48 @@ public class SalaryRequestsService : ISalaryRequestsService
     {
         PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
-        return await this.dbContext.SalaryRequests
+        var result = await this.dbContext.SalaryRequests
             .OrderByDescending(d => d.CreatedOn)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ProjectToServiceModel()
             .ToListAsync();
+
+        foreach (var salaryRequest in result)
+        {
+            var employeeNames = await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId);
+            salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
+        }
+
+        return result;
     }
+
+    public async Task<IEnumerable<SalaryRequestServiceModel>> ListEmployeeSalaryRequestsAsync(
+        string employeeId,
+        int pageNumber,
+        int pageSize)
+    {
+        PaginationHelper.Normalize(ref pageNumber, ref pageSize);
+
+        var result = await this.dbContext.SalaryRequests
+            .Where(e => e.EmployeeId == employeeId)
+            .OrderByDescending(d => d.CreatedOn)
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
+            .ProjectToServiceModel()
+            .ToListAsync();
+
+        foreach (var salaryRequest in result)
+        {
+            var employeeNames = await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId);
+            salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
+        }
+
+        return result;
+    }
+
+    public Task<int> GetEmployeeSalaryRequestsCountAsync(string employeeId)
+        => this.dbContext.SalaryRequests.CountAsync(r => r.EmployeeId == employeeId);
 
     public Task<int> GetCountAsync() => this.dbContext.SalaryRequests.CountAsync();
 
@@ -181,11 +222,11 @@ public class SalaryRequestsService : ISalaryRequestsService
     private Task<bool> EmployeeExistsAsync(string employeeId)
         => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 
-    private async Task<string[]> GetEmployeeNamesAsync(params string[] employeeIds)
+    private async Task<string[]> GetEmployeeNamesAsync(params string?[] employeeIds)
     {
         await Task.CompletedTask;
 
         // TODO:
-        return new string[] { "test" };
+        return employeeIds.Select(_ => "TODO").ToArray();
     }
 }

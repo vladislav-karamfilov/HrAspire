@@ -54,6 +54,7 @@ public static class EmployeesEndpoints
                     }))
             .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
+        // TODO: Remove if unused
         group
             .MapGet(
                 "/Managed",

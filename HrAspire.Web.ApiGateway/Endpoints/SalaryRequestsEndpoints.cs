@@ -24,7 +24,7 @@ public static class SalaryRequestsEndpoints
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
                         var salaryRequestsResponse = await salaryRequestsClient.ListAsync(
-                            new GetSalaryRequestsRequest { PageNumber = pageNumber, PageSize = pageSize });
+                            new ListSalaryRequestsRequest { PageNumber = pageNumber, PageSize = pageSize });
 
                         var salaryRequests = salaryRequestsResponse.SalaryRequests.Select(e => e.MapToResponseModel()).ToList();
 
@@ -41,9 +41,17 @@ public static class SalaryRequestsEndpoints
                     [FromQuery] int pageSize = 10)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        await Task.CompletedTask;
+                        var salaryRequestsResponse = await salaryRequestsClient.ListEmployeeSalaryRequestsAsync(
+                            new ListEmployeeSalaryRequestsRequest
+                            {
+                                EmployeeId = employeeId,
+                                PageNumber = pageNumber,
+                                PageSize = pageSize,
+                            });
 
-                        throw new NotImplementedException();
+                        var salaryRequests = salaryRequestsResponse.SalaryRequests.Select(e => e.MapToResponseModel()).ToList();
+
+                        return Results.Ok(new SalaryRequestsResponseModel(salaryRequests, salaryRequestsResponse.Total));
                     }));
         // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
 

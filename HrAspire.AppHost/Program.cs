@@ -1,21 +1,21 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 // TODO: extract resource names into a constants class in ServiceDefaults
-var postgres = builder.AddPostgres("postgres").WithPgAdmin().WithDataVolume("db-data");
+var postgres = builder.AddPostgres("postgres").WithPgAdmin().WithDataVolume("HrAspire-db-data");
 var employeesDb = postgres.AddDatabase("employees-db", "employees");
 var salariesDb = postgres.AddDatabase("salaries-db", "salaries");
 var vacationsDb = postgres.AddDatabase("vacations-db", "vacations");
 
 var azureStorage = builder
     .AddAzureStorage("azure-storage")
-    .RunAsEmulator(c => c.WithDataVolume("blob-data").WithImageTag("3.31.0")); // TODO: Remove tag specification at some point
+    .RunAsEmulator(c => c.WithDataVolume("HrAspire-blob-data").WithImageTag("3.31.0")); // TODO: Remove tag specification at some point
 
 var blobs = azureStorage.AddBlobs("blobs");
 
 var cache = builder
     .AddGarnet("cache")
     // TODO: .WithDataVolume("cache-data") // workaround for https://github.com/dotnet/aspire/issues/4870
-    .WithVolume("cache-data", "/data")
+    .WithVolume("HrAspire-cache-data", "/data")
     .WithArgs("--checkpointdir", "/data/checkpoints", "--recover", "--aof", "--aof-commit-freq", "60000");
 
 var messaging = builder
@@ -24,7 +24,7 @@ var messaging = builder
         builder.AddParameter("messaging-user", secret: true),
         builder.AddParameter("messaging-password", secret: true))
     .WithManagementPlugin()
-    .WithDataVolume("messaging-data");
+    .WithDataVolume("HrAspire-messaging-data");
 
 var employeesService = builder
     .AddProject<Projects.HrAspire_Employees_Web>("employees-service")

@@ -3,6 +3,7 @@ using System;
 using HrAspire.Salaries.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HrAspire.DataSeeder.Migrations.SalariesDb
 {
     [DbContext(typeof(SalariesDbContext))]
-    partial class SalariesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240905075054_RenamingInOutboxMessage")]
+    partial class RenamingInOutboxMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,15 +36,18 @@ namespace HrAspire.DataSeeder.Migrations.SalariesDb
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsSent")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Payload")
+                    b.Property<string>("Data")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("SentOn")
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ProcessedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProcessedResult")
+                        .HasColumnType("text");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -49,7 +55,7 @@ namespace HrAspire.DataSeeder.Migrations.SalariesDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsSent");
+                    b.HasIndex("IsProcessed");
 
                     b.ToTable("OutboxMessages");
                 });

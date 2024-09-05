@@ -23,7 +23,7 @@ public class SalariesDbContext : DbContext
 
         modelBuilder.Entity<SalaryRequest>().Property(r => r.NewSalary).HasPrecision(precision: 18, scale: 6);
 
-        modelBuilder.Entity<OutboxMessage>().HasIndex(m => m.IsProcessed);
+        modelBuilder.Entity<OutboxMessage>().HasIndex(m => m.IsSent);
 
         modelBuilder
             .SetUtcKindToDateTimeProperties()

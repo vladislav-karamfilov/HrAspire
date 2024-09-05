@@ -1,7 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 // TODO: extract resource names into a constants class in ServiceDefaults
-var postgres = builder.AddPostgres("postgres").WithDataVolume("db-data").WithPgAdmin();
+var postgres = builder.AddPostgres("postgres").WithPgAdmin().WithDataVolume("db-data");
 var employeesDb = postgres.AddDatabase("employees-db", "employees");
 var salariesDb = postgres.AddDatabase("salaries-db", "salaries");
 var vacationsDb = postgres.AddDatabase("vacations-db", "vacations");
@@ -18,16 +18,26 @@ var cache = builder
     .WithVolume("cache-data", "/data")
     .WithArgs("--checkpointdir", "/data/checkpoints", "--recover", "--aof", "--aof-commit-freq", "60000");
 
+var messaging = builder
+    .AddRabbitMQ(
+        "messaging",
+        builder.AddParameter("messaging-user", secret: true),
+        builder.AddParameter("messaging-password", secret: true))
+    .WithManagementPlugin()
+    .WithDataVolume("messaging-data");
+
 var employeesService = builder
     .AddProject<Projects.HrAspire_Employees_Web>("employees-service")
     .WithReference(employeesDb)
     .WithReference(blobs)
-    .WithReference(cache);
+    .WithReference(cache)
+    .WithReference(messaging);
 
 var salariesService = builder
     .AddProject<Projects.HrAspire_Salaries_Web>("salaries-service")
     .WithReference(salariesDb)
-    .WithReference(cache);
+    .WithReference(cache)
+    .WithReference(messaging);
 
 var apiGateway = builder
     .AddProject<Projects.HrAspire_Web_ApiGateway>("api-gateway")

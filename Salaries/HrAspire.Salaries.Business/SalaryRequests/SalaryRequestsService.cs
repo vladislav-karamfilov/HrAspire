@@ -1,9 +1,12 @@
 ﻿namespace HrAspire.Salaries.Business.SalaryRequests;
 
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using HrAspire.Business.Common;
+using HrAspire.Business.Common.Events;
+using HrAspire.Data.Common.Models;
 using HrAspire.Salaries.Business.Mappers;
 using HrAspire.Salaries.Data;
 using HrAspire.Salaries.Data.Models;
@@ -176,11 +179,19 @@ public class SalaryRequestsService : ISalaryRequestsService
             return ServiceResult.Error("Salary request has already been rejected.");
         }
 
+        var utcNow = this.timeProvider.GetUtcNow().UtcDateTime;
+
         salaryRequest.Status = SalaryRequestStatus.Approved;
-        salaryRequest.StatusChangedOn = this.timeProvider.GetUtcNow().UtcDateTime;
+        salaryRequest.StatusChangedOn = utcNow;
         salaryRequest.StatusChangedById = approvedById;
 
-        // TODO: add outbox message
+        this.dbContext.OutboxMessages.Add(new OutboxMessage
+        {
+            EventType = typeof(SalaryRequestApprovedEvent).FullName!,
+            EventData = JsonSerializer.Serialize(new SalaryRequestApprovedEvent(salaryRequest.EmployeeId, salaryRequest.NewSalary, utcNow)),
+            CreatedOn = utcNow,
+        });
+
         await this.dbContext.SaveChangesAsync();
 
         return ServiceResult.Success;

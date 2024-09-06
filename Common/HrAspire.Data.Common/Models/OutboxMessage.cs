@@ -10,7 +10,9 @@ public class OutboxMessage
 
     public DateTime CreatedOn { get; set; }
 
-    public bool IsSent { get; set; }
+    public bool IsProcessed { get; set; }
 
-    public DateTime? SentOn { get; set; }
+    public DateTime? ProcessedOn { get; set; }
+
+    public string? ProcessedResult { get; set; }
 }

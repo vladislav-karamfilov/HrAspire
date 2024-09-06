@@ -30,6 +30,12 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, configurator) =>
     {
+        configurator.UseMessageRetry(
+            retry => retry.Incremental(
+                retryLimit: 5,
+                initialInterval: TimeSpan.FromMilliseconds(500),
+                intervalIncrement: TimeSpan.FromMilliseconds(500)));
+
         var configuration = context.GetRequiredService<IConfiguration>();
         var host = configuration.GetConnectionString("messaging");
         configurator.Host(host);

@@ -35,4 +35,6 @@ public interface IEmployeesService
         string? managerId);
 
     Task<ServiceResult> DeleteAsync(string id);
+
+    Task<ServiceResult> UpdateSalaryAsync(string id, decimal newSalary);
 }

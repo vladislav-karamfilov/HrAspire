@@ -113,12 +113,12 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
                     message.Type,
                     ex);
 
-                errorMessage = $"Error deserializing payload to {message.Type}: {ex}";
+                errorMessage = $"Error deserializing payload: {ex}";
             }
         }
         else
         {
-            errorMessage = "Unknown message type.";
+            errorMessage = "Unknown message type";
         }
 
         if (string.IsNullOrEmpty(errorMessage))

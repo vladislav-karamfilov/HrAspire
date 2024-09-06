@@ -214,4 +214,18 @@ public class EmployeesService : IEmployeesService
 
     public async Task<IEnumerable<EmployeeServiceModel>> ListManagedEmployeesAsync(string managerId)
         => await this.dbContext.Employees.Where(e => e.ManagerId == managerId).ProjectToServiceModel().ToListAsync();
+
+    public async Task<ServiceResult> UpdateSalaryAsync(string id, decimal newSalary)
+    {
+        if (newSalary < 0)
+        {
+            return ServiceResult.Error("New employee salary cannot be negative");
+        }
+
+        var updatedCount = await this.dbContext.Employees
+            .Where(e => e.Id == id)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(e => e.Salary, newSalary));
+
+        return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+    }
 }

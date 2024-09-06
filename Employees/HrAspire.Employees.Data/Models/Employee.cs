@@ -16,6 +16,8 @@ public class Employee : IdentityUser, IDeletableEntity
     // TODO: non-nullable
     public string? Position { get; set; } = default!;
 
+    public decimal Salary { get; set; }
+
     public string? ManagerId { get; set; }
 
     public Employee? Manager { get; set; }

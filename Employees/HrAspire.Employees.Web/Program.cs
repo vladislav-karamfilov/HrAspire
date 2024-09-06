@@ -5,6 +5,8 @@ using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web.Services;
 using HrAspire.Web.Common;
 
+using MassTransit;
+
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,21 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
 builder.AddAzureBlobClient("blobs");
 
 builder.AddRedisClient("cache");
+
+builder.Services.AddMassTransit(x =>
+{
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.AddConsumers(typeof(Program).Assembly);
+
+    x.UsingRabbitMq((context, configurator) =>
+    {
+        var configuration = context.GetRequiredService<IConfiguration>();
+        var host = configuration.GetConnectionString("messaging");
+        configurator.Host(host);
+        configurator.ConfigureEndpoints(context);
+    });
+});
 
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 builder.Services.AddScoped<IDocumentsService, DocumentsService>();

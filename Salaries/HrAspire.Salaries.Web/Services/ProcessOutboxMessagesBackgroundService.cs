@@ -1,35 +1,22 @@
 ﻿namespace HrAspire.Salaries.Web.Services;
 
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-using HrAspire.Business.Common.Events;
-using HrAspire.Data.Common.Models;
-using HrAspire.Salaries.Data;
-
-using MassTransit;
-
-using Microsoft.EntityFrameworkCore;
+using HrAspire.Salaries.Business.OutboxMessages;
 
 public class ProcessOutboxMessagesBackgroundService : BackgroundService
 {
     private static readonly TimeSpan TimeToWaitBeforeNextFetchAfterNoMessagesSent = TimeSpan.FromSeconds(5);
 
-    private readonly IBus bus;
     private readonly IServiceProvider serviceProvider;
-    private readonly TimeProvider timeProvider;
     private readonly ILogger<ProcessOutboxMessagesBackgroundService> logger;
 
     public ProcessOutboxMessagesBackgroundService(
-        IBus bus,
         IServiceProvider serviceProvider,
-        TimeProvider timeProvider,
         ILogger<ProcessOutboxMessagesBackgroundService> logger)
     {
-        this.bus = bus;
         this.serviceProvider = serviceProvider;
-        this.timeProvider = timeProvider;
         this.logger = logger;
     }
 
@@ -45,33 +32,8 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
             {
                 try
                 {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<SalariesDbContext>();
-
-                    var messagesToSend = await dbContext.OutboxMessages
-                        .Where(m => !m.IsProcessed)
-                        .OrderBy(m => m.Id)
-                        .ToListAsync(cancellationToken);
-
-                    foreach (var message in messagesToSend)
-                    {
-                        try
-                        {
-                            await this.ProcessOutboxMessageAsync(message, cancellationToken);
-
-                            await dbContext.SaveChangesAsync(cancellationToken);
-
-                            processedMessages++;
-                        }
-                        catch (TaskCanceledException tce) when (tce.CancellationToken == cancellationToken)
-                        {
-                            // Our cancellation token has been triggered => ignore and stop
-                            return;
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError("Error processing message {messageId}: {exception}", message.Id, ex);
-                        }
-                    }
+                    var outboxMessagesService = scope.ServiceProvider.GetRequiredService<IOutboxMessagesService>();
+                    processedMessages = await outboxMessagesService.ProcessMessagesAsync(cancellationToken);
                 }
                 catch (TaskCanceledException tce) when (tce.CancellationToken == cancellationToken)
                 {
@@ -89,45 +51,5 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
                 await Task.Delay(TimeToWaitBeforeNextFetchAfterNoMessagesSent, cancellationToken);
             }
         }
-    }
-
-    private async Task ProcessOutboxMessageAsync(OutboxMessage message, CancellationToken cancellationToken)
-    {
-        object? payloadObject = null;
-        string? errorMessage = null;
-        if (message.Type == nameof(SalaryRequestApprovedEvent))
-        {
-            try
-            {
-                payloadObject = JsonSerializer.Deserialize<SalaryRequestApprovedEvent>(message.Payload);
-                if (payloadObject is null)
-                {
-                    errorMessage = "Deserialized payload object is null";
-                }
-            }
-            catch (JsonException ex)
-            {
-                this.logger.LogError(
-                    "Error deserializing payload of message {messageId} to {messageType}: {exception}",
-                    message.Id,
-                    message.Type,
-                    ex);
-
-                errorMessage = $"Error deserializing payload: {ex}";
-            }
-        }
-        else
-        {
-            errorMessage = "Unknown message type";
-        }
-
-        if (string.IsNullOrEmpty(errorMessage))
-        {
-            await this.bus.Publish(payloadObject!, cancellationToken);
-        }
-
-        message.IsProcessed = true;
-        message.ProcessedOn = this.timeProvider.GetUtcNow().UtcDateTime;
-        message.ProcessedResult = errorMessage;
     }
 }

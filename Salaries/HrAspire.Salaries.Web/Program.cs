@@ -1,3 +1,4 @@
+using HrAspire.Salaries.Business.OutboxMessages;
 using HrAspire.Salaries.Business.SalaryRequests;
 using HrAspire.Salaries.Data;
 using HrAspire.Salaries.Web.Services;
@@ -29,6 +30,7 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.AddScoped<ISalaryRequestsService, SalaryRequestsService>();
+builder.Services.AddScoped<IOutboxMessagesService, OutboxMessagesService>();
 
 builder.Services.AddHostedService<ProcessOutboxMessagesBackgroundService>();
 

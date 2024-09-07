@@ -12,7 +12,6 @@ package employees;
 service Employees {
 	rpc List(ListEmployeesRequest) returns (ListEmployeesResponse);
 	rpc ListManagers(google.protobuf.Empty) returns (ListEmployeesResponse);
-	rpc ListManagedEmployees(ListManagedEmployeesRequest) returns (ListEmployeesResponse);
 	rpc Get(GetEmployeeRequest) returns (GetEmployeeResponse);
 	rpc Create(CreateEmployeeRequest) returns (CreateEmployeeResponse);
 	rpc Update(UpdateEmployeeRequest) returns (google.protobuf.Empty);
@@ -92,8 +91,4 @@ message UpdateEmployeeRequest {
 
 message DeleteEmployeeRequest {
 	string id = 1;
-}
-
-message ListManagedEmployeesRequest {
-	string managerId = 1;
 }

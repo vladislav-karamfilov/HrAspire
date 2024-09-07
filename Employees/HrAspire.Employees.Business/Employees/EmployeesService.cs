@@ -217,9 +217,6 @@ public class EmployeesService : IEmployeesService
             .ProjectToServiceModel()
             .ToListAsync();
 
-    public async Task<IEnumerable<EmployeeServiceModel>> ListManagedEmployeesAsync(string managerId)
-        => await this.dbContext.Employees.Where(e => e.ManagerId == managerId).ProjectToServiceModel().ToListAsync();
-
     public async Task<ServiceResult> UpdateSalaryAsync(string id, decimal newSalary)
     {
         if (newSalary < 0)

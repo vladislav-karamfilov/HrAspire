@@ -54,22 +54,6 @@ public static class EmployeesEndpoints
                     }))
             .RequireAuthorization(Constants.HrManagerAuthPolicyName);
 
-        // TODO: Remove if unused
-        group
-            .MapGet(
-                "/Managed",
-                (Employees.EmployeesClient employeesClient, ClaimsPrincipal user)
-                    => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-                    {
-                        var managersResponse = await employeesClient.ListManagedEmployeesAsync(
-                            new ListManagedEmployeesRequest { ManagerId = user.GetId()! });
-
-                        var employees = managersResponse.Employees.Select(e => e.MapToResponseModel()).ToList();
-
-                        return Results.Ok(employees);
-                    }))
-            .RequireAuthorization(Constants.ManagerAuthPolicyName);
-
         group
             .MapPost(
                 "/",

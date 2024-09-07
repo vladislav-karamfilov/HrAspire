@@ -77,16 +77,4 @@ public class EmployeesApiClient
 
         return [];
     }
-
-    public async Task<IEnumerable<EmployeeResponseModel>> GetManagedEmployeesAsync()
-    {
-        var response = await this.httpClient.GetAsync("employees/managed");
-        if (response.IsSuccessStatusCode)
-        {
-            var managers = await response.Content.ReadFromJsonAsync<IEnumerable<EmployeeResponseModel>>();
-            return managers!;
-        }
-
-        return [];
-    }
 }

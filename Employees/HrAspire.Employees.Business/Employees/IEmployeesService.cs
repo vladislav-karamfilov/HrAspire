@@ -8,8 +8,6 @@ public interface IEmployeesService
 
     Task<IEnumerable<EmployeeServiceModel>> ListManagersAsync();
 
-    Task<IEnumerable<EmployeeServiceModel>> ListManagedEmployeesAsync(string managerId);
-
     Task<int> GetCountAsync(string currentEmployeeId);
 
     Task<EmployeeDetailsServiceModel?> GetAsync(string id);

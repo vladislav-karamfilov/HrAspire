@@ -20,6 +20,8 @@ public class EmployeeDetailsServiceModel
 
     public string? ManagerFullName { get; set; }
 
+    public decimal Salary { get; set; }
+
     public DateTime CreatedOn { get; set; }
 
     public string? CreatedById { get; set; }

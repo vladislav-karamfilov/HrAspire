@@ -86,6 +86,7 @@ public static class EmployeesEndpoints
                             DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
                             Department = model.Department,
                             ManagerId = string.IsNullOrWhiteSpace(model.ManagerId) ? null : model.ManagerId,
+                            Salary = model.Salary,
                             Role = model.Role,
                             CreatedById = user.GetId()!,
                         });

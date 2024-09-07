@@ -19,6 +19,9 @@ public class EmployeeCreateRequestModel
     [Required]
     public DateOnly? DateOfBirth { get; set; }
 
+    [Range(0, int.MaxValue)]
+    public decimal Salary { get; set; }
+
     [Required]
     public string Position { get; set; } = default!;
 

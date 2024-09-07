@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\documents.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\employees.proto" GrpcServices="Server" />
+	  <Protobuf Include="..\..\Employees\HrAspire.Employees.Web\Protos\employees.proto" Link="Protos\employees.proto" GrpcServices="Server" ProtoRoot="..\.." />
+	  <Protobuf Include="..\..\Employees\HrAspire.Employees.Web\Protos\documents.proto" Link="Protos\documents.proto" GrpcServices="Server" ProtoRoot="..\.." />
+	  <Protobuf Include="..\..\Common\HrAspire.Web.Common\Protos\decimal_value.proto" Link="Protos\decimal_value.proto" GrpcServices="None" ProtoCompile="False" />
   </ItemGroup>
 
   <ItemGroup>

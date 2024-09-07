@@ -83,6 +83,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.Position,
             request.Department,
             request.ManagerId,
+            request.Salary,
             request.Role,
             request.CreatedById);
 
@@ -102,8 +103,8 @@ public class EmployeesGrpcService : Employees.EmployeesBase
             request.DateOfBirth.ToDateOnly(),
             request.Position,
             request.Department,
-            request.Role,
-            request.ManagerId);
+            request.ManagerId,
+            request.Role);
 
         if (updateResult.IsError)
         {

@@ -42,6 +42,7 @@ public class EmployeesService : IEmployeesService
         string position,
         string? department,
         string? managerId,
+        decimal salary,
         string role,
         string createdById)
     {
@@ -54,6 +55,7 @@ public class EmployeesService : IEmployeesService
             Position = position,
             Department = department,
             ManagerId = managerId,
+            Salary = salary,
             CreatedById = createdById,
             CreatedOn = this.timeProvider.GetUtcNow().UtcDateTime,
         };
@@ -89,8 +91,8 @@ public class EmployeesService : IEmployeesService
         DateOnly dateOfBirth,
         string position,
         string? department,
-        string role,
-        string? managerId)
+        string? managerId,
+        string role)
     {
         var employee = await this.dbContext.Employees.FirstOrDefaultAsync(e => e.Id == id);
         if (employee is null)
@@ -147,7 +149,10 @@ public class EmployeesService : IEmployeesService
         }
         catch (Exception ex) when (ex is not RedisException)
         {
+            // Set the old employee full name just in case it's was updated before the exception
             await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, oldEmployeeFullName);
+
+            throw;
         }
 
         var result = string.IsNullOrWhiteSpace(errorMessage)

@@ -22,6 +22,7 @@ public interface IEmployeesService
         string position,
         string? department,
         string? managerId,
+        decimal salary,
         string role,
         string createdById);
 
@@ -31,8 +32,8 @@ public interface IEmployeesService
         DateOnly dateOfBirth,
         string position,
         string? department,
-        string role,
-        string? managerId);
+        string? managerId,
+        string role);
 
     Task<ServiceResult> DeleteAsync(string id);
 

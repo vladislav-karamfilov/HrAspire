@@ -1,6 +1,6 @@
 ﻿@page "/employee-create"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.HrManagerRole)]
 
 @inject EmployeesApiClient EmployeesApiClient
 @inject NavigationManager NavigationManager
@@ -84,6 +84,11 @@
                     </InputSelect>
                     <label for="manager" class="form-label">Manager</label>
                     <ValidationMessage For="() => Input.ManagerId" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputNumber @bind-Value="Input.Salary" step=".01" class="form-control" aria-required="true" placeholder="5000.00" />
+                    <label for="salary" class="form-label">Salary</label>
+                    <ValidationMessage For="() => Input.Salary" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
                     <InputSelect @bind-Value="Input.Role" class="form-control" placeholder="role">

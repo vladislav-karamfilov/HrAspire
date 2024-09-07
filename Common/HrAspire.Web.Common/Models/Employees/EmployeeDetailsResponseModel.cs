@@ -12,6 +12,7 @@ public record EmployeeDetailsResponseModel(
     string Position,
     string? ManagerId,
     string? ManagerFullName,
+    decimal Salary,
     DateTime CreatedOn,
     string? CreatedById,
     string? CreatedByFullName);

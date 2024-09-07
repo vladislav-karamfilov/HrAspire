@@ -1,6 +1,5 @@
 ﻿namespace HrAspire.Web.Client.Services.Employees;
 
-using System.Net;
 using System.Net.Http.Json;
 
 using HrAspire.Web.Common.Models.Employees;
@@ -17,15 +16,17 @@ public class EmployeesApiClient
     public Task<EmployeesResponseModel> GetEmployeesAsync(int pageNumber, int pageSize)
         => this.httpClient.GetFromJsonAsync<EmployeesResponseModel>($"employees?pageNumber={pageNumber}&pageSize={pageSize}")!;
 
-    public async Task<EmployeeDetailsResponseModel?> GetEmployeeAsync(string id)
+    public async Task<(EmployeeDetailsResponseModel? Employee, string? ErrorMessage)> GetEmployeeAsync(string id)
     {
         var response = await this.httpClient.GetAsync($"employees/{id}");
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<EmployeeDetailsResponseModel>();
+            var employee = await response.Content.ReadFromJsonAsync<EmployeeDetailsResponseModel>();
+            return (employee, null);
         }
 
-        return null;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return (null, errorMessage);
     }
 
     public async Task<(string? EmployeeId, string? ErrorMessage)> CreateEmployeeAsync(EmployeeCreateRequestModel request)
@@ -37,15 +38,8 @@ public class EmployeesApiClient
             return (employeeId, null);
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return (null, errorMessage ?? Constants.UnexpectedErrorMessage);
+        var errorMessage = await response.GetErrorMessageAsync();
+        return (null, errorMessage);
     }
 
     public async Task<string?> UpdateEmployeeAsync(string id, EmployeeUpdateRequestModel request)
@@ -56,14 +50,8 @@ public class EmployeesApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
     public async Task<string?> DeleteEmployeeAsync(string id)
@@ -74,14 +62,8 @@ public class EmployeesApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
     public async Task<IEnumerable<EmployeeResponseModel>> GetManagersAsync()

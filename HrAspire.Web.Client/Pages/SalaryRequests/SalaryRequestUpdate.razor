@@ -53,7 +53,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var salaryRequest = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
+        var (salaryRequest, _) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
         this.Input = salaryRequest?.ToUpdateRequestModel();
     }
 

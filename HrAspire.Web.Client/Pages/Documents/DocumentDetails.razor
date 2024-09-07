@@ -59,10 +59,7 @@
                         <tr>
                             <td>Created by</td>
                             <td>
-                                @if (!string.IsNullOrWhiteSpace(Document.CreatedById))
-                                {
-                                    <a href="/employees/@Document.CreatedById">@Document.CreatedByFullName</a>
-                                }
+                                <a href="/employees/@Document.CreatedById">@Document.CreatedByFullName</a>
                             </td>
                         </tr>
                     </tbody>
@@ -78,20 +75,12 @@
 
     private DocumentDetailsResponseModel? Document { get; set; }
 
-    private string DownloadUrl => this.DocumentsApiClient.GetDocumentDownloadUrl(this.Id);
+    private string DownloadUrl => this.DocumentsApiClient.BuildDocumentDownloadUrl(this.Id);
 
     private string? ErrorMessage { get; set; }
 
     protected override async Task OnParametersSetAsync()
-    {
-        this.ErrorMessage = null;
-
-        this.Document = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
-        if (this.Document is null)
-        {
-            this.ErrorMessage = "No such document found.";
-        }
-    }
+        => (this.Document, this.ErrorMessage) = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
 
     private async Task DeleteDocumentAsync()
     {

@@ -152,16 +152,8 @@
         this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
     }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        this.ErrorMessage = null;
-
-        this.Employee = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
-        if (this.Employee is null)
-        {
-            this.ErrorMessage = "No such employee found.";
-        }
-    }
+    protected override async Task OnParametersSetAsync() 
+        => (this.Employee, this.ErrorMessage) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
 
     private async Task DeleteEmployeeAsync()
     {

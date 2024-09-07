@@ -91,7 +91,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var employee = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
+        var (employee, _) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
         this.Input = employee?.ToUpdateRequestModel();
     }
 

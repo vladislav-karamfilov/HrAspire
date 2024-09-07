@@ -1,6 +1,5 @@
 ﻿namespace HrAspire.Web.Client.Services.Documents;
 
-using System.Net;
 using System.Net.Http.Json;
 
 using HrAspire.Web.Common.Models.Documents;
@@ -18,15 +17,17 @@ public class DocumentsApiClient
         => this.httpClient.GetFromJsonAsync<DocumentsResponseModel>(
             $"employees/{employeeId}/documents?pageNumber={pageNumber}&pageSize={pageSize}")!;
 
-    public async Task<DocumentDetailsResponseModel?> GetDocumentAsync(int id)
+    public async Task<(DocumentDetailsResponseModel? Document, string? ErrorMessage)> GetDocumentAsync(int id)
     {
         var response = await this.httpClient.GetAsync($"documents/{id}");
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<DocumentDetailsResponseModel>();
+            var document = await response.Content.ReadFromJsonAsync<DocumentDetailsResponseModel>();
+            return (document, null);
         }
 
-        return null;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return (null, errorMessage);
     }
 
     public async Task<(int? DocumentId, string? ErrorMessage)> CreateDocumentAsync(
@@ -40,15 +41,8 @@ public class DocumentsApiClient
             return (documentId, null);
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return (null, errorMessage ?? Constants.UnexpectedErrorMessage);
+        var errorMessage = await response.GetErrorMessageAsync();
+        return (null, errorMessage);
     }
 
     public async Task<string?> UpdateDocumentAsync(int id, DocumentUpdateRequestModel request)
@@ -59,15 +53,8 @@ public class DocumentsApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
     public async Task<string?> DeleteDocumentAsync(int id)
@@ -78,15 +65,9 @@ public class DocumentsApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
-    public string GetDocumentDownloadUrl(int id) => $"{this.httpClient.BaseAddress}documents/{id}/content";
+    public string BuildDocumentDownloadUrl(int id) => $"{this.httpClient.BaseAddress}documents/{id}/content";
 }

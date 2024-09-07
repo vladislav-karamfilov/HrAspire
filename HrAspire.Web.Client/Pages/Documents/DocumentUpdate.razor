@@ -52,7 +52,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var document = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
+        var (document, _) = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
         this.Input = document?.ToUpdateRequestModel();
     }
 

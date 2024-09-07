@@ -152,16 +152,8 @@
 
     protected override Task OnParametersSetAsync() => this.LoadSalaryRequestAsync();
 
-    private async Task LoadSalaryRequestAsync()
-    {
-        this.ErrorMessage = null;
-
-        this.SalaryRequest = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
-        if (this.SalaryRequest is null)
-        {
-            this.ErrorMessage = "No such salary request found.";
-        }
-    }
+    private async Task LoadSalaryRequestAsync() 
+        => (this.SalaryRequest, this.ErrorMessage) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
 
     private async Task ApproveSalaryRequestAsync()
     {

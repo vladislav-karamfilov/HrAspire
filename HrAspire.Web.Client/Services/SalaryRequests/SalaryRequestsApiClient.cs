@@ -1,6 +1,5 @@
 ﻿namespace HrAspire.Web.Client.Services.SalaryRequests;
 
-using System.Net;
 using System.Net.Http.Json;
 
 using HrAspire.Web.Common.Models.SalaryRequests;
@@ -21,15 +20,17 @@ public class SalaryRequestsApiClient
         => this.httpClient.GetFromJsonAsync<SalaryRequestsResponseModel>(
             $"employees/{employeeId}/salaryRequests?pageNumber={pageNumber}&pageSize={pageSize}")!;
 
-    public async Task<SalaryRequestDetailsResponseModel?> GetSalaryRequestAsync(int id)
+    public async Task<(SalaryRequestDetailsResponseModel? SalaryRequest, string? ErrorMessage)> GetSalaryRequestAsync(int id)
     {
         var response = await this.httpClient.GetAsync($"salaryRequests/{id}");
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<SalaryRequestDetailsResponseModel>();
+            var salaryRequest = await response.Content.ReadFromJsonAsync<SalaryRequestDetailsResponseModel>();
+            return (salaryRequest, null);
         }
 
-        return null;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return (null, errorMessage);
     }
 
     public async Task<(int? NewSalaryRequestId, string? ErrorMessage)> CreateSalaryRequestAsync(
@@ -43,15 +44,8 @@ public class SalaryRequestsApiClient
             return (salaryRequestId, null);
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return (null, errorMessage ?? Constants.UnexpectedErrorMessage);
+        var errorMessage = await response.GetErrorMessageAsync();
+        return (null, errorMessage);
     }
 
     public async Task<string?> UpdateSalaryRequestAsync(int id, SalaryRequestUpdateRequestModel request)
@@ -62,15 +56,8 @@ public class SalaryRequestsApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
     public async Task<string?> DeleteSalaryRequestAsync(int id)
@@ -81,14 +68,8 @@ public class SalaryRequestsApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
     public async Task<string?> ApproveSalaryRequestAsync(int id)
@@ -99,15 +80,8 @@ public class SalaryRequestsApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 
     public async Task<string?> RejectSalaryRequestAsync(int id)
@@ -118,14 +92,7 @@ public class SalaryRequestsApiClient
             return null;
         }
 
-        string? errorMessage = null;
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            // TODO: Extract to an extension method on response? Handle the cases when the content is not a ProblemDetails JSON (try-catch)
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-            errorMessage = problemDetails?.Detail;
-        }
-
-        return errorMessage ?? Constants.UnexpectedErrorMessage;
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 }

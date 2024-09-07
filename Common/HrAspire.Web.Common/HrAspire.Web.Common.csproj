@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.28.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.65.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.66.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />	
   </ItemGroup>
 
@@ -18,6 +22,10 @@
 
   <ItemGroup>
     <Compile Include="..\..\Salaries\HrAspire.Salaries.Data\Models\SalaryRequestStatus.cs" Link="Models\SalaryRequests\SalaryRequestStatus.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\decimal_value.proto" GrpcServices="None" />
   </ItemGroup>
 
 </Project>

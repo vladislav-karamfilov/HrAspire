@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Salaries.Web;
+﻿namespace HrAspire.Web.Common;
 
 public partial class DecimalValue
 {

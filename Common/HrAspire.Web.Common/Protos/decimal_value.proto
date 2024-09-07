@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option csharp_namespace = "HrAspire.Web.Common";
+
+package common;
+
+message DecimalValue {
+    // Whole units part of the amount
+    int64 units = 1;
+
+    // Nano units of the amount (10^-9)
+    // Must be same sign as units
+    sfixed32 nanos = 2;
+}

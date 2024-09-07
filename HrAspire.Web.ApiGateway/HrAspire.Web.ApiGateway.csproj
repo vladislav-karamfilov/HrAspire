@@ -30,13 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\documents.proto" GrpcServices="Client" Link="Protos\documents.proto" />
-	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\employees.proto" GrpcServices="Client" Link="Protos\employees.proto" />
-	  <Protobuf Include="..\Salaries\HrAspire.Salaries.Web\Protos\salary_requests.proto" GrpcServices="Client" Link="Protos\salary_requests.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\Salaries\HrAspire.Salaries.Web\DecimalValue.cs" Link="DecimalValue.cs" />
+	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\documents.proto" Link="Protos\documents.proto" GrpcServices="Client" ProtoRoot=".." />
+	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\employees.proto" Link="Protos\employees.proto" GrpcServices="Client" ProtoRoot=".." />
+	  <Protobuf Include="..\Salaries\HrAspire.Salaries.Web\Protos\salary_requests.proto" Link="Protos\salary_requests.proto" GrpcServices="Client" ProtoRoot=".." />
   </ItemGroup>
 	
 </Project>

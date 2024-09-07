@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\salary_requests.proto" GrpcServices="Server" />
+    <Protobuf Include="..\..\Salaries\HrAspire.Salaries.Web\Protos\salary_requests.proto" Link="Protos\salary_requests.proto" GrpcServices="Server" ProtoRoot="..\.." />
+    <Protobuf Include="..\..\Common\HrAspire.Web.Common\Protos\decimal_value.proto" Link="Protos\decimal_value.proto" GrpcServices="None" ProtoCompile="False" />
   </ItemGroup>
 
   <ItemGroup>

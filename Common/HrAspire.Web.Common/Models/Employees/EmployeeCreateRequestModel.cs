@@ -8,6 +8,7 @@ public class EmployeeCreateRequestModel
     public string Email { get; set; } = default!;
 
     [Required]
+    [MinLength(AccountConstants.PasswordMinLength, ErrorMessage = "{0} must be at least {1} characters long.")]
     public string Password { get; set; } = default!;
 
     [Compare(nameof(Password))]

@@ -30,12 +30,24 @@ public class AccountApiClient
 
     public async Task<UserInfoResponseModel?> GetUserInfoAsync()
     {
-        var userResponse = await this.httpClient.GetAsync("account/userInfo");
-        if (userResponse.IsSuccessStatusCode)
+        var response = await this.httpClient.GetAsync("account/userInfo");
+        if (response.IsSuccessStatusCode)
         {
-            return await userResponse.Content.ReadFromJsonAsync<UserInfoResponseModel>();
+            return await response.Content.ReadFromJsonAsync<UserInfoResponseModel>();
         }
 
         return null;
+    }
+
+    public async Task<string?> ChangePasswordAsync(ChangePasswordRequestModel model)
+    {
+        var response = await this.httpClient.PostAsJsonAsync("account/manage/info", model);
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var errorMessage = await response.GetErrorMessageAsync();
+        return errorMessage;
     }
 }

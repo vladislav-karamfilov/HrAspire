@@ -21,7 +21,10 @@ public class SalariesDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<SalaryRequest>().Property(r => r.NewSalary).HasPrecision(precision: 18, scale: 6);
+        var salaryRequestsBuilder = modelBuilder.Entity<SalaryRequest>();
+
+        salaryRequestsBuilder.Property(r => r.NewSalary).HasPrecision(precision: 18, scale: 6);
+        salaryRequestsBuilder.HasIndex(r => r.EmployeeId);
 
         modelBuilder.Entity<OutboxMessage>().HasIndex(m => m.IsProcessed);
 

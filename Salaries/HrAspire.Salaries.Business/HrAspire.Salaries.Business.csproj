@@ -10,7 +10,7 @@
     <PackageReference Include="MassTransit.Abstractions" Version="8.2.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
     <PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.12" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
   </ItemGroup>
 
   <ItemGroup>

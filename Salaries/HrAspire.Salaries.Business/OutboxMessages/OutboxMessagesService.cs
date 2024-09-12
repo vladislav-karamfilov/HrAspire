@@ -34,11 +34,14 @@ public class OutboxMessagesService : IOutboxMessagesService
 
     public async Task<int> ProcessMessagesAsync(CancellationToken cancellationToken)
     {
+        const int MaxMessagesToProcess = 20;
+
         var processedMessages = 0;
 
         var messagesToProcess = await this.dbContext.OutboxMessages
             .Where(m => !m.IsProcessed)
             .OrderBy(m => m.Id)
+            .Take(MaxMessagesToProcess)
             .ToListAsync(cancellationToken);
 
         foreach (var message in messagesToProcess)
@@ -85,7 +88,7 @@ public class OutboxMessagesService : IOutboxMessagesService
 
         message.IsProcessed = true;
         message.ProcessedOn = this.timeProvider.GetUtcNow().UtcDateTime;
-        message.ProcessedResult = errorMessage;
+        message.ProcessingError = errorMessage;
     }
 
     private (SalaryRequestApprovedEvent? @Event, string? ErrorMessage) TryDeserializeSalaryRequestApprovedEvent(

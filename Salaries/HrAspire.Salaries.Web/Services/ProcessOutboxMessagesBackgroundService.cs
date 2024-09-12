@@ -7,7 +7,7 @@ using HrAspire.Salaries.Business.OutboxMessages;
 
 public class ProcessOutboxMessagesBackgroundService : BackgroundService
 {
-    private static readonly TimeSpan TimeToWaitBeforeNextFetchAfterNoMessagesSent = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan TimeToWaitBeforeNextFetchAfterNoMessagesProcessed = TimeSpan.FromSeconds(5);
 
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger<ProcessOutboxMessagesBackgroundService> logger;
@@ -48,7 +48,7 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
 
             if (processedMessages == 0)
             {
-                await Task.Delay(TimeToWaitBeforeNextFetchAfterNoMessagesSent, cancellationToken);
+                await Task.Delay(TimeToWaitBeforeNextFetchAfterNoMessagesProcessed, cancellationToken);
             }
         }
     }

@@ -14,5 +14,5 @@ public class OutboxMessage
 
     public DateTime? ProcessedOn { get; set; }
 
-    public string? ProcessedResult { get; set; }
+    public string? ProcessingError { get; set; }
 }

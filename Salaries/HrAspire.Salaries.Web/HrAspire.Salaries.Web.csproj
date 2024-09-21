@@ -14,7 +14,7 @@
   <ItemGroup>
 	<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.2.0" />
 	<PackageReference Include="Aspire.StackExchange.Redis" Version="8.2.0" />
-	<PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
+	<PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
 	<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
 	<PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>

@@ -187,7 +187,7 @@ public class SalaryRequestsService : ISalaryRequestsService
 
         this.dbContext.OutboxMessages.Add(new OutboxMessage
         {
-            Type = nameof(SalaryRequestApprovedEvent),
+            Type = typeof(SalaryRequestApprovedEvent).FullName!,
             Payload = JsonSerializer.Serialize(new SalaryRequestApprovedEvent(salaryRequest.EmployeeId, salaryRequest.NewSalary, utcNow)),
             CreatedOn = utcNow,
         });

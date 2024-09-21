@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\Employees\HrAspire.Employees.Web\HrAspire.Employees.Web.csproj" />
     <ProjectReference Include="..\HrAspire.DataSeeder\HrAspire.DataSeeder.csproj" />
     <ProjectReference Include="..\HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj" />

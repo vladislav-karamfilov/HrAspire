@@ -2,6 +2,7 @@ using HrAspire.Salaries.Business.OutboxMessages;
 using HrAspire.Salaries.Business.SalaryRequests;
 using HrAspire.Salaries.Data;
 using HrAspire.Salaries.Web.Services;
+using HrAspire.ServiceDefaults;
 
 using MassTransit;
 
@@ -12,9 +13,9 @@ builder.Services.AddGrpc();
 
 builder.AddServiceDefaults();
 
-builder.AddNpgsqlDbContext<SalariesDbContext>("salaries-db");
+builder.AddNpgsqlDbContext<SalariesDbContext>(ResourceNames.SalariesDb);
 
-builder.AddRedisClient("cache");
+builder.AddRedisClient(ResourceNames.Cache);
 
 builder.Services.AddMassTransit(x =>
 {
@@ -23,7 +24,7 @@ builder.Services.AddMassTransit(x =>
     x.UsingRabbitMq((context, configurator) =>
     {
         var configuration = context.GetRequiredService<IConfiguration>();
-        var host = configuration.GetConnectionString("messaging");
+        var host = configuration.GetConnectionString(ResourceNames.Messaging);
         configurator.Host(host);
         configurator.ConfigureEndpoints(context);
     });

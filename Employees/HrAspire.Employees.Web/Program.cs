@@ -3,6 +3,7 @@ using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web.Services;
+using HrAspire.ServiceDefaults;
 using HrAspire.Web.Common;
 
 using MassTransit;
@@ -16,11 +17,11 @@ builder.Services.AddGrpc();
 
 builder.AddServiceDefaults();
 
-builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
+builder.AddNpgsqlDbContext<EmployeesDbContext>(ResourceNames.EmployeesDb);
 
-builder.AddAzureBlobClient("blobs");
+builder.AddAzureBlobClient(ResourceNames.Blobs);
 
-builder.AddRedisClient("cache");
+builder.AddRedisClient(ResourceNames.Cache);
 
 builder.Services.AddMassTransit(x =>
 {
@@ -37,7 +38,7 @@ builder.Services.AddMassTransit(x =>
                 intervalIncrement: TimeSpan.FromMilliseconds(500)));
 
         var configuration = context.GetRequiredService<IConfiguration>();
-        var host = configuration.GetConnectionString("messaging");
+        var host = configuration.GetConnectionString(ResourceNames.Messaging);
         configurator.Host(host);
         configurator.ConfigureEndpoints(context);
     });

@@ -3,6 +3,7 @@ using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web;
 using HrAspire.Salaries.Web;
+using HrAspire.ServiceDefaults;
 using HrAspire.Web.ApiGateway;
 using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
@@ -19,7 +20,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors();
 
-builder.AddNpgsqlDbContext<EmployeesDbContext>("employees-db");
+builder.AddNpgsqlDbContext<EmployeesDbContext>(ResourceNames.EmployeesDb);
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -30,9 +31,9 @@ builder.Services
             cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         }));
 
-builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri("https://employees-service"));
-builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri("https://employees-service"));
-builder.Services.AddGrpcClient<SalaryRequests.SalaryRequestsClient>(o => o.Address = new Uri("https://salaries-service"));
+builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
+builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
+builder.Services.AddGrpcClient<SalaryRequests.SalaryRequestsClient>(o => o.Address = new Uri($"https://{ResourceNames.SalariesService}"));
 
 builder.Services
     .AddAuthorizationBuilder()
@@ -60,7 +61,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(policyBuilder => policyBuilder
-    .WithOrigins(app.Configuration["WebFrontEndUrl"]!)
+    .WithOrigins(app.Configuration[EnvironmentVariableNames.WebFrontEndUrl]!)
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());

@@ -1,3 +1,4 @@
+using HrAspire.ServiceDefaults;
 using HrAspire.Web.Components;
 
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +44,7 @@ app
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(HrAspire.Web.Client._Imports).Assembly);
 
-app.MapGet("/ApiBaseUrl", (IConfiguration configuration) => configuration["ApiGatewayUrl"]);
+app.MapGet("/ApiBaseUrl", (IConfiguration configuration) => configuration[EnvironmentVariableNames.ApiGatewayUrl]);
 
 app.MapDefaultEndpoints();
 

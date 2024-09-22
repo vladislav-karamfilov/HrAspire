@@ -89,8 +89,8 @@ public class SalaryRequestsService : ISalaryRequestsService
             salaryRequest.CreatedById,
             salaryRequest.StatusChangedById);
 
-        salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
-        salaryRequest.CreatedByFullName = employeeNames[1] ?? string.Empty;
+        salaryRequest.EmployeeFullName = employeeNames[0];
+        salaryRequest.CreatedByFullName = employeeNames[1];
         salaryRequest.StatusChangedByFullName = employeeNames[2];
 
         return salaryRequest;
@@ -107,11 +107,7 @@ public class SalaryRequestsService : ISalaryRequestsService
             .ProjectToServiceModel()
             .ToListAsync();
 
-        foreach (var salaryRequest in result)
-        {
-            var employeeNames = await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId);
-            salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
-        }
+        await this.PopulateEmployeeNamesAsync(result);
 
         return result;
     }
@@ -131,11 +127,7 @@ public class SalaryRequestsService : ISalaryRequestsService
             .ProjectToServiceModel()
             .ToListAsync();
 
-        foreach (var salaryRequest in result)
-        {
-            var employeeNames = await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId);
-            salaryRequest.EmployeeFullName = employeeNames[0] ?? string.Empty;
-        }
+        await this.PopulateEmployeeNamesAsync(result);
 
         return result;
     }
@@ -232,12 +224,29 @@ public class SalaryRequestsService : ISalaryRequestsService
     private Task<bool> EmployeeExistsAsync(string employeeId)
         => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeeNamesCacheSetName, employeeId);
 
-    private async Task<string?[]> GetEmployeeNamesAsync(params string?[] employeeIds)
+    private async Task<string[]> GetEmployeeNamesAsync(params string?[] employeeIds)
     {
         var employeeNames = await this.CacheDatabase.HashGetAsync(
             BusinessConstants.EmployeeNamesCacheSetName,
             employeeIds.Select(e => (RedisValue)(e ?? string.Empty)).ToArray());
 
-        return employeeNames.Select(n => n == RedisValue.Null ? null : (string?)n).ToArray();
+        return employeeNames.Select(n => n == RedisValue.Null ? string.Empty : n.ToString()).ToArray();
+    }
+
+    private async Task PopulateEmployeeNamesAsync(List<SalaryRequestServiceModel> salaryRequests)
+    {
+        var cachedNames = new Dictionary<string, string>();
+        foreach (var salaryRequest in salaryRequests)
+        {
+            if (!cachedNames.TryGetValue(salaryRequest.EmployeeId, out var employeeFullName))
+            {
+                var employeeNames = await this.GetEmployeeNamesAsync(salaryRequest.EmployeeId);
+                employeeFullName = employeeNames[0];
+
+                cachedNames[salaryRequest.EmployeeId] = employeeFullName;
+            }
+
+            salaryRequest.EmployeeFullName = employeeFullName;
+        }
     }
 }

@@ -53,8 +53,7 @@ message SalaryRequestModel {
 	google.protobuf.Timestamp createdOn = 6;
 }
 
-enum SalaryRequestStatus
-{
+enum SalaryRequestStatus {
 	Pending = 0;
 	Approved = 1;
 	Rejected = 2;

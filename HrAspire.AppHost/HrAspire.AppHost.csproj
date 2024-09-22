@@ -24,6 +24,7 @@
     <ProjectReference Include="..\HrAspire.Web.ApiGateway\HrAspire.Web.ApiGateway.csproj" />
     <ProjectReference Include="..\HrAspire.Web\HrAspire.Web.csproj" />
     <ProjectReference Include="..\Salaries\HrAspire.Salaries.Web\HrAspire.Salaries.Web.csproj" />
+    <ProjectReference Include="..\Vacations\HrAspire.Vacations.Web\HrAspire.Vacations.Web.csproj" />
   </ItemGroup>
 
 </Project>

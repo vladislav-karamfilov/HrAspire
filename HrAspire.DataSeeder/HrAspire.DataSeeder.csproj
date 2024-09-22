@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Common\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Employees\HrAspire.Employees.Data\HrAspire.Employees.Data.csproj" />
     <ProjectReference Include="..\Salaries\HrAspire.Salaries.Data\HrAspire.Salaries.Data.csproj" />
+    <ProjectReference Include="..\Vacations\HrAspire.Vacations.Data\HrAspire.Vacations.Data.csproj" />
   </ItemGroup>
 
 </Project>

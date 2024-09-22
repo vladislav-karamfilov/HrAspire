@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
 using HrAspire.Salaries.Data;
-
+using HrAspire.Vacations.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,6 +36,8 @@ public class DataSeederWorker : BackgroundService
             await this.MigrateAndSeedEmployeesDbAsync(stoppingToken);
 
             await this.MigrateAndSeedSalariesDbAsync(stoppingToken);
+
+            await this.MigrateAndSeedVacationsDbAsync(stoppingToken);
         }
 
         this.hostApplicationLifetime.StopApplication();
@@ -83,5 +85,17 @@ public class DataSeederWorker : BackgroundService
         this.logger.LogInformation("Migrated salaries DB.");
 
         // TODO: seed data - salary requests?
+    }
+
+    private async Task MigrateAndSeedVacationsDbAsync(CancellationToken cancellationToken)
+    {
+        using var scope = this.scopeFactory.CreateScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<VacationsDbContext>();
+
+        this.logger.LogInformation("Migrating vacations DB...");
+        await dbContext.Database.MigrateAsync(cancellationToken);
+        this.logger.LogInformation("Migrated vacations DB.");
+
+        // TODO: seed data - vacation requests?
     }
 }

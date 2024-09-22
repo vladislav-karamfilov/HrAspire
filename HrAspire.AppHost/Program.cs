@@ -2,7 +2,6 @@ using HrAspire.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// TODO: extract resource names into a constants class in ServiceDefaults
 var postgres = builder.AddPostgres(ResourceNames.Postgres).WithPgAdmin().WithDataVolume("HrAspire-db-data");
 var employeesDb = postgres.AddDatabase(ResourceNames.EmployeesDb, "employees");
 var salariesDb = postgres.AddDatabase(ResourceNames.SalariesDb, "salaries");
@@ -41,11 +40,18 @@ var salariesService = builder
     .WithReference(cache)
     .WithReference(messaging);
 
+var vacationsService = builder
+    .AddProject<Projects.HrAspire_Vacations_Web>(ResourceNames.VacationsService)
+    .WithReference(vacationsDb)
+    .WithReference(cache)
+    .WithReference(messaging);
+
 var apiGateway = builder
     .AddProject<Projects.HrAspire_Web_ApiGateway>(ResourceNames.ApiGateway)
     .WithReference(employeesDb)
     .WithReference(employeesService)
     .WithReference(salariesService)
+    .WithReference(vacationsService)
     .WithExternalHttpEndpoints();
 
 var apiGatewayEndpoint = apiGateway.GetEndpoint("https");
@@ -64,6 +70,7 @@ builder
     .AddProject<Projects.HrAspire_DataSeeder>(ResourceNames.DataSeeder)
     .WithReference(employeesDb)
     .WithReference(salariesDb)
+    .WithReference(vacationsDb)
     .WithReference(cache);
 
 builder.Build().Run();

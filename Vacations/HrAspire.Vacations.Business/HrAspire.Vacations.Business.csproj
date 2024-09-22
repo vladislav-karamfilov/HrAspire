@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HrAspire.Vacations.Data\HrAspire.Vacations.Data.csproj" />
+  </ItemGroup>
+
 </Project>

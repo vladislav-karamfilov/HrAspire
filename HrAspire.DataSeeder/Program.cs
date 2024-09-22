@@ -2,6 +2,7 @@ using HrAspire.DataSeeder;
 using HrAspire.Employees.Data;
 using HrAspire.Salaries.Data;
 using HrAspire.ServiceDefaults;
+using HrAspire.Vacations.Data;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,10 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>(
 
 builder.AddNpgsqlDbContext<SalariesDbContext>(
     ResourceNames.SalariesDb,
+    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+
+builder.AddNpgsqlDbContext<VacationsDbContext>(
+    ResourceNames.VacationsDb,
     configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.Services.AddHostedService<DataSeederWorker>();

@@ -102,12 +102,15 @@
     <hr />
 
     <QuickGrid ItemsProvider="GridDocumentsProvider" Pagination="DocumentsPagination" Class="table table-bordered table-striped">
-        <TemplateColumn Title="Title">
-            <a href="/documents/@context.Id">@context.Title</a>
-        </TemplateColumn>
+        <PropertyColumn Property="@(e => e.Title)" />
         <PropertyColumn Property="@(e => e.FileName)" Title="File Name" />
         <TemplateColumn Title="Created on">
             @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
+        </TemplateColumn>
+
+        <TemplateColumn Title="Title">
+            <a href="/documents/@context.Id">View</a>
+            <a href="/document-update/@context.Id" class="ms-3">Update</a>
         </TemplateColumn>
     </QuickGrid>
 
@@ -120,12 +123,19 @@
     <hr />
 
     <QuickGrid ItemsProvider="GridSalaryRequestsProvider" Pagination="SalaryRequestsPagination" Class="table table-bordered table-striped">
-        <TemplateColumn Title="New Salary">
-            <a href="/salary-requests/@context.Id">@context.NewSalary</a>
-        </TemplateColumn>
+        <PropertyColumn Property="@(e => e.NewSalary)" Format="@Constants.MoneyFormat" />
         <PropertyColumn Property="@(e => e.Status)" />
         <TemplateColumn Title="Created on">
             @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
+        </TemplateColumn>
+
+        <TemplateColumn Title="Operations">
+            <a href="/salary-requests/@context.Id">View</a>
+
+            @if (!IsUserHrManager)
+            {
+                <a href="/salary-request-update/@context.Id" class="ms-3">Update</a>
+            }
         </TemplateColumn>
     </QuickGrid>
 
@@ -136,6 +146,9 @@
     [Parameter]
     public string Id { get; set; } = default!;
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     private EmployeeDetailsResponseModel? Employee { get; set; }
 
     private GridItemsProvider<DocumentResponseModel>? GridDocumentsProvider { get; set; }
@@ -144,15 +157,20 @@
     private GridItemsProvider<SalaryRequestResponseModel>? GridSalaryRequestsProvider { get; set; }
     private PaginationState SalaryRequestsPagination { get; set; } = new() { ItemsPerPage = 5 };
 
+    private bool IsUserHrManager { get; set; }
+
     private string? ErrorMessage { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var authState = await this.AuthState;
+        this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
+
         this.GridDocumentsProvider = this.GetGridDocumentsAsync;
         this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
     }
 
-    protected override async Task OnParametersSetAsync() 
+    protected override async Task OnParametersSetAsync()
         => (this.Employee, this.ErrorMessage) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
 
     private async Task DeleteEmployeeAsync()
@@ -177,7 +195,7 @@
 
         var data = await this.DocumentsApiClient.GetEmployeeDocumentsAsync(this.Id, pageNumber, this.DocumentsPagination.ItemsPerPage);
 
-        return new GridItemsProviderResult<DocumentResponseModel> { Items = data.Documents, TotalItemCount = data.Total, };
+        return GridItemsProviderResult.From(data.Documents, data.Total);
     }
 
     private async ValueTask<GridItemsProviderResult<SalaryRequestResponseModel>> GetGridSalaryRequestsAsync(
@@ -190,6 +208,6 @@
             pageNumber,
             this.SalaryRequestsPagination.ItemsPerPage);
 
-        return new GridItemsProviderResult<SalaryRequestResponseModel> { Items = data.SalaryRequests, TotalItemCount = data.Total, };
+        return GridItemsProviderResult.From(data.SalaryRequests, data.Total);
     }
 }

@@ -1,6 +1,6 @@
 ﻿@page "/employees"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
 
 @inject EmployeesApiClient EmployeesApiClient
 
@@ -13,14 +13,17 @@
 <hr />
 
 <QuickGrid ItemsProvider="GridEmployeesProvider" Pagination="Pagination" Class="table table-bordered table-striped">
-    <TemplateColumn Title="Full Name">
-        <a href="/employees/@context.Id">@context.FullName</a>
-    </TemplateColumn>
+    <PropertyColumn Property="@(e => e.FullName)" />
     <PropertyColumn Property="@(e => e.Email)" />
     <PropertyColumn Property="@(e => e.Position)" />
     <PropertyColumn Property="@(e => e.Department)" />
     <TemplateColumn Title="Created on">
         @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
+    </TemplateColumn>
+
+    <TemplateColumn Title="Operations">
+        <a href="/employees/@context.Id">View</a>
+        <a href="/employee-update/@context.Id" class="ms-3">Update</a>
     </TemplateColumn>
 </QuickGrid>
 
@@ -39,6 +42,6 @@
 
         var data = await this.EmployeesApiClient.GetEmployeesAsync(pageNumber, this.Pagination.ItemsPerPage);
 
-        return new GridItemsProviderResult<EmployeeResponseModel> { Items = data.Employees, TotalItemCount = data.Total, };
+        return GridItemsProviderResult.From(data.Employees, data.Total);
     }
 }

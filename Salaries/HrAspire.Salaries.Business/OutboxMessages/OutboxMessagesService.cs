@@ -72,7 +72,7 @@ public class OutboxMessagesService : IOutboxMessagesService
     {
         object? payloadObject = null;
         string? errorMessage = null;
-        if (message.Type == typeof(SalaryRequestApprovedEvent).FullName!)
+        if (message.Type == typeof(SalaryRequestApprovedEvent).FullName)
         {
             (payloadObject, errorMessage) = this.TryDeserializeSalaryRequestApprovedEvent(message);
         }

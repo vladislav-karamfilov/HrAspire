@@ -2,12 +2,12 @@
 
 @attribute [Authorize]
 
-@inject SalaryRequestsApiClient SalaryRequestsApiClient
+@inject VacationRequestsApiClient VacationRequestsApiClient
 @inject NavigationManager NavigationManager
 
-<PageTitle>Update Salary Request - HR Aspire</PageTitle>
+<PageTitle>Update Vacation Request - HR Aspire</PageTitle>
 
-<h1>Update Salary Request</h1>
+<h1>Update Vacation Request</h1>
 <hr />
 
 @if (Input is not null)
@@ -16,17 +16,30 @@
         <div class="col-md-4">
             <section>
                 <StatusMessage Message="@ErrorMessage" IsError="true" />
-                <EditForm Model="Input" OnValidSubmit="UpdateSalaryRequestAsync">
+                <EditForm Model="Input" OnValidSubmit="UpdateVacationRequestAsync">
                     <DataAnnotationsValidator />
                     <ValidationSummary class="text-danger" role="alert" />
                     <div class="form-floating mb-3">
-                        <InputNumber @bind-Value="Input.NewSalary"
-                                     step=".01"
-                                     class="form-control"
-                                     aria-required="true"
-                                     placeholder="5000.00" />
-                        <label for="new-salary" class="form-label">New Salary</label>
-                        <ValidationMessage For="() => Input.NewSalary" class="text-danger" />
+                        <InputSelect @bind-Value="Input.Type" class="form-control" placeholder="type">
+                            <option value="">Select...</option>
+
+                            @foreach (var type in Enum.GetValues<VacationRequestType>())
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                        <label for="type" class="form-label">Type</label>
+                        <ValidationMessage For="() => Input.Type" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputDate @bind-Value="Input.FromDate" class="form-control" aria-required="true" />
+                        <label for="from-date" class="form-label">From Date</label>
+                        <ValidationMessage For="() => Input.FromDate" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputDate @bind-Value="Input.ToDate" class="form-control" aria-required="true" />
+                        <label for="to-date" class="form-label">To Date</label>
+                        <ValidationMessage For="() => Input.ToDate" class="text-danger" />
                     </div>
                     <div class="form-floating mb-3">
                         <InputTextArea @bind-Value="Input.Notes" class="form-control floating-label-textarea" placeholder="notes" />
@@ -47,24 +60,24 @@
     [Parameter]
     public int Id { get; set; }
 
-    private SalaryRequestUpdateRequestModel? Input { get; set; }
+    private VacationRequestUpdateRequestModel? Input { get; set; }
 
     private string? ErrorMessage { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        var (salaryRequest, _) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
-        this.Input = salaryRequest?.ToUpdateRequestModel();
+        var (vacationRequest, _) = await this.VacationRequestsApiClient.GetVacationRequestAsync(this.Id);
+        this.Input = vacationRequest?.ToUpdateRequestModel();
     }
 
-    private async Task UpdateSalaryRequestAsync()
+    private async Task UpdateVacationRequestAsync()
     {
         this.ErrorMessage = null;
 
-        var errorMessage = await this.SalaryRequestsApiClient.UpdateSalaryRequestAsync(this.Id, this.Input!);
+        var errorMessage = await this.VacationRequestsApiClient.UpdateVacationRequestAsync(this.Id, this.Input!);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/salary-requests/{this.Id}");
+            this.NavigationManager.NavigateTo($"/vacation-requests/{this.Id}");
         }
         else
         {

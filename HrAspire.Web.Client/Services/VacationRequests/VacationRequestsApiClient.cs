@@ -48,9 +48,9 @@ public class VacationRequestsApiClient
         return (null, errorMessage);
     }
 
-    public async Task<string?> UpdateSalaryRequestAsync(int id, SalaryRequestUpdateRequestModel request)
+    public async Task<string?> UpdateVacationRequestAsync(int id, VacationRequestUpdateRequestModel request)
     {
-        var response = await this.httpClient.PutAsJsonAsync($"salaryRequests/{id}", request);
+        var response = await this.httpClient.PutAsJsonAsync($"vacationRequests/{id}", request);
         if (response.IsSuccessStatusCode)
         {
             return null;

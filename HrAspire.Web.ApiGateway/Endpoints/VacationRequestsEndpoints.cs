@@ -2,11 +2,9 @@
 
 using System.Security.Claims;
 
-using HrAspire.Salaries.Web;
 using HrAspire.Vacations.Web;
 using HrAspire.Web.ApiGateway.Mappers;
 using HrAspire.Web.Common;
-using HrAspire.Web.Common.Models.SalaryRequests;
 using HrAspire.Web.Common.Models.VacationRequests;
 
 using Microsoft.AspNetCore.Mvc;
@@ -74,35 +72,38 @@ public static class VacationRequestsEndpoints
                     return Results.Created(string.Empty, createResponse.Id);
                 }));
 
-        //group
-        //    .MapGet(
-        //        "/SalaryRequests/{id:int}",
-        //        (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
-        //            => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-        //            {
-        //                var salaryRequestResponse = await salaryRequestsClient.GetAsync(new GetSalaryRequestRequest { Id = id });
+        group.MapGet(
+            "/VacationRequests/{id:int}",
+            (VacationRequests.VacationRequestsClient vacationRequestsClient, [FromRoute] int id)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                {
+                    var vacationRequestResponse = await vacationRequestsClient.GetAsync(new GetVacationRequestRequest { Id = id });
 
-        //                var salaryRequest = salaryRequestResponse.SalaryRequest.MapToDetailsResponseModel();
+                    var vacationRequest = vacationRequestResponse.VacationRequest.MapToDetailsResponseModel();
 
-        //                return Results.Ok(salaryRequest);
-        //            }))
-        //    .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
+                    return Results.Ok(vacationRequest);
+                }));
 
-        //group
-        //    .MapPut(
-        //        "/SalaryRequests/{id:int}",
-        //        (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
-        //            [FromRoute] int id,
-        //            [FromBody] SalaryRequestUpdateRequestModel model)
-        //            => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-        //            {
-        //                // TODO: Make sure the model cannot come unvalidated!!!
-        //                var updateResponse = await salaryRequestsClient.UpdateAsync(
-        //                    new UpdateSalaryRequestRequest { Id = id, NewSalary = model.NewSalary, Notes = model.Notes, });
+        group.MapPut(
+            "/VacationRequests/{id:int}",
+            (VacationRequests.VacationRequestsClient vacationRequestsClient,
+                [FromRoute] int id,
+                [FromBody] VacationRequestUpdateRequestModel model)
+                => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
+                {
+                    // TODO: Make sure the model cannot come unvalidated!!!
+                    var updateResponse = await vacationRequestsClient.UpdateAsync(
+                        new UpdateVacationRequestRequest
+                        {
+                            Id = id,
+                            Type = (VacationRequestType)(int)model.Type.GetValueOrDefault(),
+                            FromDate = model.FromDate.ToTimestamp(),
+                            ToDate = model.ToDate.ToTimestamp(),
+                            Notes = model.Notes,
+                        });
 
-        //                return Results.Ok();
-        //            }));
-        //// TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+                    return Results.Ok();
+                }));
 
         group.MapDelete(
             "/VacationRequests/{id:int}",
@@ -126,7 +127,7 @@ public static class VacationRequestsEndpoints
 
                         return Results.Ok();
                     }))
-            .RequireAuthorization(Constants.ManagerAuthPolicyName);
+            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
 
         group
             .MapPost(
@@ -139,7 +140,7 @@ public static class VacationRequestsEndpoints
 
                         return Results.Ok();
                     }))
-            .RequireAuthorization(Constants.ManagerAuthPolicyName);
+            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
 
         return group;
     }

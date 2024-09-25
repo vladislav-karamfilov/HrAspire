@@ -40,18 +40,30 @@ public class VacationRequestsService : IVacationRequestsService
         DateOnly toDate,
         string? notes)
     {
+        if (fromDate > toDate)
+        {
+            return ServiceResult<int>.Error("Vacation From date cannot be after its To date.");
+        }
+
+        var workDays = VacationRequestHelper.CalculateWorkDaysBetweenDates(fromDate, toDate);
+        if (workDays == 0)
+        {
+            return ServiceResult<int>.Error("No work days between selected vacation dates.");
+        }
+
         if (!await this.EmployeeExistsAsync(employeeId))
         {
             return ServiceResult<int>.Error("Employee to create vacation request for doesn't exist.");
         }
 
-        // TODO: Check if the employee has enough days left to have the paid vacation
+        // TODO: Check if the employee has enough days left to have the paid vacation (take years into account)
         var vacationRequest = new VacationRequest
         {
             EmployeeId = employeeId,
             Type = type,
             FromDate = fromDate,
             ToDate = toDate,
+            WorkDays = workDays,
             Notes = notes,
             Status = VacationRequestStatus.Pending,
             CreatedOn = this.timeProvider.GetUtcNow().UtcDateTime,
@@ -65,6 +77,7 @@ public class VacationRequestsService : IVacationRequestsService
 
     public async Task<ServiceResult> DeleteAsync(int id)
     {
+        // TODO: Don't allow update of approved (same for salary reqs)
         var deletedCount = await this.dbContext.VacationRequests
             .Where(e => e.Id == id)
             .ExecuteUpdateAsync(setters => setters
@@ -119,6 +132,7 @@ public class VacationRequestsService : IVacationRequestsService
 
     public async Task<ServiceResult> UpdateAsync(int id, VacationRequestType type, DateOnly fromDate, DateOnly toDate, string? notes)
     {
+        // TODO: don't allow update of non-pending (same for salary reqs)
         var updatedCount = await this.dbContext.VacationRequests
             .Where(e => e.Id == id)
             .ExecuteUpdateAsync(setters => setters

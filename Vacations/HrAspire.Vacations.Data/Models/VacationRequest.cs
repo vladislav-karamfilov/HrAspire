@@ -16,6 +16,8 @@ public class VacationRequest : IDeletableEntity
 
     public DateOnly ToDate { get; set; }
 
+    public int WorkDays { get; set; }
+
     public string? Notes { get; set; }
 
     public DateTime CreatedOn { get; set; }

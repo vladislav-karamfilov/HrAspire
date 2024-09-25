@@ -16,6 +16,8 @@ public class VacationRequestDetailsServiceModel
 
     public DateOnly ToDate { get; set; }
 
+    public int WorkDays { get; set; }
+
     public string? Notes { get; set; }
 
     public VacationRequestStatus Status { get; set; }

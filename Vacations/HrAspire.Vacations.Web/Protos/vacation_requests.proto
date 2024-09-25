@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+option csharp_namespace = "HrAspire.Vacations.Web";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+package vacations;
+
+service VacationRequests {
+	rpc ListEmployeeVacationRequests(ListEmployeeVacationRequestsRequest) returns (ListVacationRequestsResponse);
+	rpc Get(GetVacationRequestRequest) returns (GetVacationRequestResponse);
+	rpc Create(CreateVacationRequestRequest) returns (CreateVacationRequestResponse);
+	rpc Update(UpdateVacationRequestRequest) returns (google.protobuf.Empty);
+	rpc Delete(DeleteVacationRequestRequest) returns (google.protobuf.Empty);
+	rpc Approve(ChangeStatusOfVacationRequestRequest) returns (google.protobuf.Empty);
+	rpc Reject(ChangeStatusOfVacationRequestRequest) returns (google.protobuf.Empty);
+}
+
+message ListEmployeeVacationRequestsRequest {
+	string employeeId = 1;
+	int32 pageNumber = 2;
+	int32 pageSize = 3;
+}
+
+message GetVacationRequestRequest {
+	int32 id = 1;
+}
+
+message ListVacationRequestsResponse {
+	repeated VacationRequestModel vacationRequests = 1;
+	int32 total = 2;
+}
+
+message GetVacationRequestResponse {
+	VacationRequestDetailsModel vacationRequest = 1;
+}
+
+message VacationRequestModel {
+	int32 id = 1;
+	string employeeId = 2;
+	string employeeFullName = 3;
+	VacationRequestType type = 4;
+	google.protobuf.Timestamp fromDate = 5;
+	google.protobuf.Timestamp toDate = 6;
+	VacationRequestStatus status = 7;
+	google.protobuf.Timestamp createdOn = 8;
+}
+
+enum VacationRequestType {
+	Paid = 0;
+	Unpaid = 1;
+}
+
+enum VacationRequestStatus {
+	Pending = 0;
+	Approved = 1;
+	Rejected = 2;
+}
+
+message VacationRequestDetailsModel {
+	int32 id = 1;
+	string employeeId = 2;
+	string employeeFullName = 3;
+	VacationRequestType type = 4;
+	google.protobuf.Timestamp fromDate = 5;
+	google.protobuf.Timestamp toDate = 6;
+	int32 workDays = 7;
+	google.protobuf.StringValue notes = 8;
+	VacationRequestStatus status = 9;
+	google.protobuf.Timestamp statusChangedOn = 10;
+	google.protobuf.StringValue statusChangedById = 11;
+	google.protobuf.StringValue statusChangedByFullName = 12;
+	google.protobuf.Timestamp createdOn = 13;
+}
+
+message CreateVacationRequestRequest {
+	string employeeId = 1;
+	VacationRequestType type = 2;
+	google.protobuf.Timestamp fromDate = 3;
+	google.protobuf.Timestamp toDate = 4;
+	google.protobuf.StringValue notes = 5;
+}
+
+message CreateVacationRequestResponse {
+	int32 id = 1;
+}
+
+message UpdateVacationRequestRequest {
+	int32 id = 1;
+	VacationRequestType type = 2;
+	google.protobuf.Timestamp fromDate = 3;
+	google.protobuf.Timestamp toDate = 4;
+	google.protobuf.StringValue notes = 5;
+}
+
+message DeleteVacationRequestRequest {
+	int32 id = 1;
+}
+
+message ChangeStatusOfVacationRequestRequest {
+	int32 id = 1;
+	string currentEmployeeId = 2;
+}

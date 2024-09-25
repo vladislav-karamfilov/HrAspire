@@ -1,11 +1,14 @@
 ﻿namespace HrAspire.Vacations.Web.Mappers;
 
+extern alias webcommon;
+
 using Google.Protobuf.WellKnownTypes;
 
 using HrAspire.Vacations.Business.VacationRequests;
-using HrAspire.Web.Common;
 
 using Riok.Mapperly.Abstractions;
+
+using webcommon::HrAspire.Web.Common;
 
 [Mapper]
 internal static partial class VacationRequestMapper

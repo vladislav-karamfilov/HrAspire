@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\HrAspire.ServiceDefaults\HrAspire.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\..\Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj" />
+    <ProjectReference Include="..\..\Common\HrAspire.Web.Common\HrAspire.Web.Common.csproj" Aliases="webcommon" />
     <ProjectReference Include="..\HrAspire.Vacations.Business\HrAspire.Vacations.Business.csproj" />
   </ItemGroup>
 

@@ -33,6 +33,7 @@
 	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\documents.proto" Link="Protos\documents.proto" GrpcServices="Client" ProtoRoot=".." />
 	  <Protobuf Include="..\Employees\HrAspire.Employees.Web\Protos\employees.proto" Link="Protos\employees.proto" GrpcServices="Client" ProtoRoot=".." />
 	  <Protobuf Include="..\Salaries\HrAspire.Salaries.Web\Protos\salary_requests.proto" Link="Protos\salary_requests.proto" GrpcServices="Client" ProtoRoot=".." />
+	  <Protobuf Include="..\Vacations\HrAspire.Vacations.Web\Protos\vacation_requests.proto" Link="Protos\vacation_requests.proto" GrpcServices="Client" ProtoRoot=".." />
   </ItemGroup>
 	
 </Project>

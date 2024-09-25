@@ -11,12 +11,7 @@ public interface IVacationRequestsService
 
     Task<VacationRequestDetailsServiceModel?> GetAsync(int id);
 
-    Task<ServiceResult<int>> CreateAsync(
-        string employeeId,
-        VacationRequestType type,
-        DateOnly fromDate,
-        DateOnly toDate,
-        string? notes);
+    Task<ServiceResult<int>> CreateAsync(string employeeId, VacationRequestType type, DateOnly fromDate, DateOnly toDate, string? notes);
 
     Task<ServiceResult> UpdateAsync(int id, VacationRequestType type, DateOnly fromDate, DateOnly toDate, string? notes);
 

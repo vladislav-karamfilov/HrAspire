@@ -1,0 +1,202 @@
+﻿@page "/vacation-requests/{id:int}"
+
+@attribute [Authorize]
+
+@inject SalaryRequestsApiClient SalaryRequestsApiClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Vacation Request - HR Aspire</PageTitle>
+
+<h1>
+    Salary Request - @SalaryRequest?.EmployeeFullName
+
+    @if (SalaryRequest is not null)
+    {
+        if (IsUserHrManager)
+        {
+            if (SalaryRequest.Status == SalaryRequestStatus.Pending)
+            {
+                <button type="button"
+                        class="btn btn-danger float-end ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reject-salary-request-modal">
+
+                    Reject
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary float-end ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#approve-salary-request-modal">
+
+                    Approve
+                </button>
+            }
+        }
+        else
+        {
+            <button type="button"
+                    class="btn btn-danger float-end ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#delete-salary-request-modal">
+
+                Delete
+            </button>
+
+            <a href="/salary-request-update/@SalaryRequest.Id" class="btn btn-primary float-end">Update</a>
+        }
+    }
+</h1>
+<hr />
+
+<StatusMessage IsError="true" Message="@ErrorMessage" />
+
+@if (SalaryRequest is not null)
+{
+    <Modal Id="approve-salary-request-modal"
+           Title="Approve Salary Request"
+           Body="Are you sure you want to approve this salary request?"
+           Confirmed="ApproveSalaryRequestAsync" />
+
+    <Modal Id="reject-salary-request-modal"
+           Title="Reject Salary Request"
+           Body="Are you sure you want to reject this salary request?"
+           Confirmed="RejectSalaryRequestAsync" />
+
+    <Modal Id="delete-salary-request-modal"
+           Title="Delete Salary Request"
+           Body="Are you sure you want to delete this salary request?"
+           Confirmed="DeleteSalaryRequestAsync" />
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-product">
+                    <tbody>
+                        <tr>
+                            <td width="390">Employee</td>
+                            <td>
+                                <a href="/employees/@SalaryRequest.EmployeeId">@SalaryRequest.EmployeeFullName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>New Salary</td>
+                            <td>@SalaryRequest.NewSalary.ToString(Constants.MoneyFormat)</td>
+                        </tr>
+                        <tr>
+                            <td>Notes</td>
+                            <td>@SalaryRequest.Notes</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>
+                                <span class="@StatusCssClass">@SalaryRequest.Status</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Status on</td>
+                            <td>@SalaryRequest.StatusChangedOn?.ToLocalTime().ToString(Constants.DateTimeFormat)</td>
+                        </tr>
+                        <tr>
+                            <td>Status by</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(SalaryRequest.StatusChangedById))
+                                {
+                                    <a href="/employees/@SalaryRequest.StatusChangedById">@SalaryRequest.StatusChangedByFullName</a>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Created on</td>
+                            <td>@SalaryRequest.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)</td>
+                        </tr>
+                        <tr>
+                            <td>Created by</td>
+                            <td>
+                                <a href="/employees/@SalaryRequest.CreatedById">@SalaryRequest.CreatedByFullName</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    private bool IsUserHrManager { get; set; }
+
+    private SalaryRequestDetailsResponseModel? SalaryRequest { get; set; }
+
+    private string? ErrorMessage { get; set; }
+
+    private string? StatusCssClass
+        => SalaryRequest?.Status switch
+        {
+            SalaryRequestStatus.Approved => "badge bg-success",
+            SalaryRequestStatus.Rejected => "badge bg-danger",
+            _ => "badge bg-secondary",
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
+    }
+
+    protected override Task OnParametersSetAsync() => this.LoadSalaryRequestAsync();
+
+    private async Task LoadSalaryRequestAsync() 
+        => (this.SalaryRequest, this.ErrorMessage) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
+
+    private async Task ApproveSalaryRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.SalaryRequestsApiClient.ApproveSalaryRequestAsync(this.Id);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            await this.LoadSalaryRequestAsync();
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+
+    private async Task RejectSalaryRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.SalaryRequestsApiClient.RejectSalaryRequestAsync(this.Id);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            await this.LoadSalaryRequestAsync();
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+
+    private async Task DeleteSalaryRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.SalaryRequestsApiClient.DeleteSalaryRequestAsync(this.Id);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/employees/{this.SalaryRequest?.EmployeeId}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+}

@@ -1,0 +1,74 @@
+﻿@page "/vacation-request-update/{id:int}"
+
+@attribute [Authorize]
+
+@inject SalaryRequestsApiClient SalaryRequestsApiClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Update Salary Request - HR Aspire</PageTitle>
+
+<h1>Update Salary Request</h1>
+<hr />
+
+@if (Input is not null)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <section>
+                <StatusMessage Message="@ErrorMessage" IsError="true" />
+                <EditForm Model="Input" OnValidSubmit="UpdateSalaryRequestAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <div class="form-floating mb-3">
+                        <InputNumber @bind-Value="Input.NewSalary"
+                                     step=".01"
+                                     class="form-control"
+                                     aria-required="true"
+                                     placeholder="5000.00" />
+                        <label for="new-salary" class="form-label">New Salary</label>
+                        <ValidationMessage For="() => Input.NewSalary" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputTextArea @bind-Value="Input.Notes" class="form-control floating-label-textarea" placeholder="notes" />
+                        <label for="notes" class="form-label">Notes</label>
+                        <ValidationMessage For="() => Input.Notes" class="text-danger" />
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Update</button>
+                    </div>
+                </EditForm>
+            </section>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private SalaryRequestUpdateRequestModel? Input { get; set; }
+
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var (salaryRequest, _) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
+        this.Input = salaryRequest?.ToUpdateRequestModel();
+    }
+
+    private async Task UpdateSalaryRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var errorMessage = await this.SalaryRequestsApiClient.UpdateSalaryRequestAsync(this.Id, this.Input!);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/salary-requests/{this.Id}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+}

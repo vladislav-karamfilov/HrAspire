@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <Compile Include="..\..\Salaries\HrAspire.Salaries.Data\Models\SalaryRequestStatus.cs" Link="Models\SalaryRequests\SalaryRequestStatus.cs" />
+    <Compile Include="..\..\Vacations\HrAspire.Vacations.Data\Models\VacationRequestStatus.cs" Link="Models\VacationRequests\VacationRequestStatus.cs" />
+    <Compile Include="..\..\Vacations\HrAspire.Vacations.Data\Models\VacationRequestType.cs" Link="Models\VacationRequests\VacationRequestType.cs" />
   </ItemGroup>
 
   <ItemGroup>

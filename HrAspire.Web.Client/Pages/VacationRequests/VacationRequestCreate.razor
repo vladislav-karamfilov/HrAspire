@@ -1,0 +1,75 @@
+﻿@page "/vacation-request-create"
+
+@attribute [Authorize]
+
+@inject VacationRequestsApiClient VacationRequestsApiClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Vacation Request - HR Aspire</PageTitle>
+
+<h1>Create Vacation Request</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <StatusMessage Message="@ErrorMessage" IsError="true" />
+            <EditForm Model="Input" OnValidSubmit="CreateVacationRequestAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.Type" class="form-control" placeholder="type">
+                        <option value="">(Select)</option>
+
+                        @foreach (var type in Enum.GetValues<VacationRequestType>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                    <label for="type" class="form-label">Type</label>
+                    <ValidationMessage For="() => Input.Type" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputDate @bind-Value="Input.FromDate" class="form-control" aria-required="true" />
+                    <label for="from-date" class="form-label">From Date</label>
+                    <ValidationMessage For="() => Input.FromDate" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputDate @bind-Value="Input.ToDate" class="form-control" aria-required="true" />
+                    <label for="to-date" class="form-label">To Date</label>
+                    <ValidationMessage For="() => Input.ToDate" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputTextArea @bind-Value="Input.Notes" class="form-control floating-label-textarea" placeholder="notes" />
+                    <label for="notes" class="form-label">Notes</label>
+                    <ValidationMessage For="() => Input.Notes" class="text-danger" />
+                </div>
+
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Create</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    private VacationRequestCreateRequestModel Input { get; set; } = new();
+
+    private string? ErrorMessage { get; set; }
+
+    private async Task CreateVacationRequestAsync()
+    {
+        this.ErrorMessage = null;
+
+        var (newVacationRequestId, errorMessage) = await this.VacationRequestsApiClient.CreateVacationRequestAsync(this.Input);
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            this.NavigationManager.NavigateTo($"/vacation-requests/{newVacationRequestId}");
+        }
+        else
+        {
+            this.ErrorMessage = errorMessage;
+        }
+    }
+}

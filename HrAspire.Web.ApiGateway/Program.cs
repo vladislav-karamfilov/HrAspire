@@ -4,6 +4,7 @@ using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web;
 using HrAspire.Salaries.Web;
 using HrAspire.ServiceDefaults;
+using HrAspire.Vacations.Web;
 using HrAspire.Web.ApiGateway;
 using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
@@ -34,6 +35,8 @@ builder.Services
 builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
 builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
 builder.Services.AddGrpcClient<SalaryRequests.SalaryRequestsClient>(o => o.Address = new Uri($"https://{ResourceNames.SalariesService}"));
+builder.Services.AddGrpcClient<VacationRequests.VacationRequestsClient>(
+    o => o.Address = new Uri($"https://{ResourceNames.VacationsService}"));
 
 builder.Services
     .AddAuthorizationBuilder()
@@ -73,6 +76,7 @@ app.MapAccountEndpoints();
 app.MapEmployeesEndpoints();
 app.MapDocumentsEndpoints();
 app.MapSalaryRequestsEndpoints();
+app.MapVacationRequestsEndpoints();
 
 app.MapDefaultEndpoints();
 

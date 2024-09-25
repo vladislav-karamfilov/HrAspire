@@ -1,5 +1,7 @@
 namespace HrAspire.Vacations.Web.Services;
 
+extern alias webcommon;
+
 using System.Threading.Tasks;
 
 using Google.Protobuf.WellKnownTypes;
@@ -7,9 +9,11 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 using HrAspire.Vacations.Business.VacationRequests;
-using HrAspire.Vacations.Data.Models;
 using HrAspire.Vacations.Web.Mappers;
-using HrAspire.Web.Common;
+
+using webcommon::HrAspire.Web.Common;
+
+using VacationRequestType = HrAspire.Vacations.Data.Models.VacationRequestType;
 
 public class VacationRequestsGrpcService : VacationRequests.VacationRequestsBase
 {

@@ -46,7 +46,7 @@ public class VacationRequestsService : IVacationRequestsService
         }
 
         var workDays = VacationRequestHelper.CalculateWorkDaysBetweenDates(fromDate, toDate);
-        if (workDays == 0)
+        if (workDays <= 0)
         {
             return ServiceResult<int>.Error("No work days between selected vacation dates.");
         }
@@ -77,14 +77,23 @@ public class VacationRequestsService : IVacationRequestsService
 
     public async Task<ServiceResult> DeleteAsync(int id)
     {
-        // TODO: Don't allow update of approved (same for salary reqs)
-        var deletedCount = await this.dbContext.VacationRequests
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.IsDeleted, true)
-                .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
+        var vacationRequest = await this.dbContext.VacationRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (vacationRequest is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
 
-        return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+        if (vacationRequest.Status == VacationRequestStatus.Approved)
+        {
+            return ServiceResult.Error("Vacation request is approved and cannot be deleted.");
+        }
+
+        vacationRequest.IsDeleted = true;
+        vacationRequest.DeletedOn = this.timeProvider.GetUtcNow().UtcDateTime;
+
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
     }
 
     public async Task<VacationRequestDetailsServiceModel?> GetAsync(int id)
@@ -132,16 +141,37 @@ public class VacationRequestsService : IVacationRequestsService
 
     public async Task<ServiceResult> UpdateAsync(int id, VacationRequestType type, DateOnly fromDate, DateOnly toDate, string? notes)
     {
-        // TODO: don't allow update of non-pending (same for salary reqs)
-        var updatedCount = await this.dbContext.VacationRequests
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.Type, type)
-                .SetProperty(e => e.FromDate, fromDate)
-                .SetProperty(e => e.ToDate, toDate)
-                .SetProperty(e => e.Notes, notes));
+        var vacationRequest = await this.dbContext.VacationRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (vacationRequest is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
 
-        return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+        if (vacationRequest.Status != VacationRequestStatus.Pending)
+        {
+            return ServiceResult.Error("Vacation request is not pending and cannot be updated.");
+        }
+
+        if (fromDate > toDate)
+        {
+            return ServiceResult<int>.Error("Vacation From date cannot be after its To date.");
+        }
+
+        var workDays = VacationRequestHelper.CalculateWorkDaysBetweenDates(fromDate, toDate);
+        if (workDays <= 0)
+        {
+            return ServiceResult<int>.Error("No work days between selected vacation dates.");
+        }
+
+        vacationRequest.Type = type;
+        vacationRequest.FromDate = fromDate;
+        vacationRequest.ToDate = toDate;
+        vacationRequest.WorkDays = workDays;
+        vacationRequest.Notes = notes;
+
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
     }
 
     public async Task<ServiceResult> ApproveAsync(int id, string approvedById)

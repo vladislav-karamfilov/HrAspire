@@ -10,9 +10,9 @@ using MassTransit;
 public class SalaryRequestApprovedEventConsumer : IConsumer<SalaryRequestApprovedEvent>
 {
     private readonly IEmployeesService employeesService;
-    private readonly ILogger<SalaryRequestApprovedEvent> logger;
+    private readonly ILogger<SalaryRequestApprovedEventConsumer> logger;
 
-    public SalaryRequestApprovedEventConsumer(IEmployeesService employeesService, ILogger<SalaryRequestApprovedEvent> logger)
+    public SalaryRequestApprovedEventConsumer(IEmployeesService employeesService, ILogger<SalaryRequestApprovedEventConsumer> logger)
     {
         this.employeesService = employeesService;
         this.logger = logger;

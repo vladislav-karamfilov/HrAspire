@@ -65,9 +65,9 @@ public static class VacationRequestsEndpoints
                     var createResponse = await vacationRequestsClient.CreateAsync(new CreateVacationRequestRequest
                     {
                         EmployeeId = user.GetId()!,
-                        Type = (VacationRequestType)(int)model.Type!,
-                        FromDate = model.FromDate.ToTimestamp(),
-                        ToDate = model.ToDate.ToTimestamp(),
+                        Type = (VacationRequestType)(int)model.Type.GetValueOrDefault(),
+                        FromDate = model.FromDate.GetValueOrDefault().ToTimestamp(),
+                        ToDate = model.ToDate.GetValueOrDefault().ToTimestamp(),
                         Notes = model.Notes,
                     });
 

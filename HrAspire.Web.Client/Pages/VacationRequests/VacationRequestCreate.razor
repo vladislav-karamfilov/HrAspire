@@ -19,7 +19,7 @@
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
                     <InputSelect @bind-Value="Input.Type" class="form-control" placeholder="type">
-                        <option value="">(Select)</option>
+                        <option value="">Select...</option>
 
                         @foreach (var type in Enum.GetValues<VacationRequestType>())
                         {

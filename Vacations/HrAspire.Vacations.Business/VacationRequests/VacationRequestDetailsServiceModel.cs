@@ -1,14 +1,14 @@
-﻿namespace HrAspire.Vacations.Data.Models;
+﻿namespace HrAspire.Vacations.Business.VacationRequests;
 
-using System;
+using HrAspire.Vacations.Data.Models;
 
-using HrAspire.Data.Common;
-
-public class VacationRequest : IDeletableEntity
+public class VacationRequestDetailsServiceModel
 {
     public int Id { get; set; }
 
     public string EmployeeId { get; set; } = default!;
+
+    public string EmployeeFullName { get; set; } = default!;
 
     public VacationRequestType Type { get; set; }
 
@@ -18,15 +18,13 @@ public class VacationRequest : IDeletableEntity
 
     public string? Notes { get; set; }
 
-    public DateTime CreatedOn { get; set; }
-
     public VacationRequestStatus Status { get; set; }
-
-    public string? StatusChangedById { get; set; }
 
     public DateTime? StatusChangedOn { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public string? StatusChangedById { get; set; }
 
-    public DateTime? DeletedOn { get; set; }
+    public string? StatusChangedByFullName { get; set; }
+
+    public DateTime CreatedOn { get; set; }
 }

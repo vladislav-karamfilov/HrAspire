@@ -1,3 +1,4 @@
+using HrAspire.Business.Common.Services;
 using HrAspire.Salaries.Business.OutboxMessages;
 using HrAspire.Salaries.Business.SalaryRequests;
 using HrAspire.Salaries.Data;

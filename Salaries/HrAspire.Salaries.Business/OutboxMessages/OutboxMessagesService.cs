@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using HrAspire.Business.Common.Events;
+using HrAspire.Business.Common.Services;
 using HrAspire.Data.Common.Models;
 using HrAspire.Salaries.Data;
 

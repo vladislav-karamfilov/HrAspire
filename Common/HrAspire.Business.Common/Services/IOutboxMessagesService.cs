@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Salaries.Business.OutboxMessages;
+﻿namespace HrAspire.Business.Common.Services;
 
 public interface IOutboxMessagesService
 {

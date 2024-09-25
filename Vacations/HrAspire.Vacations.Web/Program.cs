@@ -1,3 +1,4 @@
+using HrAspire.Business.Common.Services;
 using HrAspire.ServiceDefaults;
 using HrAspire.Vacations.Business.OutboxMessages;
 using HrAspire.Vacations.Business.VacationRequests;

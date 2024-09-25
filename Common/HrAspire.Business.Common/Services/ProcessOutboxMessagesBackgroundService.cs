@@ -1,9 +1,11 @@
-﻿namespace HrAspire.Salaries.Web.Services;
+﻿namespace HrAspire.Business.Common.Services;
 
 using System.Threading;
 using System.Threading.Tasks;
 
-using HrAspire.Salaries.Business.OutboxMessages;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 public class ProcessOutboxMessagesBackgroundService : BackgroundService
 {
@@ -20,7 +22,7 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
         this.logger = logger;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) => this.ProcessOutboxMessagesAsync(stoppingToken);
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) => ProcessOutboxMessagesAsync(stoppingToken);
 
     private async Task ProcessOutboxMessagesAsync(CancellationToken cancellationToken)
     {
@@ -28,7 +30,7 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
         {
             var processedMessages = 0;
 
-            using (var scope = this.serviceProvider.CreateScope())
+            using (var scope = serviceProvider.CreateScope())
             {
                 try
                 {
@@ -42,7 +44,7 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogError($"{nameof(this.ProcessOutboxMessagesAsync)}() failed with ex: {e}");
+                    logger.LogError($"{nameof(this.ProcessOutboxMessagesAsync)}() failed with ex: {e}");
                 }
             }
 

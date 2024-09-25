@@ -63,13 +63,23 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     public async Task<ServiceResult> DeleteAsync(int id)
     {
-        var deletedCount = await this.dbContext.SalaryRequests
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.IsDeleted, true)
-                .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
+        var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (salaryRequest is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
 
-        return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+        if (salaryRequest.Status == SalaryRequestStatus.Approved)
+        {
+            return ServiceResult.Error("Salary request is approved and cannot be deleted.");
+        }
+
+        salaryRequest.IsDeleted = true;
+        salaryRequest.DeletedOn = this.timeProvider.GetUtcNow().UtcDateTime;
+
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
     }
 
     public async Task<SalaryRequestDetailsServiceModel?> GetAsync(int id)
@@ -139,13 +149,23 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     public async Task<ServiceResult> UpdateAsync(int id, decimal newSalary, string? notes)
     {
-        var updatedCount = await this.dbContext.SalaryRequests
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.NewSalary, newSalary)
-                .SetProperty(e => e.Notes, notes));
+        var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (salaryRequest is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
 
-        return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+        if (salaryRequest.Status != SalaryRequestStatus.Pending)
+        {
+            return ServiceResult.Error("Salary request is not pending and cannot be updated.");
+        }
+
+        salaryRequest.NewSalary = newSalary;
+        salaryRequest.Notes = notes;
+
+        await this.dbContext.SaveChangesAsync();
+
+        return ServiceResult.Success;
     }
 
     public async Task<ServiceResult> ApproveAsync(int id, string approvedById)

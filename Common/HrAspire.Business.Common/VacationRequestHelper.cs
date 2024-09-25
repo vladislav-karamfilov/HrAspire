@@ -13,7 +13,7 @@ public static class VacationRequestHelper
         var current = fromDate;
         while (current <= toDate)
         {
-            if (current.DayOfWeek is not DayOfWeek.Saturday or DayOfWeek.Sunday)
+            if (current.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday))
             {
                 workDays++;
             }

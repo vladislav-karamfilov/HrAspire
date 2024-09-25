@@ -60,7 +60,7 @@ public class VacationRequestsApiClient
         return errorMessage;
     }
 
-    public async Task<string?> DeleteSalaryRequestAsync(int id)
+    public async Task<string?> DeleteVacationRequestAsync(int id)
     {
         var response = await this.httpClient.DeleteAsync($"vacationRequests/{id}");
         if (response.IsSuccessStatusCode)
@@ -72,7 +72,7 @@ public class VacationRequestsApiClient
         return errorMessage;
     }
 
-    public async Task<string?> ApproveSalaryRequestAsync(int id)
+    public async Task<string?> ApproveVacationRequestAsync(int id)
     {
         var response = await this.httpClient.PostAsync($"vacationRequests/{id}/approval", content: null);
         if (response.IsSuccessStatusCode)
@@ -84,7 +84,7 @@ public class VacationRequestsApiClient
         return errorMessage;
     }
 
-    public async Task<string?> RejectSalaryRequestAsync(int id)
+    public async Task<string?> RejectVacationRequestAsync(int id)
     {
         var response = await this.httpClient.PostAsync($"vacationRequests/{id}/rejection", content: null);
         if (response.IsSuccessStatusCode)

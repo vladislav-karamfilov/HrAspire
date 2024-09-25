@@ -230,4 +230,18 @@ public class EmployeesService : IEmployeesService
 
         return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
+
+    public async Task<ServiceResult> UpdateUsedPaidVacationDaysAsync(string id, int usedPaidVacationDays)
+    {
+        if (usedPaidVacationDays < 0)
+        {
+            return ServiceResult.Error("New employee used paid vacation days cannot be negative");
+        }
+
+        var updatedCount = await this.dbContext.Employees
+            .Where(e => e.Id == id)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(e => e.UsedPaidVacationDays, usedPaidVacationDays));
+
+        return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+    }
 }

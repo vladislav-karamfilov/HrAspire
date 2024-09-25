@@ -36,4 +36,6 @@ public interface IEmployeesService
     Task<ServiceResult> DeleteAsync(string id);
 
     Task<ServiceResult> UpdateSalaryAsync(string id, decimal newSalary);
+
+    Task<ServiceResult> UpdateUsedPaidVacationDaysAsync(string id, int usedPaidVacationDays);
 }

@@ -147,7 +147,7 @@
 
         @if (IsUserCurrentEmployee)
         {
-            <a href="/vacation-request-create" class="btn btn-primary float-end">Create</a>            
+            <a href="/vacation-request-create" class="btn btn-primary float-end">Create</a>
         }
     </h3>
     <hr />
@@ -202,7 +202,6 @@
     {
         var authState = await this.AuthState;
         this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
-        this.IsUserCurrentEmployee = authState.User.GetId() == this.Id;
 
         this.GridDocumentsProvider = this.GetGridDocumentsAsync;
         this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
@@ -210,7 +209,12 @@
     }
 
     protected override async Task OnParametersSetAsync()
-        => (this.Employee, this.ErrorMessage) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
+    {
+        (this.Employee, this.ErrorMessage) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
+
+        var authState = await this.AuthState;
+        this.IsUserCurrentEmployee = authState.User.GetId() == this.Id;
+    }
 
     private async Task DeleteEmployeeAsync()
     {

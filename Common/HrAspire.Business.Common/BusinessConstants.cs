@@ -7,4 +7,6 @@ public static class BusinessConstants
     public const string ManagerAndHrManagerRoles = ManagerRole + "," + HrManagerRole;
 
     public const string EmployeeNamesCacheSetName = "employee-names";
+
+    public const int MaxPaidVacationDaysPerYear = 20;
 }

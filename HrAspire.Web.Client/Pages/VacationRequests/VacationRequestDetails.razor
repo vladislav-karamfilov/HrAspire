@@ -1,6 +1,6 @@
 ﻿@page "/vacation-requests/{id:int}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
 
 @inject VacationRequestsApiClient VacationRequestsApiClient
 @inject NavigationManager NavigationManager
@@ -12,28 +12,7 @@
 
     @if (VacationRequest is not null)
     {
-        if (IsUserManager)
-        {
-            if (VacationRequest.Status == VacationRequestStatus.Pending)
-            {
-                <button type="button"
-                        class="btn btn-danger float-end ms-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#reject-vacation-request-modal">
-
-                    Reject
-                </button>
-
-                <button type="button"
-                        class="btn btn-primary float-end ms-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#approve-vacation-request-modal">
-
-                    Approve
-                </button>
-            }
-        }
-        else
+        if (IsUserCurrentEmployee)
         {
             <button type="button"
                     class="btn btn-danger float-end ms-2"
@@ -44,6 +23,24 @@
             </button>
 
             <a href="/vacation-request-update/@VacationRequest.Id" class="btn btn-primary float-end">Update</a>
+        }
+        else if (VacationRequest.Status == VacationRequestStatus.Pending)
+        {
+            <button type="button"
+                    class="btn btn-danger float-end ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#reject-vacation-request-modal">
+
+                Reject
+            </button>
+
+            <button type="button"
+                    class="btn btn-primary float-end ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#approve-vacation-request-modal">
+
+                Approve
+            </button>
         }
     }
 </h1>
@@ -136,7 +133,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    private bool IsUserManager { get; set; }
+    private bool IsUserCurrentEmployee { get; set; }
 
     private VacationRequestDetailsResponseModel? VacationRequest { get; set; }
 
@@ -150,13 +147,13 @@
             _ => "badge bg-secondary",
         };
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        var authState = await this.AuthState;
-        this.IsUserManager = authState.User.IsInRole(BusinessConstants.ManagerRole);
-    }
+        await this.LoadVacationRequestAsync();
 
-    protected override Task OnParametersSetAsync() => this.LoadVacationRequestAsync();
+        var authState = await this.AuthState;
+        this.IsUserCurrentEmployee = authState.User.GetId() == this.VacationRequest?.EmployeeId;
+    }
 
     private async Task LoadVacationRequestAsync()
         => (this.VacationRequest, this.ErrorMessage) = await this.VacationRequestsApiClient.GetVacationRequestAsync(this.Id);

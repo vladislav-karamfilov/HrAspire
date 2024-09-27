@@ -246,7 +246,7 @@ public class VacationRequestsService : IVacationRequestsService
 
             this.dbContext.OutboxMessages.Add(new OutboxMessage
             {
-                Type = typeof(SalaryRequestApprovedEvent).FullName!,
+                Type = typeof(PaidVacationRequestApprovedEvent).FullName!,
                 CreatedOn = utcNow,
                 Payload = JsonSerializer.Serialize(
                     new PaidVacationRequestApprovedEvent(

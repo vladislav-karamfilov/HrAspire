@@ -106,6 +106,7 @@ public class EmployeesService : IEmployeesService
         }
 
         var oldEmployeeFullName = employee.FullName;
+
         employee.FullName = fullName;
         employee.DateOfBirth = dateOfBirth;
         employee.Position = position;
@@ -149,7 +150,7 @@ public class EmployeesService : IEmployeesService
         }
         catch (Exception ex) when (ex is not RedisException)
         {
-            // Set the old employee full name just in case it's was updated before the exception
+            // Set the old employee full name just in case it was updated before the exception
             await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, oldEmployeeFullName);
 
             throw;

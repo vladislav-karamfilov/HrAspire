@@ -22,8 +22,16 @@ builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
+    x.AddConsumer<EmployeeDeletedEventConsumer>().Endpoint(e => e.InstanceId = "vacations");
+
     x.UsingRabbitMq((context, configurator) =>
     {
+        configurator.UseMessageRetry(
+            retry => retry.Incremental(
+                retryLimit: 10,
+                initialInterval: TimeSpan.FromMilliseconds(500),
+                intervalIncrement: TimeSpan.FromMilliseconds(500)));
+
         var configuration = context.GetRequiredService<IConfiguration>();
         var host = configuration.GetConnectionString(ResourceNames.Messaging);
         configurator.Host(host);
@@ -42,7 +50,7 @@ var app = builder.Build();
 app.MapGrpcService<VacationRequestsGrpcService>();
 
 app.MapGet(
-    "/", 
+    "/",
     () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.MapDefaultEndpoints();

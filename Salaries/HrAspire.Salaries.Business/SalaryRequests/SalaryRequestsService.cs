@@ -82,6 +82,13 @@ public class SalaryRequestsService : ISalaryRequestsService
         return ServiceResult.Success;
     }
 
+    public Task DeleteEmployeeSalaryRequestsAsync(string employeeId)
+        => this.dbContext.SalaryRequests
+            .Where(r => r.EmployeeId == employeeId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(e => e.IsDeleted, true)
+                .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
+
     public async Task<SalaryRequestDetailsServiceModel?> GetAsync(int id)
     {
         var salaryRequest = await this.dbContext.SalaryRequests

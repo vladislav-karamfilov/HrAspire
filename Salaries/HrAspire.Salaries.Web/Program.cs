@@ -22,8 +22,16 @@ builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
+    x.AddConsumer<EmployeeDeletedEventConsumer>().Endpoint(e => e.InstanceId = "salaries");
+
     x.UsingRabbitMq((context, configurator) =>
     {
+        configurator.UseMessageRetry(
+            retry => retry.Incremental(
+                retryLimit: 10,
+                initialInterval: TimeSpan.FromMilliseconds(500),
+                intervalIncrement: TimeSpan.FromMilliseconds(500)));
+
         var configuration = context.GetRequiredService<IConfiguration>();
         var host = configuration.GetConnectionString(ResourceNames.Messaging);
         configurator.Host(host);

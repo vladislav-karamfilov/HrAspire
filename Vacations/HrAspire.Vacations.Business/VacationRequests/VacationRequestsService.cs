@@ -110,6 +110,13 @@ public class VacationRequestsService : IVacationRequestsService
         return ServiceResult.Success;
     }
 
+    public Task DeleteEmployeeVacationRequestsAsync(string employeeId)
+        => this.dbContext.VacationRequests
+            .Where(r => r.EmployeeId == employeeId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(e => e.IsDeleted, true)
+                .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
+
     public async Task<VacationRequestDetailsServiceModel?> GetAsync(int id)
     {
         var vacationRequest = await this.dbContext.VacationRequests

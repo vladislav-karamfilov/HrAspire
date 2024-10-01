@@ -17,6 +17,8 @@ public interface IVacationRequestsService
 
     Task<ServiceResult> DeleteAsync(int id);
 
+    Task DeleteEmployeeVacationRequestsAsync(string employeeId);
+
     Task<ServiceResult> ApproveAsync(int id, string approvedById);
 
     Task<ServiceResult> RejectAsync(int id, string rejectedById);

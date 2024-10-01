@@ -1,5 +1,7 @@
+using HrAspire.Business.Common.Services;
 using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Business.Employees;
+using HrAspire.Employees.Business.OutboxMessages;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 using HrAspire.Employees.Web.Services;
@@ -33,7 +35,7 @@ builder.Services.AddMassTransit(x =>
     {
         configurator.UseMessageRetry(
             retry => retry.Incremental(
-                retryLimit: 5,
+                retryLimit: 10,
                 initialInterval: TimeSpan.FromMilliseconds(500),
                 intervalIncrement: TimeSpan.FromMilliseconds(500)));
 
@@ -46,6 +48,9 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 builder.Services.AddScoped<IDocumentsService, DocumentsService>();
+builder.Services.AddScoped<IOutboxMessagesService, OutboxMessagesService>();
+
+builder.Services.AddHostedService<ProcessOutboxMessagesBackgroundService>();
 
 builder.Services
     .AddIdentityCore<Employee>(options =>

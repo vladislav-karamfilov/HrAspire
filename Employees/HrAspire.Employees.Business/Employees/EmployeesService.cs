@@ -2,9 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using HrAspire.Business.Common;
+using HrAspire.Business.Common.Events;
+using HrAspire.Data.Common.Models;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
 
@@ -164,13 +167,36 @@ public class EmployeesService : IEmployeesService
 
     public async Task<ServiceResult> DeleteAsync(string id)
     {
-        var deletedCount = await this.dbContext.Employees
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.IsDeleted, true)
-                .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
+        var employee = await this.dbContext.Employees.FirstOrDefaultAsync(x => x.Id == id);
+        if (employee is null)
+        {
+            return ServiceResult.ErrorNotFound;
+        }
 
-        return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
+        var utcNow = this.timeProvider.GetUtcNow().UtcDateTime;
+
+        employee.IsDeleted = true;
+        employee.DeletedOn = utcNow;
+
+        this.dbContext.OutboxMessages.Add(new OutboxMessage
+        {
+            Type = typeof(EmployeeDeletedEvent).FullName!,
+            Payload = JsonSerializer.Serialize(new EmployeeDeletedEvent(employee.Id, utcNow)),
+            CreatedOn = utcNow,
+        });
+
+        await this.dbContext.SaveChangesAsync();
+
+        try
+        {
+            await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id);
+        }
+        catch
+        {
+            // It's not crucial to delete the hash key from cache so ignore exceptions here
+        }
+
+        return ServiceResult.Success;
     }
 
     public Task<EmployeeDetailsServiceModel?> GetAsync(string id)

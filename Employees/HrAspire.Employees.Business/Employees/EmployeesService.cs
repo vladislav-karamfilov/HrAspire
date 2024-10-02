@@ -75,7 +75,10 @@ public class EmployeesService : IEmployeesService
         {
             try
             {
-                await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id);
+                await this.CacheDatabase.HashDeleteAsync(
+                    BusinessConstants.EmployeeNamesCacheSetName,
+                    employee.Id,
+                    CommandFlags.FireAndForget);
             }
             catch
             {
@@ -190,7 +193,7 @@ public class EmployeesService : IEmployeesService
 
         try
         {
-            await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id);
+            await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, CommandFlags.FireAndForget);
         }
         catch
         {
@@ -240,7 +243,7 @@ public class EmployeesService : IEmployeesService
 
     public async Task<IEnumerable<EmployeeServiceModel>> ListManagersAsync()
         => await this.dbContext.Employees
-            .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole))
+            .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole || ur.RoleId == BusinessConstants.HrManagerRole))
             .ProjectToServiceModel()
             .ToListAsync();
 

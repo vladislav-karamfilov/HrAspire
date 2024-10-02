@@ -10,6 +10,7 @@ public class EmployeeCreateRequestModelValidator : AbstractValidator<EmployeeCre
     {
         this.RuleFor(m => m.Email).NotEmpty().EmailAddress();
         this.RuleFor(m => m.Password).NotEmpty().MinimumLength(AccountConstants.PasswordMinLength);
+        this.RuleFor(m => m.ConfirmPassword).Equal(m => m.Password).WithMessage("'Confirm Password' must match 'Password'");
         this.RuleFor(m => m.FullName).NotEmpty();
         this.RuleFor(m => m.Salary).GreaterThanOrEqualTo(0);
         this.RuleFor(m => m.Position).NotEmpty();

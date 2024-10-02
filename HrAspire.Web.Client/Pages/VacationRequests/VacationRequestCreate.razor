@@ -15,7 +15,7 @@
         <section>
             <StatusMessage Message="@ErrorMessage" IsError="true" />
             <EditForm Model="Input" OnValidSubmit="CreateVacationRequestAsync">
-                <DataAnnotationsValidator />
+                <FluentValidationValidator DisableAssemblyScanning="true" />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
                     <InputSelect @bind-Value="Input.Type" class="form-control" placeholder="type">

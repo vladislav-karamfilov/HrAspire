@@ -23,12 +23,12 @@ public static class HttpResponseMessageExtensions
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return "Object not found.";
+            return "Not found.";
         }
 
         if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
         {
-            return "You don't have access to this object.";
+            return "You don't have access.";
         }
 
         return Constants.UnexpectedErrorMessage;

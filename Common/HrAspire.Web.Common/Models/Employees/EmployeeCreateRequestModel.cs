@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 public class EmployeeCreateRequestModel
 {
     [Required]
+    [EmailAddress]
     public string Email { get; set; } = default!;
 
     [Required]

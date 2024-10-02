@@ -59,7 +59,6 @@ public static class VacationRequestsEndpoints
                 ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    // TODO: Make sure the model cannot come unvalidated!!!
                     var createResponse = await vacationRequestsClient.CreateAsync(new CreateVacationRequestRequest
                     {
                         EmployeeId = user.GetId()!,
@@ -91,7 +90,6 @@ public static class VacationRequestsEndpoints
                 [FromBody] VacationRequestUpdateRequestModel model)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    // TODO: Make sure the model cannot come unvalidated!!!
                     var updateResponse = await vacationRequestsClient.UpdateAsync(
                         new UpdateVacationRequestRequest
                         {

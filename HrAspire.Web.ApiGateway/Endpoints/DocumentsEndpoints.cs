@@ -43,7 +43,6 @@ public static class DocumentsEndpoints
                 ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    // TODO: Make sure the model cannot come unvalidated!!!
                     var createResponse = await documentsClient.CreateAsync(new CreateDocumentRequest
                     {
                         EmployeeId = employeeId,
@@ -74,7 +73,6 @@ public static class DocumentsEndpoints
             (Documents.DocumentsClient documentsClient, [FromRoute] int id, [FromBody] DocumentUpdateRequestModel model)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    // TODO: Make sure the model cannot come unvalidated!!!
                     await documentsClient.UpdateAsync(new UpdateDocumentRequest
                     {
                         Id = id,

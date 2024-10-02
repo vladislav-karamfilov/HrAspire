@@ -64,7 +64,6 @@ public static class SalaryRequestsEndpoints
                     ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        // TODO: Make sure the model cannot come unvalidated!!!
                         var createResponse = await salaryRequestsClient.CreateAsync(new CreateSalaryRequestRequest
                         {
                             EmployeeId = employeeId,
@@ -99,7 +98,6 @@ public static class SalaryRequestsEndpoints
                     [FromBody] SalaryRequestUpdateRequestModel model)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        // TODO: Make sure the model cannot come unvalidated!!!
                         var updateResponse = await salaryRequestsClient.UpdateAsync(
                             new UpdateSalaryRequestRequest { Id = id, NewSalary = model.NewSalary, Notes = model.Notes, });
 

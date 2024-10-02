@@ -60,7 +60,6 @@ public static class EmployeesEndpoints
                 (Employees.EmployeesClient employeesClient, [FromBody] EmployeeCreateRequestModel model, ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        // TODO: Make sure the model cannot come unvalidated!!!
                         var createResponse = await employeesClient.CreateAsync(new CreateEmployeeRequest
                         {
                             Email = model.Email,
@@ -97,7 +96,6 @@ public static class EmployeesEndpoints
                 (Employees.EmployeesClient employeesClient, [FromRoute] string id, [FromBody] EmployeeUpdateRequestModel model)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        // TODO: Make sure the model cannot come unvalidated!!!
                         await employeesClient.UpdateAsync(new UpdateEmployeeRequest
                         {
                             Id = id,

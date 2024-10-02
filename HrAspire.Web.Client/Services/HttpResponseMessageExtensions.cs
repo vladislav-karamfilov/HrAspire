@@ -19,6 +19,12 @@ public static class HttpResponseMessageExtensions
             {
                 return problemDetails.Detail;
             }
+
+            var errorMessages = problemDetails?.Errors?.SelectMany(e => e.Value).Where(e => !string.IsNullOrWhiteSpace(e)).ToList();
+            if (errorMessages?.Count > 0)
+            {
+                return string.Join(Environment.NewLine, errorMessages);
+            }
         }
 
         if (response.StatusCode == HttpStatusCode.NotFound)

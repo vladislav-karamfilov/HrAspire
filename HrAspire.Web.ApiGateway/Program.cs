@@ -1,3 +1,5 @@
+using FluentValidation;
+
 using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
@@ -8,6 +10,7 @@ using HrAspire.Vacations.Web;
 using HrAspire.Web.ApiGateway;
 using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
+using HrAspire.Web.Common.Validators.Employees;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -52,6 +55,8 @@ builder.Services
     .AddEntityFrameworkStores<EmployeesDbContext>()
     .AddApiEndpoints();
 
+builder.Services.AddValidatorsFromAssemblyContaining<EmployeeCreateRequestModelValidator>(ServiceLifetime.Singleton);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -72,12 +77,15 @@ app.UseCors(policyBuilder => policyBuilder
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapAccountEndpoints();
-app.MapEmployeesEndpoints();
-app.MapDocumentsEndpoints();
-app.MapSalaryRequestsEndpoints();
-app.MapVacationRequestsEndpoints();
-
 app.MapDefaultEndpoints();
+
+var root = app.MapGroup(string.Empty);
+root.AddEndpointFilterFactory(ValidationHelper.ValidationFilterFactory);
+
+root.MapAccountEndpoints();
+root.MapEmployeesEndpoints();
+root.MapDocumentsEndpoints();
+root.MapSalaryRequestsEndpoints();
+root.MapVacationRequestsEndpoints();
 
 app.Run();

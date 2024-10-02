@@ -13,4 +13,6 @@ public class ProblemDetails
     public string? Instance { get; set; }
 
     public IDictionary<string, object?>? Extensions { get; set; }
+
+    public IDictionary<string, string[]>? Errors { get; set; }
 }

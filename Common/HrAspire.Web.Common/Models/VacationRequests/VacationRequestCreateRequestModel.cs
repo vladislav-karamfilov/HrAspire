@@ -9,7 +9,6 @@ public class VacationRequestCreateRequestModel
     [Required]
     public VacationRequestType? Type { get; set; }
 
-    // TODO: validate from date < to date + from date >= today
     [Required]
     public DateOnly? FromDate { get; set; }
 

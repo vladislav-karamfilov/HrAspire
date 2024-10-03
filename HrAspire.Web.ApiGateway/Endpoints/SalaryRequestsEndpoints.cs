@@ -52,8 +52,8 @@ public static class SalaryRequestsEndpoints
                         var salaryRequests = salaryRequestsResponse.SalaryRequests.Select(e => e.MapToResponseModel()).ToList();
 
                         return Results.Ok(new SalaryRequestsResponseModel(salaryRequests, salaryRequestsResponse.Total));
-                    }));
-        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+                    }))
+            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
 
         group
             .MapPost(
@@ -73,8 +73,8 @@ public static class SalaryRequestsEndpoints
                         });
 
                         return Results.Created(string.Empty, createResponse.Id);
-                    }));
-        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+                    }))
+            .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapGet(
@@ -102,8 +102,8 @@ public static class SalaryRequestsEndpoints
                             new UpdateSalaryRequestRequest { Id = id, NewSalary = model.NewSalary, Notes = model.Notes, });
 
                         return Results.Ok();
-                    }));
-        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+                    }))
+            .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapDelete(
@@ -114,8 +114,8 @@ public static class SalaryRequestsEndpoints
                         await salaryRequestsClient.DeleteAsync(new DeleteSalaryRequestRequest { Id = id });
 
                         return Results.Ok();
-                    }));
-        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
+                    }))
+            .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapPost(

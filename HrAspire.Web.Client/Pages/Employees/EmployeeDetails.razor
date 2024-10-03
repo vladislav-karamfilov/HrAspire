@@ -15,11 +15,13 @@
 
     @if (Employee is not null)
     {
-        <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-employee-modal">
-            Delete
-        </button>
+        <AuthorizeView Roles="@BusinessConstants.HrManagerRole">
+            <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-employee-modal">
+                Delete
+            </button>
 
-        <a href="/employee-update/@Employee.Id" class="btn btn-primary float-end">Update</a>
+            <a href="/employee-update/@Employee.Id" class="btn btn-primary float-end">Update</a>
+        </AuthorizeView>
     }
 </h1>
 <hr />
@@ -28,10 +30,12 @@
 
 @if (Employee is not null)
 {
-    <Modal Id="delete-employee-modal"
-           Title="Delete Employee"
-           Body="Are you sure you want to delete this employee?"
-           Confirmed="DeleteEmployeeAsync" />
+    <AuthorizeView Roles="@BusinessConstants.HrManagerRole">
+        <Modal Id="delete-employee-modal"
+               Title="Delete Employee"
+               Body="Are you sure you want to delete this employee?"
+               Confirmed="DeleteEmployeeAsync" />
+    </AuthorizeView>
 
     <div class="card">
         <div class="card-body">
@@ -100,51 +104,53 @@
         </div>
     </div>
 
-    <h3 class="mt-5">
-        Documents
-        <a href="/document-create/@Id" class="btn btn-primary float-end">Create</a>
-    </h3>
-    <hr />
+    <AuthorizeView Roles="@BusinessConstants.ManagerAndHrManagerRoles" Context="authState">
+        <h3 class="mt-5">
+            Documents
+            <a href="/document-create/@Id" class="btn btn-primary float-end">Create</a>
+        </h3>
+        <hr />
 
-    <QuickGrid ItemsProvider="GridDocumentsProvider" Pagination="DocumentsPagination" Class="table table-bordered table-striped">
-        <PropertyColumn Property="@(e => e.Title)" />
-        <PropertyColumn Property="@(e => e.FileName)" Title="File Name" />
-        <TemplateColumn Title="Created on">
-            @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
-        </TemplateColumn>
+        <QuickGrid ItemsProvider="GridDocumentsProvider" Pagination="DocumentsPagination" Class="table table-bordered table-striped">
+            <PropertyColumn Property="@(e => e.Title)" />
+            <PropertyColumn Property="@(e => e.FileName)" Title="File Name" />
+            <TemplateColumn Title="Created on">
+                @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
+            </TemplateColumn>
 
-        <TemplateColumn Title="Title">
-            <a href="/documents/@context.Id">View</a>
-            <a href="/document-update/@context.Id" class="ms-3">Update</a>
-        </TemplateColumn>
-    </QuickGrid>
+            <TemplateColumn Title="Title">
+                <a href="/documents/@context.Id">View</a>
+                <a href="/document-update/@context.Id" class="ms-3">Update</a>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="DocumentsPagination"></Paginator>
+    </AuthorizeView>
 
-    <Paginator State="DocumentsPagination"></Paginator>
+    <AuthorizeView Roles="@BusinessConstants.ManagerAndHrManagerRoles" Context="authState">
+        <h3 class="mt-5">
+            Salary Requests
+            <a href="/salary-request-create/@Id" class="btn btn-primary float-end">Create</a>
+        </h3>
+        <hr />
 
-    <h3 class="mt-5">
-        Salary Requests
-        <a href="/salary-request-create/@Id" class="btn btn-primary float-end">Create</a>
-    </h3>
-    <hr />
+        <QuickGrid ItemsProvider="GridSalaryRequestsProvider" Pagination="SalaryRequestsPagination" Class="table table-bordered table-striped">
+            <PropertyColumn Property="@(e => e.NewSalary)" Format="@Constants.MoneyFormat" />
+            <PropertyColumn Property="@(e => e.Status)" />
+            <TemplateColumn Title="Created on">
+                @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
+            </TemplateColumn>
 
-    <QuickGrid ItemsProvider="GridSalaryRequestsProvider" Pagination="SalaryRequestsPagination" Class="table table-bordered table-striped">
-        <PropertyColumn Property="@(e => e.NewSalary)" Format="@Constants.MoneyFormat" />
-        <PropertyColumn Property="@(e => e.Status)" />
-        <TemplateColumn Title="Created on">
-            @context.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)
-        </TemplateColumn>
+            <TemplateColumn Title="Operations">
+                <a href="/salary-requests/@context.Id">View</a>
 
-        <TemplateColumn Title="Operations">
-            <a href="/salary-requests/@context.Id">View</a>
-
-            @if (!IsUserHrManager)
-            {
-                <a href="/salary-request-update/@context.Id" class="ms-3">Update</a>
-            }
-        </TemplateColumn>
-    </QuickGrid>
-
-    <Paginator State="SalaryRequestsPagination"></Paginator>
+                @if (IsUserEmployeeManager)
+                {
+                    <a href="/salary-request-update/@context.Id" class="ms-3">Update</a>
+                }
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="SalaryRequestsPagination"></Paginator>
+    </AuthorizeView>
 
     <h3 class="mt-5">
         Vacation Requests
@@ -168,13 +174,12 @@
         <TemplateColumn Title="Operations">
             <a href="/vacation-requests/@context.Id">View</a>
 
-            @if (!IsUserHrManager)
+            @if (IsUserCurrentEmployee)
             {
                 <a href="/vacation-request-update/@context.Id" class="ms-3">Update</a>
             }
         </TemplateColumn>
     </QuickGrid>
-
     <Paginator State="VacationRequestsPagination"></Paginator>
 }
 
@@ -196,18 +201,13 @@
     private GridItemsProvider<VacationRequestResponseModel>? GridVacationRequestsProvider { get; set; }
     private PaginationState VacationRequestsPagination { get; set; } = new() { ItemsPerPage = 5 };
 
-    // TODO: rework to IsUserEmployeeManager
-    private bool IsUserHrManager { get; set; }
-
     private bool IsUserCurrentEmployee { get; set; }
+    private bool IsUserEmployeeManager { get; set; }
 
     private string? ErrorMessage { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var authState = await this.AuthState;
-        this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
-
         this.GridDocumentsProvider = this.GetGridDocumentsAsync;
         this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
         this.GridVacationRequestsProvider = this.GetGridVacationRequestsAsync;
@@ -218,7 +218,9 @@
         (this.Employee, this.ErrorMessage) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
 
         var authState = await this.AuthState;
-        this.IsUserCurrentEmployee = authState.User.GetId() == this.Id;
+        var currentUserId = authState.User.GetId();
+        this.IsUserCurrentEmployee = currentUserId == this.Id;
+        this.IsUserEmployeeManager = currentUserId == this.Employee?.ManagerId;
     }
 
     private async Task DeleteEmployeeAsync()

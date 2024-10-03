@@ -26,6 +26,7 @@ message ListEmployeesRequest {
 
 message GetEmployeeRequest {
 	string id = 1;
+	string currentEmployeeId = 2;
 }
 
 message ListEmployeesResponse {
@@ -57,9 +58,10 @@ message EmployeeDetailsModel {
 	google.protobuf.StringValue managerId = 8;
 	google.protobuf.StringValue managerFullName = 9;
 	common.DecimalValue salary = 10;
-	google.protobuf.Timestamp createdOn = 11;
-	google.protobuf.StringValue createdById = 12;
-	google.protobuf.StringValue createdByFullName = 13;
+	int32 usedPaidVacationDays = 11;
+	google.protobuf.Timestamp createdOn = 12;
+	google.protobuf.StringValue createdById = 13;
+	google.protobuf.StringValue createdByFullName = 14;
 }
 
 message CreateEmployeeRequest {

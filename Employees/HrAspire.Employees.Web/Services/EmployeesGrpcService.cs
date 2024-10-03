@@ -49,7 +49,7 @@ public class EmployeesGrpcService : Employees.EmployeesBase
 
     public override async Task<GetEmployeeResponse> Get(GetEmployeeRequest request, ServerCallContext context)
     {
-        var employee = await this.employeesService.GetAsync(request.Id);
+        var employee = await this.employeesService.GetAsync(request.Id, request.CurrentEmployeeId);
         if (employee is null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));

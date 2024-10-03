@@ -203,19 +203,23 @@ public class EmployeesService : IEmployeesService
         return ServiceResult.Success;
     }
 
-    public Task<EmployeeDetailsServiceModel?> GetAsync(string id)
-        => this.dbContext.Employees.Where(e => e.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
+    public async Task<EmployeeDetailsServiceModel?> GetAsync(string id, string currentEmployeeId)
+    {
+        var employee = await this.dbContext.Employees.Where(e => e.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
+        if (employee is not null &&
+            (currentEmployeeId == employee.Id ||
+                currentEmployeeId == employee.ManagerId ||
+                await this.IsEmployeeHrManagerAsync(currentEmployeeId)))
+        {
+            return employee;
+        }
+
+        return null;
+    }
 
     public async Task<int> GetCountAsync(string currentEmployeeId)
     {
-        var isHrManager = await this.dbContext.UserRoles.AnyAsync(
-            ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
-
-        var query = this.dbContext.Employees.AsQueryable();
-        if (!isHrManager)
-        {
-            query = query.Where(e => e.ManagerId == currentEmployeeId);
-        }
+        var query = await this.GetEmployeesQueryForCurrentEmployeeAsync(currentEmployeeId);
 
         return await query.CountAsync();
     }
@@ -224,14 +228,7 @@ public class EmployeesService : IEmployeesService
     {
         PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
-        var isHrManager = await this.dbContext.UserRoles.AnyAsync(
-            ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
-
-        var query = this.dbContext.Employees.AsQueryable();
-        if (!isHrManager)
-        {
-            query = query.Where(e => e.ManagerId == currentEmployeeId);
-        }
+        var query = await this.GetEmployeesQueryForCurrentEmployeeAsync(currentEmployeeId);
 
         return await query
             .OrderByDescending(e => e.CreatedOn)
@@ -274,4 +271,21 @@ public class EmployeesService : IEmployeesService
 
         return updatedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
+
+    private async Task<IQueryable<Employee>> GetEmployeesQueryForCurrentEmployeeAsync(string currentEmployeeId)
+    {
+        var isHrManager = await this.dbContext.UserRoles.AnyAsync(
+            ur => ur.UserId == currentEmployeeId && ur.RoleId == BusinessConstants.HrManagerRole);
+
+        var query = this.dbContext.Employees.AsQueryable();
+        if (!isHrManager)
+        {
+            query = query.Where(e => e.ManagerId == currentEmployeeId);
+        }
+
+        return query;
+    }
+
+    private Task<bool> IsEmployeeHrManagerAsync(string employeeId)
+        => this.dbContext.UserRoles.AnyAsync(ur => ur.UserId == employeeId && ur.RoleId == BusinessConstants.HrManagerRole);
 }

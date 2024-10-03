@@ -78,6 +78,10 @@
                             <td>@Employee.Salary.ToString(Constants.MoneyFormat)</td>
                         </tr>
                         <tr>
+                            <td>Used Paid Vacation Days</td>
+                            <td>@Employee.UsedPaidVacationDays</td>
+                        </tr>
+                        <tr>
                             <td>Created on</td>
                             <td>@Employee.CreatedOn.ToLocalTime().ToString(Constants.DateTimeFormat)</td>
                         </tr>
@@ -192,6 +196,7 @@
     private GridItemsProvider<VacationRequestResponseModel>? GridVacationRequestsProvider { get; set; }
     private PaginationState VacationRequestsPagination { get; set; } = new() { ItemsPerPage = 5 };
 
+    // TODO: rework to IsUserEmployeeManager
     private bool IsUserHrManager { get; set; }
 
     private bool IsUserCurrentEmployee { get; set; }

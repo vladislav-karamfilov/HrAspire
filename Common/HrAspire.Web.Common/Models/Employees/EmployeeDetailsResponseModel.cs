@@ -13,6 +13,7 @@ public record EmployeeDetailsResponseModel(
     string? ManagerId,
     string? ManagerFullName,
     decimal Salary,
+    int UsedPaidVacationDays,
     DateTime CreatedOn,
     string? CreatedById,
     string? CreatedByFullName);

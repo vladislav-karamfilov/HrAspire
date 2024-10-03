@@ -80,10 +80,11 @@ public static class EmployeesEndpoints
 
         group.MapGet(
             "/{id}",
-            (Employees.EmployeesClient employeesClient, [FromRoute] string id)
+            (Employees.EmployeesClient employeesClient, [FromRoute] string id, ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    var employeeResponse = await employeesClient.GetAsync(new GetEmployeeRequest { Id = id });
+                    var employeeResponse = await employeesClient.GetAsync(
+                        new GetEmployeeRequest { Id = id, CurrentEmployeeId = user.GetId()! });
 
                     var employee = employeeResponse.Employee.MapToDetailsResponseModel();
 

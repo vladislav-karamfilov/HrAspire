@@ -10,7 +10,7 @@ public interface IEmployeesService
 
     Task<int> GetCountAsync(string currentEmployeeId);
 
-    Task<EmployeeDetailsServiceModel?> GetAsync(string id);
+    Task<EmployeeDetailsServiceModel?> GetAsync(string id, string currentEmployeeId);
 
     Task<ServiceResult<string>> CreateAsync(
         string email,

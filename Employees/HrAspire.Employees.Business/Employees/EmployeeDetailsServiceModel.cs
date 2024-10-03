@@ -22,6 +22,8 @@ public class EmployeeDetailsServiceModel
 
     public decimal Salary { get; set; }
 
+    public int UsedPaidVacationDays { get; set; }
+
     public DateTime CreatedOn { get; set; }
 
     public string? CreatedById { get; set; }

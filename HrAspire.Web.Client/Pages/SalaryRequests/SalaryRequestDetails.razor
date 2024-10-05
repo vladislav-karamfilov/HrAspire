@@ -12,10 +12,9 @@
 
     @if (SalaryRequest is not null)
     {
-        if (IsUserHrManager)
+        if (SalaryRequest.Status == SalaryRequestStatus.Pending)
         {
-            if (SalaryRequest.Status == SalaryRequestStatus.Pending)
-            {
+            <AuthorizeView Roles="@BusinessConstants.HrManagerRole">
                 <button type="button"
                         class="btn btn-danger float-end ms-2"
                         data-bs-toggle="modal"
@@ -31,9 +30,10 @@
 
                     Approve
                 </button>
-            }
+            </AuthorizeView>
         }
-        else
+
+        if (SalaryRequest.CreatedById == UserId)
         {
             <button type="button"
                     class="btn btn-danger float-end ms-2"
@@ -53,20 +53,25 @@
 
 @if (SalaryRequest is not null)
 {
-    <Modal Id="approve-salary-request-modal"
-           Title="Approve Salary Request"
-           Body="Are you sure you want to approve this salary request?"
-           Confirmed="ApproveSalaryRequestAsync" />
+    <AuthorizeView Roles="@BusinessConstants.HrManagerRole">
+        <Modal Id="approve-salary-request-modal"
+               Title="Approve Salary Request"
+               Body="Are you sure you want to approve this salary request?"
+               Confirmed="ApproveSalaryRequestAsync" />
 
-    <Modal Id="reject-salary-request-modal"
-           Title="Reject Salary Request"
-           Body="Are you sure you want to reject this salary request?"
-           Confirmed="RejectSalaryRequestAsync" />
+        <Modal Id="reject-salary-request-modal"
+               Title="Reject Salary Request"
+               Body="Are you sure you want to reject this salary request?"
+               Confirmed="RejectSalaryRequestAsync" />
+    </AuthorizeView>
 
-    <Modal Id="delete-salary-request-modal"
-           Title="Delete Salary Request"
-           Body="Are you sure you want to delete this salary request?"
-           Confirmed="DeleteSalaryRequestAsync" />
+    @if (SalaryRequest.CreatedById == UserId)
+    {
+        <Modal Id="delete-salary-request-modal"
+               Title="Delete Salary Request"
+               Body="Are you sure you want to delete this salary request?"
+               Confirmed="DeleteSalaryRequestAsync" />
+    }
 
     <div class="card">
         <div class="card-body">
@@ -130,13 +135,13 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    private bool IsUserHrManager { get; set; }
+    private string UserId { get; set; } = default!;
 
     private SalaryRequestDetailsResponseModel? SalaryRequest { get; set; }
 
     private string? ErrorMessage { get; set; }
 
-    private string? StatusCssClass
+    private string StatusCssClass
         => SalaryRequest?.Status switch
         {
             SalaryRequestStatus.Approved => "badge bg-success",
@@ -147,12 +152,12 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await this.AuthState;
-        this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
+        this.UserId = authState.User.GetId()!;
     }
 
     protected override Task OnParametersSetAsync() => this.LoadSalaryRequestAsync();
 
-    private async Task LoadSalaryRequestAsync() 
+    private async Task LoadSalaryRequestAsync()
         => (this.SalaryRequest, this.ErrorMessage) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
 
     private async Task ApproveSalaryRequestAsync()

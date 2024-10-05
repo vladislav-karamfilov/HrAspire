@@ -21,32 +21,16 @@
 
     <TemplateColumn Title="Operations">
         <a href="/salary-requests/@context.Id">View</a>
-
-        @if (!IsUserHrManager)
-        {
-            <a href="/salary-request-update/@context.Id">Update</a>
-        }
+        <a href="/salary-request-update/@context.Id">Update</a>
     </TemplateColumn>
 </QuickGrid>
-
 <Paginator State="Pagination"></Paginator>
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
-
     private GridItemsProvider<SalaryRequestResponseModel>? GridSalaryRequestsProvider { get; set; }
     private PaginationState Pagination { get; set; } = new() { ItemsPerPage = 10 };
 
-    private bool IsUserHrManager { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await this.AuthState;
-        this.IsUserHrManager = authState.User.IsInRole(BusinessConstants.HrManagerRole);
-
-        this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
-    }
+    protected override void OnInitialized() => this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
 
     private async ValueTask<GridItemsProviderResult<SalaryRequestResponseModel>> GetGridSalaryRequestsAsync(
         GridItemsProviderRequest<SalaryRequestResponseModel> request)

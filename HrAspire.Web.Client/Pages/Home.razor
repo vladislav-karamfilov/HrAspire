@@ -1,7 +1,26 @@
 ﻿@page "/"
 
+@attribute [Authorize]
+
+@inject NavigationManager NavigationManager
+
 <PageTitle>Home - HR Aspire</PageTitle>
 
-<h1>Hello, world!</h1>
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-Welcome to your new app.
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        var user = authState.User;
+        if (user.IsInRole(BusinessConstants.HrManagerRole) || user.IsInRole(BusinessConstants.ManagerRole))
+        {
+            this.NavigationManager.NavigateTo("/employees");
+        }
+        else
+        {
+            this.NavigationManager.NavigateTo($"/employees/{user.GetId()}");
+        }
+    }
+}

@@ -1,6 +1,6 @@
 ﻿@page "/salary-request-update/{id:int}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerRole)]
 
 @inject SalaryRequestsApiClient SalaryRequestsApiClient
 @inject NavigationManager NavigationManager
@@ -47,14 +47,32 @@
     [Parameter]
     public int Id { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     private SalaryRequestUpdateRequestModel? Input { get; set; }
 
+    private string UserId { get; set; } = default!;
+
     private string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.UserId = authState.User.GetId()!;
+    }
 
     protected override async Task OnParametersSetAsync()
     {
         var (salaryRequest, _) = await this.SalaryRequestsApiClient.GetSalaryRequestAsync(this.Id);
-        this.Input = salaryRequest?.ToUpdateRequestModel();
+        if (salaryRequest?.CreatedById == this.UserId)
+        {
+            this.Input = salaryRequest.ToUpdateRequestModel();
+        }
+        else
+        {
+            this.Input = null;
+        }
     }
 
     private async Task UpdateSalaryRequestAsync()

@@ -1,6 +1,6 @@
 ﻿@page "/salary-request-create/{employeeId}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerRole)]
 
 @inject SalaryRequestsApiClient SalaryRequestsApiClient
 @inject NavigationManager NavigationManager

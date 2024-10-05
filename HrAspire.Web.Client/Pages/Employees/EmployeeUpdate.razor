@@ -1,6 +1,6 @@
 ﻿@page "/employee-update/{id}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.HrManagerRole)]
 
 @inject EmployeesApiClient EmployeesApiClient
 @inject NavigationManager NavigationManager
@@ -83,9 +83,9 @@
 
     private EmployeeUpdateRequestModel? Input { get; set; }
 
-    private string? ErrorMessage { get; set; }
-
     private IEnumerable<EmployeeResponseModel> Managers { get; set; } = [];
+
+    private string? ErrorMessage { get; set; }
 
     protected override async Task OnInitializedAsync() => this.Managers = await this.EmployeesApiClient.GetManagersAsync();
 

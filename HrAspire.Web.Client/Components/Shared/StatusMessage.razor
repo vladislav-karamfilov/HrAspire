@@ -1,6 +1,6 @@
 ﻿@if (!string.IsNullOrEmpty(Message))
 {
-    <div class="alert alert-@StatusMessageClass" role="alert">
+    <div class="@MessageCssClass" role="alert">
         @Message
     </div>
 }
@@ -12,5 +12,5 @@
     [Parameter]
     public bool IsError { get; set; }
 
-    private string StatusMessageClass => this.IsError ? "danger" : "success";
+    private string MessageCssClass => this.IsError ? "alert alert-danger" : "alert alert-success";
 }

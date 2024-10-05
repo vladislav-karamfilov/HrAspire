@@ -13,7 +13,7 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <span>Hello, @UserName!</span>
+                    <a href="/employees/@UserId">@UserName</a>
                     <a href="/logout">Logout</a>
                 </Authorized>
                 <NotAuthorized>
@@ -38,22 +38,24 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;
 
+    private string? UserId { get; set; }
     private string? UserName { get; set; }
 
     public void Dispose() => this.AuthenticationStateProvider.AuthenticationStateChanged -= this.HandleAuthStateChanged;
 
     protected override async Task OnInitializedAsync()
     {
-        await this.SetUserNameAsync(this.AuthState);
+        await this.SetUserInfoAsync(this.AuthState);
 
         this.AuthenticationStateProvider.AuthenticationStateChanged += this.HandleAuthStateChanged;
     }
 
-    private async void HandleAuthStateChanged(Task<AuthenticationState> authState) => await this.SetUserNameAsync(authState);
+    private async void HandleAuthStateChanged(Task<AuthenticationState> authState) => await this.SetUserInfoAsync(authState);
 
-    private async Task SetUserNameAsync(Task<AuthenticationState> authState)
+    private async Task SetUserInfoAsync(Task<AuthenticationState> authState)
     {
         var auth = await this.AuthState;
+        this.UserId = auth.User.GetId();
         this.UserName = auth.User.Identity?.Name;
     }
 }

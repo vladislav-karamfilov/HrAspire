@@ -1,6 +1,6 @@
 ﻿@page "/employees/{id}"
 
-@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
+@attribute [Authorize]
 
 @inject EmployeesApiClient EmployeesApiClient
 @inject DocumentsApiClient DocumentsApiClient

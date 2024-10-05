@@ -8,7 +8,9 @@
 
 <h1>
     Employees
-    <a href="/employee-create" class="btn btn-primary float-end">Create</a>
+    <AuthorizeView Roles="@BusinessConstants.HrManagerRole">
+        <a href="/employee-create" class="btn btn-primary float-end">Create</a>
+    </AuthorizeView>
 </h1>
 <hr />
 
@@ -23,10 +25,12 @@
 
     <TemplateColumn Title="Operations">
         <a href="/employees/@context.Id">View</a>
-        <a href="/employee-update/@context.Id" class="ms-3">Update</a>
+
+        <AuthorizeView Roles="@BusinessConstants.HrManagerRole" Context="authState">
+            <a href="/employee-update/@context.Id" class="ms-3">Update</a>
+        </AuthorizeView>
     </TemplateColumn>
 </QuickGrid>
-
 <Paginator State="Pagination"></Paginator>
 
 @code {

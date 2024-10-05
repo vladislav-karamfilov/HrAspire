@@ -1,6 +1,7 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
 using System.Security.Claims;
+
 using HrAspire.Business.Common;
 using HrAspire.Salaries.Web;
 using HrAspire.Web.ApiGateway.Mappers;

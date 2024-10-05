@@ -181,8 +181,13 @@ public class EmployeesService : IEmployeesService
             return ServiceResult.ErrorNotFound;
         }
 
+        var userNameSuffix = Guid.NewGuid().ToString().ToUpperInvariant();
+
         var utcNow = this.timeProvider.GetUtcNow().UtcDateTime;
 
+        // Update user name props to workaround unique index and allow new employee (user) creation with the same user name
+        employee.UserName += userNameSuffix;
+        employee.NormalizedUserName += userNameSuffix;
         employee.IsDeleted = true;
         employee.DeletedOn = utcNow;
 

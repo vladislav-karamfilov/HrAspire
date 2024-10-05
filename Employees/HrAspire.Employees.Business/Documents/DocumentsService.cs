@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Azure.Storage.Blobs;
@@ -18,25 +19,31 @@ using HrAspire.Employees.Data.Models;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 public class DocumentsService : IDocumentsService
 {
     private readonly EmployeesDbContext dbContext;
     private readonly BlobServiceClient blobServiceClient;
+    private readonly IConnectionMultiplexer cacheConnectionMultiplexer;
     private readonly TimeProvider timeProvider;
     private readonly ILogger<DocumentsService> logger;
 
     public DocumentsService(
         EmployeesDbContext dbContext,
         BlobServiceClient blobServiceClient,
+        IConnectionMultiplexer cacheConnectionMultiplexer,
         TimeProvider timeProvider,
         ILogger<DocumentsService> logger)
     {
         this.dbContext = dbContext;
         this.blobServiceClient = blobServiceClient;
+        this.cacheConnectionMultiplexer = cacheConnectionMultiplexer;
         this.timeProvider = timeProvider;
         this.logger = logger;
     }
+
+    private IDatabase CacheDatabase => this.cacheConnectionMultiplexer.GetDatabase();
 
     // TODO: Validate file allowed using file extension
     public async Task<ServiceResult<int>> CreateAsync(
@@ -47,6 +54,11 @@ public class DocumentsService : IDocumentsService
         string fileName,
         string createdById)
     {
+        if (await this.IsEmployeeManagerAsync(createdById) && createdById != await this.GetEmployeeManagerIdAsync(employeeId))
+        {
+            return ServiceResult<int>.Error("Employee to create document for doesn't exist.");
+        }
+
         var url = await this.UploadFileToBlobStorageAsync(fileContent, fileName, employeeId);
         if (string.IsNullOrWhiteSpace(url))
         {
@@ -70,10 +82,10 @@ public class DocumentsService : IDocumentsService
         return ServiceResult<int>.Success(document.Id);
     }
 
-    public async Task<ServiceResult> DeleteAsync(int id)
+    public async Task<ServiceResult> DeleteAsync(int id, string currentEmployeeId)
     {
         var deletedCount = await this.dbContext.Documents
-            .Where(d => d.Id == id)
+            .Where(d => d.Id == id && d.CreatedById == currentEmployeeId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(e => e.IsDeleted, true)
                 .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
@@ -81,8 +93,17 @@ public class DocumentsService : IDocumentsService
         return deletedCount > 0 ? ServiceResult.Success : ServiceResult.ErrorNotFound;
     }
 
-    public async Task<IEnumerable<DocumentServiceModel>> ListEmployeeDocumentsAsync(string employeeId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<DocumentServiceModel>> ListEmployeeDocumentsAsync(
+        string employeeId,
+        int pageNumber,
+        int pageSize,
+        string? managerId)
     {
+        if (!string.IsNullOrEmpty(managerId) && managerId != await this.GetEmployeeManagerIdAsync(employeeId))
+        {
+            return [];
+        }
+
         PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
         return await this.dbContext.Documents
@@ -94,14 +115,45 @@ public class DocumentsService : IDocumentsService
             .ToListAsync();
     }
 
-    public Task<int> GetEmployeeDocumentsCountAsync(string employeeId)
-        => this.dbContext.Documents.CountAsync(d => d.EmployeeId == employeeId);
+    public async Task<int> GetEmployeeDocumentsCountAsync(string employeeId, string? managerId)
+    {
+        if (!string.IsNullOrEmpty(managerId) && managerId != await this.GetEmployeeManagerIdAsync(employeeId))
+        {
+            return 0;
+        }
 
-    public Task<DocumentDetailsServiceModel?> GetAsync(int id)
-        => this.dbContext.Documents.Where(d => d.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
+        return await this.dbContext.Documents.CountAsync(d => d.EmployeeId == employeeId);
+    }
 
-    public Task<DocumentUrlAndFileNameServiceModel?> GetUrlAndFileNameAsync(int id)
-        => this.dbContext.Documents.Where(d => d.Id == id).ProjectToUrlAndFileNameServiceModel().FirstOrDefaultAsync();
+    public async Task<DocumentDetailsServiceModel?> GetAsync(int id, string? managerId)
+    {
+        var document = await this.dbContext.Documents.Where(d => d.Id == id).ProjectToDetailsServiceModel().FirstOrDefaultAsync();
+        if (document is not null &&
+            !string.IsNullOrEmpty(managerId) &&
+            managerId != await this.GetEmployeeManagerIdAsync(document.EmployeeId))
+        {
+            return null;
+        }
+
+        return document;
+    }
+
+    public async Task<DocumentUrlAndFileNameServiceModel?> GetUrlAndFileNameAsync(int id, string? managerId)
+    {
+        var urlAndFileNameInfo = await this.dbContext.Documents
+            .Where(d => d.Id == id)
+            .ProjectToUrlAndFileNameServiceModel()
+            .FirstOrDefaultAsync();
+
+        if (urlAndFileNameInfo is not null &&
+            !string.IsNullOrEmpty(managerId) &&
+            managerId != await this.GetEmployeeManagerIdAsync(urlAndFileNameInfo.EmployeeId))
+        {
+            return null;
+        }
+
+        return urlAndFileNameInfo;
+    }
 
     // TODO: Validate file allowed using file extension
     public async Task<ServiceResult> UpdateAsync(
@@ -109,10 +161,11 @@ public class DocumentsService : IDocumentsService
         string title,
         string? description,
         byte[]? fileContent,
-        string? fileName)
+        string? fileName,
+        string currentEmployeeId)
     {
         var document = await this.dbContext.Documents.FirstOrDefaultAsync(d => d.Id == id);
-        if (document is null)
+        if (document is null || document.CreatedById != currentEmployeeId)
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -177,5 +230,16 @@ public class DocumentsService : IDocumentsService
         await container.CreateIfNotExistsAsync();
 
         return container.GetBlockBlobClient(blobName);
+    }
+
+    private Task<bool> IsEmployeeManagerAsync(string employeeId)
+        => this.dbContext.UserRoles.AnyAsync(ur => ur.UserId == employeeId && ur.RoleId == BusinessConstants.ManagerRole);
+
+    private async Task<string?> GetEmployeeManagerIdAsync(string employeeId)
+    {
+        var employeeInfo = await this.CacheDatabase.HashGetAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
+
+        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(employeeInfo!);
+        return cachedEmployee?.ManagerId;
     }
 }

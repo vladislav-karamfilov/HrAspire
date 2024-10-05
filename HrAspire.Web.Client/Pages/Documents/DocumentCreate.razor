@@ -1,6 +1,6 @@
 ﻿@page "/document-create/{employeeId}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
 
 @inject DocumentsApiClient DocumentsApiClient
 @inject NavigationManager NavigationManager
@@ -51,10 +51,10 @@
     {
         this.ErrorMessage = null;
 
-        var (_, errorMessage) = await this.DocumentsApiClient.CreateDocumentAsync(this.EmployeeId, this.Input);
+        var (newDocumentId, errorMessage) = await this.DocumentsApiClient.CreateDocumentAsync(this.EmployeeId, this.Input);
         if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            this.NavigationManager.NavigateTo($"/employees/{this.EmployeeId}");
+            this.NavigationManager.NavigateTo($"/documents/{newDocumentId}");
         }
         else
         {

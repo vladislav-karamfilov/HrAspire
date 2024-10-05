@@ -5,6 +5,7 @@ using System.Security.Claims;
 
 using Google.Protobuf;
 
+using HrAspire.Business.Common;
 using HrAspire.Employees.Web;
 using HrAspire.Web.ApiGateway.Mappers;
 using HrAspire.Web.Common;
@@ -22,13 +23,22 @@ public static class DocumentsEndpoints
         group.MapGet(
             "/Employees/{employeeId}/Documents",
             (Documents.DocumentsClient documentsClient,
+                ClaimsPrincipal user,
                 [FromRoute] string employeeId,
                 [FromQuery] int pageNumber = 0,
                 [FromQuery] int pageSize = 10)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
+                    var managerId = user.IsInRole(BusinessConstants.ManagerRole) ? user.GetId() : null;
+
                     var documentsResponse = await documentsClient.ListEmployeeDocumentsAsync(
-                        new ListEmployeeDocumentsRequest { EmployeeId = employeeId, PageNumber = pageNumber, PageSize = pageSize, });
+                        new ListEmployeeDocumentsRequest
+                        {
+                            EmployeeId = employeeId,
+                            PageNumber = pageNumber,
+                            PageSize = pageSize,
+                            ManagerId = managerId,
+                        });
 
                     var documents = documentsResponse.Documents.Select(e => e.MapToResponseModel()).ToList();
 
@@ -58,10 +68,12 @@ public static class DocumentsEndpoints
 
         group.MapGet(
             "/Documents/{id:int}",
-            (Documents.DocumentsClient documentsClient, [FromRoute] int id)
+            (Documents.DocumentsClient documentsClient, [FromRoute] int id, ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    var documentResponse = await documentsClient.GetAsync(new GetDocumentRequest { Id = id });
+                    var managerId = user.IsInRole(BusinessConstants.ManagerRole) ? user.GetId() : null;
+
+                    var documentResponse = await documentsClient.GetAsync(new GetDocumentRequest { Id = id, ManagerId = managerId });
 
                     var document = documentResponse.Document.MapToDetailsResponseModel();
 
@@ -70,7 +82,10 @@ public static class DocumentsEndpoints
 
         group.MapPut(
             "/Documents/{id:int}",
-            (Documents.DocumentsClient documentsClient, [FromRoute] int id, [FromBody] DocumentUpdateRequestModel model)
+            (Documents.DocumentsClient documentsClient,
+                [FromRoute] int id,
+                [FromBody] DocumentUpdateRequestModel model,
+                ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
                     await documentsClient.UpdateAsync(new UpdateDocumentRequest
@@ -80,6 +95,7 @@ public static class DocumentsEndpoints
                         Description = model.Description,
                         FileContent = model.FileContent is null ? null : ByteString.CopyFrom(model.FileContent),
                         FileName = model.FileName,
+                        CurrentEmployeeId = user.GetId()!,
                     });
 
                     return Results.Ok();
@@ -87,10 +103,10 @@ public static class DocumentsEndpoints
 
         group.MapDelete(
             "/Documents/{id:int}",
-            (Documents.DocumentsClient documentsClient, [FromRoute] int id)
+            (Documents.DocumentsClient documentsClient, [FromRoute] int id, ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    await documentsClient.DeleteAsync(new DeleteDocumentRequest { Id = id });
+                    await documentsClient.DeleteAsync(new DeleteDocumentRequest { Id = id, CurrentEmployeeId = user.GetId()!, });
 
                     return Results.Ok();
                 }));
@@ -101,12 +117,15 @@ public static class DocumentsEndpoints
                 HttpClient httpClient,
                 HttpContext httpContext,
                 HttpResponse response,
+                ClaimsPrincipal user,
                 [FromRoute] int id)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(
                     async () =>
                     {
+                        var managerId = user.IsInRole(BusinessConstants.ManagerRole) ? user.GetId() : null;
+
                         var documentInfo = await documentsClient.GetUrlAndFileNameAsync(
-                            new GetDocumentUrlAndFileNameRequest { Id = id });
+                            new GetDocumentUrlAndFileNameRequest { Id = id, ManagerId = managerId });
 
                         var documentContentResponse = await httpClient.GetAsync(documentInfo.Url, HttpCompletionOption.ResponseHeadersRead);
                         if (!documentContentResponse.IsSuccessStatusCode)

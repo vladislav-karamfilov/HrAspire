@@ -1,6 +1,6 @@
 ﻿@page "/document-update/{id:int}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
 
 @inject DocumentsApiClient DocumentsApiClient
 @inject NavigationManager NavigationManager
@@ -46,14 +46,32 @@
     [Parameter]
     public int Id { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     private DocumentUpdateRequestModel? Input { get; set; }
 
+    private string UserId { get; set; } = default!;
+
     private string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.UserId = authState.User.GetId()!;
+    }
 
     protected override async Task OnParametersSetAsync()
     {
         var (document, _) = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
-        this.Input = document?.ToUpdateRequestModel();
+        if (document?.CreatedById == this.UserId)
+        {
+            this.Input = document.ToUpdateRequestModel();
+        }
+        else
+        {
+            this.Input = null;
+        }
     }
 
     private async Task UpdateDocumentAsync()

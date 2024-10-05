@@ -21,10 +21,12 @@ message ListEmployeeDocumentsRequest {
 	string employeeId = 1;
 	int32 pageNumber = 2;
 	int32 pageSize = 3;
+	google.protobuf.StringValue managerId = 4;
 }
 
 message GetDocumentRequest {
 	int32 id = 1;
+	google.protobuf.StringValue managerId = 2;
 }
 
 message ListEmployeeDocumentsResponse {
@@ -73,14 +75,17 @@ message UpdateDocumentRequest {
 	google.protobuf.StringValue description = 3;
 	google.protobuf.BytesValue fileContent = 4;
 	google.protobuf.StringValue fileName = 5;
+	string currentEmployeeId = 6;
 }
 
 message DeleteDocumentRequest {
 	int32 id = 1;
+	string currentEmployeeId = 2;
 }
 
 message GetDocumentUrlAndFileNameRequest {
 	int32 id = 1;
+	google.protobuf.StringValue managerId = 2;
 }
 
 message GetDocumentUrlAndFileNameResponse {

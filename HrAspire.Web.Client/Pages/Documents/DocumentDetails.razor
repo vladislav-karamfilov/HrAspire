@@ -1,6 +1,6 @@
 ﻿@page "/documents/{id:int}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
 
 @inject DocumentsApiClient DocumentsApiClient
 @inject NavigationManager NavigationManager
@@ -10,7 +10,7 @@
 <h1>
     Document - @Document?.Title
 
-    @if (Document is not null)
+    @if (Document?.CreatedById == UserId)
     {
         <button type="button" class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#delete-document-modal">
             Delete
@@ -73,14 +73,25 @@
     [Parameter]
     public int Id { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     private DocumentDetailsResponseModel? Document { get; set; }
 
     private string DownloadUrl => this.DocumentsApiClient.BuildDocumentDownloadUrl(this.Id);
 
+    private string UserId { get; set; } = default!;
+
     private string? ErrorMessage { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.UserId = authState.User.GetId()!;
+    }
+
     protected override async Task OnParametersSetAsync()
-        => (this.Document, this.ErrorMessage) = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
+    => (this.Document, this.ErrorMessage) = await this.DocumentsApiClient.GetDocumentAsync(this.Id);
 
     private async Task DeleteDocumentAsync()
     {

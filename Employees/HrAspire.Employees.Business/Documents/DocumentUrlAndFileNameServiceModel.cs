@@ -1,3 +1,3 @@
 ﻿namespace HrAspire.Employees.Business.Documents;
 
-public record DocumentUrlAndFileNameServiceModel(string Url, string FileName);
+public record DocumentUrlAndFileNameServiceModel(string Url, string FileName, string EmployeeId);

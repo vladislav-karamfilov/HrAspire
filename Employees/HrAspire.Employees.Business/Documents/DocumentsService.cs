@@ -45,7 +45,6 @@ public class DocumentsService : IDocumentsService
 
     private IDatabase CacheDatabase => this.cacheConnectionMultiplexer.GetDatabase();
 
-    // TODO: Validate file allowed using file extension
     public async Task<ServiceResult<int>> CreateAsync(
         string employeeId,
         string title,
@@ -155,7 +154,6 @@ public class DocumentsService : IDocumentsService
         return urlAndFileNameInfo;
     }
 
-    // TODO: Validate file allowed using file extension
     public async Task<ServiceResult> UpdateAsync(
         int id,
         string title,
@@ -172,7 +170,7 @@ public class DocumentsService : IDocumentsService
 
         if (fileContent is not null && !string.IsNullOrWhiteSpace(fileName))
         {
-            // TODO: Consider deleting the old file from blob storage
+            // TODO: Consider deleting the old file from blob storage to save storage
             var url = await this.UploadFileToBlobStorageAsync(fileContent, fileName, document.EmployeeId);
             if (string.IsNullOrWhiteSpace(url))
             {

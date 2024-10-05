@@ -68,7 +68,8 @@ public class EmployeesService : IEmployeesService
             employee.Roles.Add(new IdentityUserRole<string> { RoleId = role, UserId = employee.Id });
         }
 
-        await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, employee.FullName);
+        var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(fullName, managerId));
+        await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, cachedEmployee);
 
         var identityResult = await this.userManager.CreateAsync(employee, password);
         if (!identityResult.Succeeded)
@@ -76,7 +77,7 @@ public class EmployeesService : IEmployeesService
             try
             {
                 await this.CacheDatabase.HashDeleteAsync(
-                    BusinessConstants.EmployeeNamesCacheSetName,
+                    BusinessConstants.EmployeesCacheSetName,
                     employee.Id,
                     CommandFlags.FireAndForget);
             }
@@ -112,6 +113,7 @@ public class EmployeesService : IEmployeesService
         }
 
         var oldEmployeeFullName = employee.FullName;
+        var oldManagerId = employee.ManagerId;
 
         employee.FullName = fullName;
         employee.DateOfBirth = dateOfBirth;
@@ -149,15 +151,17 @@ public class EmployeesService : IEmployeesService
 
                 await this.dbContext.SaveChangesAsync();
 
-                await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, employee.FullName);
+                var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(fullName, managerId));
+                await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, cachedEmployee);
 
                 await tx.CommitAsync();
             });
         }
         catch (Exception ex) when (ex is not RedisException)
         {
-            // Set the old employee full name just in case it was updated before the exception
-            await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, oldEmployeeFullName);
+            // Set the old employee full name and manager just in case they were updated before the exception
+            var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(oldEmployeeFullName, oldManagerId));
+            await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, cachedEmployee);
 
             throw;
         }
@@ -193,7 +197,7 @@ public class EmployeesService : IEmployeesService
 
         try
         {
-            await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeeNamesCacheSetName, employee.Id, CommandFlags.FireAndForget);
+            await this.CacheDatabase.HashDeleteAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, CommandFlags.FireAndForget);
         }
         catch
         {

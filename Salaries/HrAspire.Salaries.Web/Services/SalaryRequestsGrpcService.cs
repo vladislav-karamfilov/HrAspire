@@ -40,9 +40,10 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
         var salaryRequests = await this.salaryRequestsService.ListEmployeeSalaryRequestsAsync(
             request.EmployeeId,
             request.PageNumber,
-            request.PageSize);
+            request.PageSize,
+            request.ManagerId);
 
-        var total = await this.salaryRequestsService.GetEmployeeSalaryRequestsCountAsync(request.EmployeeId);
+        var total = await this.salaryRequestsService.GetEmployeeSalaryRequestsCountAsync(request.EmployeeId, request.ManagerId);
 
         var response = new ListSalaryRequestsResponse { Total = total };
         foreach (var salaryRequest in salaryRequests)
@@ -55,7 +56,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
 
     public override async Task<GetSalaryRequestResponse> Get(GetSalaryRequestRequest request, ServerCallContext context)
     {
-        var salaryRequest = await this.salaryRequestsService.GetAsync(request.Id);
+        var salaryRequest = await this.salaryRequestsService.GetAsync(request.Id, request.ManagerId);
         if (salaryRequest is null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
@@ -83,7 +84,12 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
 
     public override async Task<Empty> Update(UpdateSalaryRequestRequest request, ServerCallContext context)
     {
-        var updateResult = await this.salaryRequestsService.UpdateAsync(request.Id, request.NewSalary, request.Notes);
+        var updateResult = await this.salaryRequestsService.UpdateAsync(
+            request.Id,
+            request.NewSalary,
+            request.Notes,
+            request.CurrentEmployeeId);
+
         if (updateResult.IsError)
         {
             throw updateResult.ToRpcException();
@@ -94,7 +100,7 @@ public class SalaryRequestsGrpcService : SalaryRequests.SalaryRequestsBase
 
     public override async Task<Empty> Delete(DeleteSalaryRequestRequest request, ServerCallContext context)
     {
-        var deleteResult = await this.salaryRequestsService.DeleteAsync(request.Id);
+        var deleteResult = await this.salaryRequestsService.DeleteAsync(request.Id, request.CurrentEmployeeId);
         if (deleteResult.IsError)
         {
             throw deleteResult.ToRpcException();

@@ -29,10 +29,12 @@ message ListEmployeeSalaryRequestsRequest {
 	string employeeId = 1;
 	int32 pageNumber = 2;
 	int32 pageSize = 3;
+	google.protobuf.StringValue managerId = 4;
 }
 
 message GetSalaryRequestRequest {
 	int32 id = 1;
+	google.protobuf.StringValue managerId = 2;
 }
 
 message ListSalaryRequestsResponse {
@@ -89,10 +91,12 @@ message UpdateSalaryRequestRequest {
 	int32 id = 1;
 	common.DecimalValue newSalary = 2;
 	google.protobuf.StringValue notes = 3;
+	string currentEmployeeId = 4;
 }
 
 message DeleteSalaryRequestRequest {
 	int32 id = 1;
+	string currentEmployeeId = 2;
 }
 
 message ChangeStatusOfSalaryRequestRequest {

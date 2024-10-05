@@ -35,7 +35,8 @@ public class SalaryRequestsService : ISalaryRequestsService
 
     public async Task<ServiceResult<int>> CreateAsync(string employeeId, decimal newSalary, string? notes, string createdById)
     {
-        if (!await this.EmployeeExistsAsync(employeeId))
+        if (!await this.EmployeeExistsAsync(employeeId) ||
+            createdById != await this.GetEmployeeManagerIdAsync(employeeId))
         {
             return ServiceResult<int>.Error("Employee to create salary request for doesn't exist.");
         }
@@ -61,10 +62,10 @@ public class SalaryRequestsService : ISalaryRequestsService
         return ServiceResult<int>.Success(salaryRequest.Id);
     }
 
-    public async Task<ServiceResult> DeleteAsync(int id)
+    public async Task<ServiceResult> DeleteAsync(int id, string currentEmployeeId)
     {
         var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
-        if (salaryRequest is null)
+        if (salaryRequest is null || salaryRequest.CreatedById != currentEmployeeId)
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -89,14 +90,15 @@ public class SalaryRequestsService : ISalaryRequestsService
                 .SetProperty(e => e.IsDeleted, true)
                 .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
 
-    public async Task<SalaryRequestDetailsServiceModel?> GetAsync(int id)
+    public async Task<SalaryRequestDetailsServiceModel?> GetAsync(int id, string? managerId)
     {
         var salaryRequest = await this.dbContext.SalaryRequests
             .Where(r => r.Id == id)
             .ProjectToDetailsServiceModel()
             .FirstOrDefaultAsync();
 
-        if (salaryRequest is null)
+        if (salaryRequest is null ||
+            (!string.IsNullOrEmpty(managerId) && managerId != await this.GetEmployeeManagerIdAsync(salaryRequest.EmployeeId)))
         {
             return null;
         }
@@ -129,11 +131,19 @@ public class SalaryRequestsService : ISalaryRequestsService
         return result;
     }
 
+    public Task<int> GetCountAsync() => this.dbContext.SalaryRequests.CountAsync();
+
     public async Task<IEnumerable<SalaryRequestServiceModel>> ListEmployeeSalaryRequestsAsync(
         string employeeId,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        string? managerId)
     {
+        if (!string.IsNullOrEmpty(managerId) && managerId != await this.GetEmployeeManagerIdAsync(employeeId))
+        {
+            return [];
+        }
+
         PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
         var result = await this.dbContext.SalaryRequests
@@ -149,15 +159,20 @@ public class SalaryRequestsService : ISalaryRequestsService
         return result;
     }
 
-    public Task<int> GetEmployeeSalaryRequestsCountAsync(string employeeId)
-        => this.dbContext.SalaryRequests.CountAsync(r => r.EmployeeId == employeeId);
+    public async Task<int> GetEmployeeSalaryRequestsCountAsync(string employeeId, string? managerId)
+    {
+        if (!string.IsNullOrEmpty(managerId) && managerId != await this.GetEmployeeManagerIdAsync(employeeId))
+        {
+            return 0;
+        }
 
-    public Task<int> GetCountAsync() => this.dbContext.SalaryRequests.CountAsync();
+        return await this.dbContext.SalaryRequests.CountAsync(r => r.EmployeeId == employeeId);
+    }
 
-    public async Task<ServiceResult> UpdateAsync(int id, decimal newSalary, string? notes)
+    public async Task<ServiceResult> UpdateAsync(int id, decimal newSalary, string? notes, string currentEmployeeId)
     {
         var salaryRequest = await this.dbContext.SalaryRequests.FirstOrDefaultAsync(r => r.Id == id);
-        if (salaryRequest is null)
+        if (salaryRequest is null || salaryRequest.CreatedById != currentEmployeeId)
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -249,15 +264,29 @@ public class SalaryRequestsService : ISalaryRequestsService
     }
 
     private Task<bool> EmployeeExistsAsync(string employeeId)
-        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeeNamesCacheSetName, employeeId);
+        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 
     private async Task<string[]> GetEmployeeNamesAsync(params string?[] employeeIds)
     {
-        var employeeNames = await this.CacheDatabase.HashGetAsync(
-            BusinessConstants.EmployeeNamesCacheSetName,
+        var employeesInfo = await this.CacheDatabase.HashGetAsync(
+            BusinessConstants.EmployeesCacheSetName,
             employeeIds.Select(e => (RedisValue)(e ?? string.Empty)).ToArray());
 
-        return employeeNames.Select(n => n == RedisValue.Null ? string.Empty : n.ToString()).ToArray();
+        return employeesInfo
+            .Select(e =>
+            {
+                var cachedEmployee = e.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(e!);
+                return cachedEmployee?.FullName ?? string.Empty;
+            })
+            .ToArray();
+    }
+
+    private async Task<string?> GetEmployeeManagerIdAsync(string employeeId)
+    {
+        var employeeInfo = await this.CacheDatabase.HashGetAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
+
+        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(employeeInfo!);
+        return cachedEmployee?.ManagerId;
     }
 
     private async Task PopulateEmployeeNamesAsync(List<SalaryRequestServiceModel> salaryRequests)

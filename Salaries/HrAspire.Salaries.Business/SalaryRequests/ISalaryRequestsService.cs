@@ -6,19 +6,23 @@ public interface ISalaryRequestsService
 {
     Task<IEnumerable<SalaryRequestServiceModel>> ListAsync(int pageNumber, int pageSize);
 
-    Task<IEnumerable<SalaryRequestServiceModel>> ListEmployeeSalaryRequestsAsync(string employeeId, int pageNumber, int pageSize);
-
     Task<int> GetCountAsync();
 
-    Task<int> GetEmployeeSalaryRequestsCountAsync(string employeeId);
+    Task<IEnumerable<SalaryRequestServiceModel>> ListEmployeeSalaryRequestsAsync(
+        string employeeId,
+        int pageNumber,
+        int pageSize,
+        string? managerId);
 
-    Task<SalaryRequestDetailsServiceModel?> GetAsync(int id);
+    Task<int> GetEmployeeSalaryRequestsCountAsync(string employeeId, string? managerId);
+
+    Task<SalaryRequestDetailsServiceModel?> GetAsync(int id, string? managerId);
 
     Task<ServiceResult<int>> CreateAsync(string employeeId, decimal newSalary, string? notes, string createdById);
 
-    Task<ServiceResult> UpdateAsync(int id, decimal newSalary, string? notes);
+    Task<ServiceResult> UpdateAsync(int id, decimal newSalary, string? notes, string currentEmployeeId);
 
-    Task<ServiceResult> DeleteAsync(int id);
+    Task<ServiceResult> DeleteAsync(int id, string currentEmployeeId);
 
     Task DeleteEmployeeSalaryRequestsAsync(string employeeId);
 

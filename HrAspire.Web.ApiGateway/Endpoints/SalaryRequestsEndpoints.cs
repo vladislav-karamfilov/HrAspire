@@ -1,7 +1,7 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
 using System.Security.Claims;
-
+using HrAspire.Business.Common;
 using HrAspire.Salaries.Web;
 using HrAspire.Web.ApiGateway.Mappers;
 using HrAspire.Web.Common;
@@ -36,17 +36,21 @@ public static class SalaryRequestsEndpoints
             .MapGet(
                 "/Employees/{employeeId}/SalaryRequests",
                 (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
+                    ClaimsPrincipal user,
                     [FromRoute] string employeeId,
                     [FromQuery] int pageNumber = 0,
                     [FromQuery] int pageSize = 10)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
+                        var managerId = user.IsInRole(BusinessConstants.ManagerRole) ? user.GetId() : null;
+
                         var salaryRequestsResponse = await salaryRequestsClient.ListEmployeeSalaryRequestsAsync(
                             new ListEmployeeSalaryRequestsRequest
                             {
                                 EmployeeId = employeeId,
                                 PageNumber = pageNumber,
                                 PageSize = pageSize,
+                                ManagerId = managerId,
                             });
 
                         var salaryRequests = salaryRequestsResponse.SalaryRequests.Select(e => e.MapToResponseModel()).ToList();
@@ -79,10 +83,13 @@ public static class SalaryRequestsEndpoints
         group
             .MapGet(
                 "/SalaryRequests/{id:int}",
-                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id, ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        var salaryRequestResponse = await salaryRequestsClient.GetAsync(new GetSalaryRequestRequest { Id = id });
+                        var managerId = user.IsInRole(BusinessConstants.ManagerRole) ? user.GetId() : null;
+
+                        var salaryRequestResponse = await salaryRequestsClient.GetAsync(
+                            new GetSalaryRequestRequest { Id = id, ManagerId = managerId });
 
                         var salaryRequest = salaryRequestResponse.SalaryRequest.MapToDetailsResponseModel();
 
@@ -95,11 +102,18 @@ public static class SalaryRequestsEndpoints
                 "/SalaryRequests/{id:int}",
                 (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
                     [FromRoute] int id,
-                    [FromBody] SalaryRequestUpdateRequestModel model)
+                    [FromBody] SalaryRequestUpdateRequestModel model,
+                    ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
                         var updateResponse = await salaryRequestsClient.UpdateAsync(
-                            new UpdateSalaryRequestRequest { Id = id, NewSalary = model.NewSalary, Notes = model.Notes, });
+                            new UpdateSalaryRequestRequest
+                            {
+                                Id = id,
+                                NewSalary = model.NewSalary,
+                                Notes = model.Notes,
+                                CurrentEmployeeId = user.GetId()!
+                            });
 
                         return Results.Ok();
                     }))
@@ -108,10 +122,11 @@ public static class SalaryRequestsEndpoints
         group
             .MapDelete(
                 "/SalaryRequests/{id:int}",
-                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id)
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromRoute] int id, ClaimsPrincipal user)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
-                        await salaryRequestsClient.DeleteAsync(new DeleteSalaryRequestRequest { Id = id });
+                        await salaryRequestsClient.DeleteAsync(
+                            new DeleteSalaryRequestRequest { Id = id, CurrentEmployeeId = user.GetId()! });
 
                         return Results.Ok();
                     }))

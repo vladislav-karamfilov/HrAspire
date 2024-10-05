@@ -68,7 +68,7 @@ public class EmployeesService : IEmployeesService
             employee.Roles.Add(new IdentityUserRole<string> { RoleId = role, UserId = employee.Id });
         }
 
-        var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(fullName, managerId));
+        var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(fullName, managerId, role));
         await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, cachedEmployee);
 
         var identityResult = await this.userManager.CreateAsync(employee, password);
@@ -151,7 +151,7 @@ public class EmployeesService : IEmployeesService
 
                 await this.dbContext.SaveChangesAsync();
 
-                var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(fullName, managerId));
+                var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(fullName, managerId, role));
                 await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, cachedEmployee);
 
                 await tx.CommitAsync();
@@ -159,8 +159,8 @@ public class EmployeesService : IEmployeesService
         }
         catch (Exception ex) when (ex is not RedisException)
         {
-            // Set the old employee full name and manager just in case they were updated before the exception
-            var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(oldEmployeeFullName, oldManagerId));
+            // Set the old employee info just in case it was updated before the exception
+            var cachedEmployee = JsonSerializer.Serialize(new CachedEmployee(oldEmployeeFullName, oldManagerId, currentRole));
             await this.CacheDatabase.HashSetAsync(BusinessConstants.EmployeesCacheSetName, employee.Id, cachedEmployee);
 
             throw;

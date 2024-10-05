@@ -1,6 +1,6 @@
 ﻿@page "/vacation-requests/{id:int}"
 
-@attribute [Authorize(Roles = BusinessConstants.ManagerAndHrManagerRoles)]
+@attribute [Authorize]
 
 @inject VacationRequestsApiClient VacationRequestsApiClient
 @inject NavigationManager NavigationManager
@@ -24,23 +24,26 @@
 
             <a href="/vacation-request-update/@VacationRequest.Id" class="btn btn-primary float-end">Update</a>
         }
-        else if (VacationRequest.Status == VacationRequestStatus.Pending)
+
+        if (VacationRequest.Status == VacationRequestStatus.Pending)
         {
-            <button type="button"
-                    class="btn btn-danger float-end ms-2"
-                    data-bs-toggle="modal"
-                    data-bs-target="#reject-vacation-request-modal">
+            <AuthorizeView Roles="@BusinessConstants.ManagerRole">
+                <button type="button"
+                        class="btn btn-danger float-end ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reject-vacation-request-modal">
 
-                Reject
-            </button>
+                    Reject
+                </button>
 
-            <button type="button"
-                    class="btn btn-primary float-end ms-2"
-                    data-bs-toggle="modal"
-                    data-bs-target="#approve-vacation-request-modal">
+                <button type="button"
+                        class="btn btn-primary float-end ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#approve-vacation-request-modal">
 
-                Approve
-            </button>
+                    Approve
+                </button>
+            </AuthorizeView>
         }
     }
 </h1>
@@ -50,20 +53,25 @@
 
 @if (VacationRequest is not null)
 {
-    <Modal Id="approve-vacation-request-modal"
-           Title="Approve Vacation Request"
-           Body="Are you sure you want to approve this vacation request?"
-           Confirmed="ApproveVacationRequestAsync" />
+    <AuthorizeView Roles="@BusinessConstants.ManagerRole">
+        <Modal Id="approve-vacation-request-modal"
+               Title="Approve Vacation Request"
+               Body="Are you sure you want to approve this vacation request?"
+               Confirmed="ApproveVacationRequestAsync" />
 
-    <Modal Id="reject-vacation-request-modal"
-           Title="Reject Vacation Request"
-           Body="Are you sure you want to reject this vacation request?"
-           Confirmed="RejectVacationRequestAsync" />
+        <Modal Id="reject-vacation-request-modal"
+               Title="Reject Vacation Request"
+               Body="Are you sure you want to reject this vacation request?"
+               Confirmed="RejectVacationRequestAsync" />
+    </AuthorizeView>
 
-    <Modal Id="delete-vacation-request-modal"
-           Title="Delete Vacation Request"
-           Body="Are you sure you want to delete this vacation request?"
-           Confirmed="DeleteVacationRequestAsync" />
+    @if (IsUserCurrentEmployee)
+    {
+        <Modal Id="delete-vacation-request-modal"
+               Title="Delete Vacation Request"
+               Body="Are you sure you want to delete this vacation request?"
+               Confirmed="DeleteVacationRequestAsync" />
+    }
 
     <div class="card">
         <div class="card-body">

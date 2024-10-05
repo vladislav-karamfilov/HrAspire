@@ -60,14 +60,32 @@
     [Parameter]
     public int Id { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     private VacationRequestUpdateRequestModel? Input { get; set; }
 
+    private string UserId { get; set; } = default!;
+
     private string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.AuthState;
+        this.UserId = authState.User.GetId()!;
+    }
 
     protected override async Task OnParametersSetAsync()
     {
         var (vacationRequest, _) = await this.VacationRequestsApiClient.GetVacationRequestAsync(this.Id);
-        this.Input = vacationRequest?.ToUpdateRequestModel();
+        if (vacationRequest?.EmployeeId == this.UserId)
+        {
+            this.Input = vacationRequest.ToUpdateRequestModel();
+        }
+        else
+        {
+            this.Input = null;
+        }
     }
 
     private async Task UpdateVacationRequestAsync()

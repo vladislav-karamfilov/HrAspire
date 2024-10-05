@@ -22,10 +22,12 @@ message ListEmployeeVacationRequestsRequest {
 	string employeeId = 1;
 	int32 pageNumber = 2;
 	int32 pageSize = 3;
+	string currentEmployeeId = 4;
 }
 
 message GetVacationRequestRequest {
 	int32 id = 1;
+	string currentEmployeeId = 2;
 }
 
 message ListVacationRequestsResponse {
@@ -93,10 +95,12 @@ message UpdateVacationRequestRequest {
 	google.protobuf.Timestamp fromDate = 3;
 	google.protobuf.Timestamp toDate = 4;
 	google.protobuf.StringValue notes = 5;
+	string currentEmployeeId = 6;
 }
 
 message DeleteVacationRequestRequest {
 	int32 id = 1;
+	string currentEmployeeId = 2;
 }
 
 message ChangeStatusOfVacationRequestRequest {

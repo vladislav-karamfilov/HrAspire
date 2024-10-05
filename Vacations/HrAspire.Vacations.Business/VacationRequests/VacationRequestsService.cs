@@ -89,10 +89,10 @@ public class VacationRequestsService : IVacationRequestsService
         return ServiceResult<int>.Success(vacationRequest.Id);
     }
 
-    public async Task<ServiceResult> DeleteAsync(int id)
+    public async Task<ServiceResult> DeleteAsync(int id, string currentEmployeeId)
     {
         var vacationRequest = await this.dbContext.VacationRequests.FirstOrDefaultAsync(r => r.Id == id);
-        if (vacationRequest is null)
+        if (vacationRequest is null || vacationRequest.EmployeeId != currentEmployeeId)
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -117,7 +117,7 @@ public class VacationRequestsService : IVacationRequestsService
                 .SetProperty(e => e.IsDeleted, true)
                 .SetProperty(e => e.DeletedOn, this.timeProvider.GetUtcNow().UtcDateTime));
 
-    public async Task<VacationRequestDetailsServiceModel?> GetAsync(int id)
+    public async Task<VacationRequestDetailsServiceModel?> GetAsync(int id, string currentEmployeeId)
     {
         var vacationRequest = await this.dbContext.VacationRequests
             .Where(r => r.Id == id)
@@ -127,6 +127,17 @@ public class VacationRequestsService : IVacationRequestsService
         if (vacationRequest is null)
         {
             return null;
+        }
+
+        if (vacationRequest.EmployeeId != currentEmployeeId)
+        {
+            var currentEmployeeRole = await this.GetEmployeeRoleAsync(currentEmployeeId);
+            if (currentEmployeeRole is null ||
+                (currentEmployeeRole == BusinessConstants.ManagerRole &&
+                    currentEmployeeId != await this.GetEmployeeManagerIdAsync(vacationRequest.EmployeeId)))
+            {
+                return null;
+            }
         }
 
         var employeeNames = await this.GetEmployeeNamesAsync(vacationRequest.EmployeeId, vacationRequest.StatusChangedById);
@@ -140,8 +151,20 @@ public class VacationRequestsService : IVacationRequestsService
     public async Task<IEnumerable<VacationRequestServiceModel>> ListEmployeeVacationRequestsAsync(
         string employeeId,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        string currentEmployeeId)
     {
+        if (employeeId != currentEmployeeId)
+        {
+            var currentEmployeeRole = await this.GetEmployeeRoleAsync(currentEmployeeId);
+            if (currentEmployeeRole is null ||
+                (currentEmployeeRole == BusinessConstants.ManagerRole &&
+                    currentEmployeeId != await this.GetEmployeeManagerIdAsync(employeeId)))
+            {
+                return [];
+            }
+        }
+
         PaginationHelper.Normalize(ref pageNumber, ref pageSize);
 
         var result = await this.dbContext.VacationRequests
@@ -157,13 +180,32 @@ public class VacationRequestsService : IVacationRequestsService
         return result;
     }
 
-    public Task<int> GetEmployeeVacationRequestsCountAsync(string employeeId)
-        => this.dbContext.VacationRequests.CountAsync(r => r.EmployeeId == employeeId);
+    public async Task<int> GetEmployeeVacationRequestsCountAsync(string employeeId, string currentEmployeeId)
+    {
+        if (employeeId != currentEmployeeId)
+        {
+            var currentEmployeeRole = await this.GetEmployeeRoleAsync(currentEmployeeId);
+            if (currentEmployeeRole is null ||
+                (currentEmployeeRole == BusinessConstants.ManagerRole &&
+                    currentEmployeeId != await this.GetEmployeeManagerIdAsync(employeeId)))
+            {
+                return 0;
+            }
+        }
 
-    public async Task<ServiceResult> UpdateAsync(int id, VacationRequestType type, DateOnly fromDate, DateOnly toDate, string? notes)
+        return await this.dbContext.VacationRequests.CountAsync(r => r.EmployeeId == employeeId);
+    }
+
+    public async Task<ServiceResult> UpdateAsync(
+        int id,
+        VacationRequestType type,
+        DateOnly fromDate,
+        DateOnly toDate,
+        string? notes,
+        string currentEmployeeId)
     {
         var vacationRequest = await this.dbContext.VacationRequests.FirstOrDefaultAsync(r => r.Id == id);
-        if (vacationRequest is null)
+        if (vacationRequest is null || vacationRequest.EmployeeId != currentEmployeeId)
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -213,13 +255,8 @@ public class VacationRequestsService : IVacationRequestsService
 
     public async Task<ServiceResult> ApproveAsync(int id, string approvedById)
     {
-        if (!await this.EmployeeExistsAsync(approvedById))
-        {
-            return ServiceResult<int>.Error("Vacation request approving employee doesn't exist.");
-        }
-
         var vacationRequest = await this.dbContext.VacationRequests.FirstOrDefaultAsync(r => r.Id == id);
-        if (vacationRequest is null)
+        if (vacationRequest is null || approvedById != await this.GetEmployeeManagerIdAsync(vacationRequest.EmployeeId))
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -276,13 +313,8 @@ public class VacationRequestsService : IVacationRequestsService
 
     public async Task<ServiceResult> RejectAsync(int id, string rejectedById)
     {
-        if (!await this.EmployeeExistsAsync(rejectedById))
-        {
-            return ServiceResult<int>.Error("Vacation request rejecting employee doesn't exist.");
-        }
-
         var vacationRequest = await this.dbContext.VacationRequests.FirstOrDefaultAsync(r => r.Id == id);
-        if (vacationRequest is null)
+        if (vacationRequest is null || rejectedById != await this.GetEmployeeManagerIdAsync(vacationRequest.EmployeeId))
         {
             return ServiceResult.ErrorNotFound;
         }
@@ -307,15 +339,37 @@ public class VacationRequestsService : IVacationRequestsService
     }
 
     private Task<bool> EmployeeExistsAsync(string employeeId)
-        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeeNamesCacheSetName, employeeId);
+        => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 
     private async Task<string[]> GetEmployeeNamesAsync(params string?[] employeeIds)
     {
-        var employeeNames = await this.CacheDatabase.HashGetAsync(
-            BusinessConstants.EmployeeNamesCacheSetName,
+        var employeesInfo = await this.CacheDatabase.HashGetAsync(
+            BusinessConstants.EmployeesCacheSetName,
             employeeIds.Select(e => (RedisValue)(e ?? string.Empty)).ToArray());
 
-        return employeeNames.Select(n => n == RedisValue.Null ? string.Empty : n.ToString()).ToArray();
+        return employeesInfo
+            .Select(e =>
+            {
+                var cachedEmployee = e.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(e!);
+                return cachedEmployee?.FullName ?? string.Empty;
+            })
+            .ToArray();
+    }
+
+    private async Task<string?> GetEmployeeManagerIdAsync(string employeeId)
+    {
+        var employeeInfo = await this.CacheDatabase.HashGetAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
+
+        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(employeeInfo!);
+        return cachedEmployee?.ManagerId;
+    }
+
+    private async Task<string?> GetEmployeeRoleAsync(string employeeId)
+    {
+        var employeeInfo = await this.CacheDatabase.HashGetAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
+
+        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(employeeInfo!);
+        return cachedEmployee?.Role;
     }
 
     private async Task PopulateEmployeeNamesAsync(List<VacationRequestServiceModel> vacationRequests)

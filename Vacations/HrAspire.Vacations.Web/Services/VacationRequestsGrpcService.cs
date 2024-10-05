@@ -31,9 +31,12 @@ public class VacationRequestsGrpcService : VacationRequests.VacationRequestsBase
         var vacationRequests = await this.vacationRequestsService.ListEmployeeVacationRequestsAsync(
             request.EmployeeId,
             request.PageNumber,
-            request.PageSize);
+            request.PageSize,
+            request.CurrentEmployeeId);
 
-        var total = await this.vacationRequestsService.GetEmployeeVacationRequestsCountAsync(request.EmployeeId);
+        var total = await this.vacationRequestsService.GetEmployeeVacationRequestsCountAsync(
+            request.EmployeeId,
+            request.CurrentEmployeeId);
 
         var response = new ListVacationRequestsResponse { Total = total };
         foreach (var vacationRequest in vacationRequests)
@@ -46,7 +49,7 @@ public class VacationRequestsGrpcService : VacationRequests.VacationRequestsBase
 
     public override async Task<GetVacationRequestResponse> Get(GetVacationRequestRequest request, ServerCallContext context)
     {
-        var vacationRequest = await this.vacationRequestsService.GetAsync(request.Id);
+        var vacationRequest = await this.vacationRequestsService.GetAsync(request.Id, request.CurrentEmployeeId);
         if (vacationRequest is null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, detail: string.Empty));
@@ -80,7 +83,8 @@ public class VacationRequestsGrpcService : VacationRequests.VacationRequestsBase
             (VacationRequestType)(int)request.Type,
             request.FromDate.ToDateOnly(),
             request.ToDate.ToDateOnly(),
-            request.Notes);
+            request.Notes,
+            request.CurrentEmployeeId);
 
         if (updateResult.IsError)
         {
@@ -92,7 +96,7 @@ public class VacationRequestsGrpcService : VacationRequests.VacationRequestsBase
 
     public override async Task<Empty> Delete(DeleteVacationRequestRequest request, ServerCallContext context)
     {
-        var deleteResult = await this.vacationRequestsService.DeleteAsync(request.Id);
+        var deleteResult = await this.vacationRequestsService.DeleteAsync(request.Id, request.CurrentEmployeeId);
         if (deleteResult.IsError)
         {
             throw deleteResult.ToRpcException();

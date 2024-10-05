@@ -70,7 +70,7 @@ public static class EmployeesEndpoints
                             Department = model.Department,
                             ManagerId = string.IsNullOrWhiteSpace(model.ManagerId) ? null : model.ManagerId,
                             Salary = model.Salary,
-                            Role = model.Role,
+                            Role = string.IsNullOrWhiteSpace(model.Role) ? null : model.Role,
                             CreatedById = user.GetId()!,
                         });
 
@@ -105,7 +105,7 @@ public static class EmployeesEndpoints
                             DateOfBirth = model.DateOfBirth.ToTimestamp(),
                             Department = model.Department,
                             ManagerId = string.IsNullOrWhiteSpace(model.ManagerId) ? null : model.ManagerId,
-                            Role = model.Role,
+                            Role = string.IsNullOrWhiteSpace(model.Role) ? null : model.Role,
                         });
 
                         return Results.Ok();

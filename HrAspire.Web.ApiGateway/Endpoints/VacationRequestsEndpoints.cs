@@ -1,7 +1,6 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
 using System.Security.Claims;
-
 using HrAspire.Vacations.Web;
 using HrAspire.Web.ApiGateway.Mappers;
 using HrAspire.Web.Common;
@@ -15,25 +14,10 @@ public static class VacationRequestsEndpoints
     {
         var group = endpoints.MapGroup("/").RequireAuthorization();
 
-        // TODO: ?
-        //group.MapGet(
-        //    "/SalaryRequests",
-        //    (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
-        //        [FromQuery] int pageNumber = 0,
-        //        [FromQuery] int pageSize = 10)
-        //        => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
-        //        {
-        //            var salaryRequestsResponse = await salaryRequestsClient.ListAsync(
-        //                new ListSalaryRequestsRequest { PageNumber = pageNumber, PageSize = pageSize });
-
-        //            var salaryRequests = salaryRequestsResponse.SalaryRequests.Select(e => e.MapToResponseModel()).ToList();
-
-        //            return Results.Ok(new SalaryRequestsResponseModel(salaryRequests, salaryRequestsResponse.Total));
-        //        }));
-
         group.MapGet(
             "/Employees/{employeeId}/VacationRequests",
             (VacationRequests.VacationRequestsClient vacationRequestsClient,
+                ClaimsPrincipal user,
                 [FromRoute] string employeeId,
                 [FromQuery] int pageNumber = 0,
                 [FromQuery] int pageSize = 10)
@@ -45,6 +29,7 @@ public static class VacationRequestsEndpoints
                             EmployeeId = employeeId,
                             PageNumber = pageNumber,
                             PageSize = pageSize,
+                            CurrentEmployeeId = user.GetId(),
                         });
 
                     var vacationRequests = vacationRequestsResponse.VacationRequests.Select(e => e.MapToResponseModel()).ToList();
@@ -73,10 +58,11 @@ public static class VacationRequestsEndpoints
 
         group.MapGet(
             "/VacationRequests/{id:int}",
-            (VacationRequests.VacationRequestsClient vacationRequestsClient, [FromRoute] int id)
+            (VacationRequests.VacationRequestsClient vacationRequestsClient, [FromRoute] int id, ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    var vacationRequestResponse = await vacationRequestsClient.GetAsync(new GetVacationRequestRequest { Id = id });
+                    var vacationRequestResponse = await vacationRequestsClient.GetAsync(
+                        new GetVacationRequestRequest { Id = id, CurrentEmployeeId = user.GetId() });
 
                     var vacationRequest = vacationRequestResponse.VacationRequest.MapToDetailsResponseModel();
 
@@ -87,7 +73,8 @@ public static class VacationRequestsEndpoints
             "/VacationRequests/{id:int}",
             (VacationRequests.VacationRequestsClient vacationRequestsClient,
                 [FromRoute] int id,
-                [FromBody] VacationRequestUpdateRequestModel model)
+                [FromBody] VacationRequestUpdateRequestModel model,
+                ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
                     var updateResponse = await vacationRequestsClient.UpdateAsync(
@@ -98,6 +85,7 @@ public static class VacationRequestsEndpoints
                             FromDate = model.FromDate.ToTimestamp(),
                             ToDate = model.ToDate.ToTimestamp(),
                             Notes = model.Notes,
+                            CurrentEmployeeId = user.GetId(),
                         });
 
                     return Results.Ok();
@@ -105,14 +93,14 @@ public static class VacationRequestsEndpoints
 
         group.MapDelete(
             "/VacationRequests/{id:int}",
-            (VacationRequests.VacationRequestsClient vacationRequestsClient, [FromRoute] int id)
+            (VacationRequests.VacationRequestsClient vacationRequestsClient, [FromRoute] int id, ClaimsPrincipal user)
                 => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                 {
-                    await vacationRequestsClient.DeleteAsync(new DeleteVacationRequestRequest { Id = id });
+                    await vacationRequestsClient.DeleteAsync(
+                        new DeleteVacationRequestRequest { Id = id, CurrentEmployeeId = user.GetId() });
 
                     return Results.Ok();
                 }));
-        // TODO: .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapPost(
@@ -125,7 +113,7 @@ public static class VacationRequestsEndpoints
 
                         return Results.Ok();
                     }))
-            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
+            .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         group
             .MapPost(
@@ -138,7 +126,7 @@ public static class VacationRequestsEndpoints
 
                         return Results.Ok();
                     }))
-            .RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);
+            .RequireAuthorization(Constants.ManagerAuthPolicyName);
 
         return group;
     }

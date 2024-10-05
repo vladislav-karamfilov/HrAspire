@@ -249,7 +249,7 @@ public class EmployeesService : IEmployeesService
 
     public async Task<IEnumerable<EmployeeServiceModel>> ListManagersAsync()
         => await this.dbContext.Employees
-            .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole || ur.RoleId == BusinessConstants.HrManagerRole))
+            .Where(e => e.Roles.Any(ur => ur.RoleId == BusinessConstants.ManagerRole))
             .ProjectToServiceModel()
             .ToListAsync();
 

@@ -1,6 +1,6 @@
 ﻿namespace HrAspire.Employees.Data.Models;
 
-using HrAspire.Data.Common;
+using HrAspire.Data.Common.Models;
 
 using Microsoft.AspNetCore.Identity;
 

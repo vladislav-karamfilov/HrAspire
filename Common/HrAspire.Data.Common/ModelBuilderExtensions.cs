@@ -2,6 +2,8 @@
 
 using System.Reflection;
 
+using HrAspire.Data.Common.Models;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

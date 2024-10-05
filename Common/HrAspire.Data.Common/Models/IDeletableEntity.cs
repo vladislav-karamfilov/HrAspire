@@ -1,4 +1,4 @@
-﻿namespace HrAspire.Data.Common;
+﻿namespace HrAspire.Data.Common.Models;
 
 public interface IDeletableEntity
 {

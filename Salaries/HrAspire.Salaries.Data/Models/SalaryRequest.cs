@@ -2,7 +2,7 @@
 
 using System;
 
-using HrAspire.Data.Common;
+using HrAspire.Data.Common.Models;
 
 public class SalaryRequest : IDeletableEntity
 {

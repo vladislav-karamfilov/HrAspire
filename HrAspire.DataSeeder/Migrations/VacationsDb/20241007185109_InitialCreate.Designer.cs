@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HrAspire.DataSeeder.Migrations.VacationsDb
 {
     [DbContext(typeof(VacationsDbContext))]
-    [Migration("20240922063938_InitialCreate")]
+    [Migration("20241007185109_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,41 @@ namespace HrAspire.DataSeeder.Migrations.VacationsDb
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HrAspire.Data.Common.Models.OutboxMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProcessingError")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsProcessed");
+
+                    b.ToTable("OutboxMessages");
+                });
+
             modelBuilder.Entity("HrAspire.Vacations.Data.Models.VacationRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -32,6 +67,9 @@ namespace HrAspire.DataSeeder.Migrations.VacationsDb
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("timestamp with time zone");
@@ -64,7 +102,12 @@ namespace HrAspire.DataSeeder.Migrations.VacationsDb
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
+                    b.Property<int>("WorkDays")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("VacationRequests");
                 });

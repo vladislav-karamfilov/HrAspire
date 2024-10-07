@@ -41,6 +41,7 @@ builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 builder.Services.AddScoped<IDocumentsService, DocumentsService>();
 builder.Services.AddScoped<ISalaryRequestsService, SalaryRequestsService>();
 builder.Services.AddScoped<IVacationRequestsService, VacationRequestsService>();
+builder.Services.AddScoped<EmployeesDbSeeder>();
 
 builder.Services.AddHostedService<DataSeederWorker>();
 

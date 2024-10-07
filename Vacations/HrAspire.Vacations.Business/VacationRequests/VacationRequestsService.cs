@@ -50,7 +50,7 @@ public class VacationRequestsService : IVacationRequestsService
             return ServiceResult<int>.Error("Vacation From date cannot be after its To date.");
         }
 
-        var workDays = VacationRequestHelper.CalculateWorkDaysBetweenDates(fromDate, toDate);
+        var workDays = CalculateWorkDaysBetweenDates(fromDate, toDate);
         if (workDays <= 0)
         {
             return ServiceResult<int>.Error("No work days between selected vacation dates.");
@@ -220,7 +220,7 @@ public class VacationRequestsService : IVacationRequestsService
             return ServiceResult<int>.Error("Vacation From date cannot be after its To date.");
         }
 
-        var workDays = VacationRequestHelper.CalculateWorkDaysBetweenDates(fromDate, toDate);
+        var workDays = CalculateWorkDaysBetweenDates(fromDate, toDate);
         if (workDays <= 0)
         {
             return ServiceResult<int>.Error("No work days between selected vacation dates.");
@@ -338,6 +338,29 @@ public class VacationRequestsService : IVacationRequestsService
         return ServiceResult.Success;
     }
 
+    private static int CalculateWorkDaysBetweenDates(DateOnly fromDate, DateOnly toDate)
+    {
+        if (fromDate > toDate)
+        {
+            throw new ArgumentException("From date cannot be after To date.", nameof(fromDate));
+        }
+
+        var workDays = 0;
+        var current = fromDate;
+        while (current <= toDate)
+        {
+            // In real world this would be more complicated - official holidays must also be handled
+            if (current.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday))
+            {
+                workDays++;
+            }
+
+            current = current.AddDays(1);
+        }
+
+        return workDays;
+    }
+
     private Task<bool> EmployeeExistsAsync(string employeeId)
         => this.CacheDatabase.HashExistsAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 
@@ -418,7 +441,7 @@ public class VacationRequestsService : IVacationRequestsService
                     ? request.ToDate
                     : new DateOnly(request.FromDate.Year, 12, 31);
 
-                usedWorkDays += VacationRequestHelper.CalculateWorkDaysBetweenDates(request.FromDate, currentToDate);
+                usedWorkDays += CalculateWorkDaysBetweenDates(request.FromDate, currentToDate);
             }
 
             var totalUsedPaidVacationDays = usedWorkDays + workDays;
@@ -457,7 +480,7 @@ public class VacationRequestsService : IVacationRequestsService
                         ? request.ToDate
                         : endOfFromYearDate;
 
-                    usedWorkDaysForFromYear += VacationRequestHelper.CalculateWorkDaysBetweenDates(request.FromDate, currentToDate);
+                    usedWorkDaysForFromYear += CalculateWorkDaysBetweenDates(request.FromDate, currentToDate);
                 }
                 else
                 {
@@ -465,12 +488,12 @@ public class VacationRequestsService : IVacationRequestsService
                         ? request.FromDate
                         : startOfToYearDate;
 
-                    usedWorkDaysForToYear += VacationRequestHelper.CalculateWorkDaysBetweenDates(currentFromDate, request.ToDate);
+                    usedWorkDaysForToYear += CalculateWorkDaysBetweenDates(currentFromDate, request.ToDate);
                 }
             }
 
-            var workDaysForFromYear = VacationRequestHelper.CalculateWorkDaysBetweenDates(fromDate, endOfFromYearDate);
-            var workDaysForToYear = VacationRequestHelper.CalculateWorkDaysBetweenDates(startOfToYearDate, toDate);
+            var workDaysForFromYear = CalculateWorkDaysBetweenDates(fromDate, endOfFromYearDate);
+            var workDaysForToYear = CalculateWorkDaysBetweenDates(startOfToYearDate, toDate);
 
             var totalUsedPaidVacationDaysForFromYear = usedWorkDaysForFromYear + workDaysForFromYear;
             var totalUsedPaidVacationDaysForToYear = usedWorkDaysForToYear + workDaysForToYear;

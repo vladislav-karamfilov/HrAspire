@@ -141,6 +141,7 @@ namespace HrAspire.DataSeeder.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FullName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -173,6 +174,7 @@ namespace HrAspire.DataSeeder.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Position")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Salary")

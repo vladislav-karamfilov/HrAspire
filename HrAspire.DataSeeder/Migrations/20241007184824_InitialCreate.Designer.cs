@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HrAspire.DataSeeder.Migrations
 {
     [DbContext(typeof(EmployeesDbContext))]
-    [Migration("20241001154249_AddOutboxMessages")]
-    partial class AddOutboxMessages
+    [Migration("20241007184824_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,6 +144,7 @@ namespace HrAspire.DataSeeder.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FullName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -176,6 +177,7 @@ namespace HrAspire.DataSeeder.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Position")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Salary")

@@ -53,10 +53,6 @@
                             <td>@Employee.FullName</td>
                         </tr>
                         <tr>
-                            <td>Role</td>
-                            <td>@(Employee.Role ?? "Employee")</td>
-                        </tr>
-                        <tr>
                             <td>Date of Birth</td>
                             <td>@Employee.DateOfBirth.ToString(Constants.DateFormat)</td>
                         </tr>
@@ -84,6 +80,10 @@
                         <tr>
                             <td>Used Paid Vacation Days</td>
                             <td>@Employee.UsedPaidVacationDays</td>
+                        </tr>
+                        <tr>
+                            <td>Role</td>
+                            <td>@(Employee.Role ?? "Employee")</td>
                         </tr>
                         <tr>
                             <td>Created on</td>
@@ -124,12 +124,14 @@
             </TemplateColumn>
         </QuickGrid>
         <Paginator State="DocumentsPagination"></Paginator>
-    </AuthorizeView>
 
-    <AuthorizeView Roles="@BusinessConstants.ManagerAndHrManagerRoles" Context="authState">
         <h3 class="mt-5">
             Salary Requests
-            <a href="/salary-request-create/@Id" class="btn btn-primary float-end">Create</a>
+
+            @if (IsUserEmployeeManager)
+            {
+                <a href="/salary-request-create/@Id" class="btn btn-primary float-end">Create</a>
+            }
         </h3>
         <hr />
 

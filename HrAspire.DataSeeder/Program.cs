@@ -1,4 +1,4 @@
-using HrAspire.DataSeeder;
+using HrAspire.DataSeeder.Services;
 using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Data;
@@ -18,21 +18,15 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>(
     ResourceNames.EmployeesDb,
-    configureDbContextOptions: options => options
-        .UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName))
-        .EnableDetailedErrors(true));
+    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.AddNpgsqlDbContext<SalariesDbContext>(
     ResourceNames.SalariesDb,
-    configureDbContextOptions: options => options
-        .UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName))
-        .EnableDetailedErrors(true));
+    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.AddNpgsqlDbContext<VacationsDbContext>(
     ResourceNames.VacationsDb,
-    configureDbContextOptions: options => options
-        .UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName))
-        .EnableDetailedErrors(true));
+    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.AddAzureBlobClient(ResourceNames.Blobs);
 
@@ -47,7 +41,9 @@ builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 builder.Services.AddScoped<IDocumentsService, DocumentsService>();
 builder.Services.AddScoped<ISalaryRequestsService, SalaryRequestsService>();
 builder.Services.AddScoped<IVacationRequestsService, VacationRequestsService>();
+
 builder.Services.AddScoped<EmployeesDbSeeder>();
+builder.Services.AddScoped<SalariesDbSeeder>();
 
 builder.Services.AddHostedService<DataSeederWorker>();
 

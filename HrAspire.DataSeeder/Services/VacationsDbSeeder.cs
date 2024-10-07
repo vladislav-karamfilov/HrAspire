@@ -25,7 +25,7 @@ public class VacationsDbSeeder
 
             var isPaid = Random.Shared.Next() % 2 == 1;
             var startOffsetDays = Random.Shared.Next(0, 31);
-            var durationDays = Random.Shared.Next(0, 11);
+            var durationDays = Random.Shared.Next(3, 11);
 
             var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(startOffsetDays));
 

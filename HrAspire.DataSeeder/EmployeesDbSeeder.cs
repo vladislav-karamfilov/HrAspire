@@ -3,6 +3,7 @@
 using Bogus;
 
 using HrAspire.Business.Common;
+using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Data;
 using HrAspire.Employees.Data.Models;
@@ -15,12 +16,18 @@ public class EmployeesDbSeeder
     private const string UserPassword = "Password1!";
 
     private readonly IEmployeesService employeesService;
+    private readonly IDocumentsService documentsService;
     private readonly EmployeesDbContext dbContext;
     private readonly ILogger<EmployeesDbSeeder> logger;
 
-    public EmployeesDbSeeder(IEmployeesService employeesService, EmployeesDbContext dbContext, ILogger<EmployeesDbSeeder> logger)
+    public EmployeesDbSeeder(
+        IEmployeesService employeesService,
+        IDocumentsService documentsService,
+        EmployeesDbContext dbContext,
+        ILogger<EmployeesDbSeeder> logger)
     {
         this.employeesService = employeesService;
+        this.documentsService = documentsService;
         this.dbContext = dbContext;
         this.logger = logger;
     }
@@ -40,7 +47,7 @@ public class EmployeesDbSeeder
                     DateOnly.FromDateTime(DateTime.Today.AddYears(-42)),
                     DateOnly.FromDateTime(DateTime.Today.AddYears(-21))));
 
-        var employees = employeesFaker.Generate(count: 9);
+        var employees = employeesFaker.Generate(count: 10);
 
         var hrManager = employees[0];
         var hrManagerResult = await this.employeesService.CreateAsync(
@@ -86,7 +93,7 @@ public class EmployeesDbSeeder
 
         this.logger.LogInformation("Created {Position} employee: {Email}", teamLead.Position, teamLead.Email);
 
-        for (var i = 3; i < employees.Count; i++)
+        for (var i = 2; i < employees.Count; i++)
         {
             var position = i switch
             {
@@ -126,6 +133,29 @@ public class EmployeesDbSeeder
         }
 
         return employees;
+    }
+
+    public async Task SeedDocumentsAsync(IReadOnlyList<Employee> employees)
+    {
+        var sampleDocumentFilePath = "./id-card.jpg";
+        var fileBytes = File.ReadAllBytes(sampleDocumentFilePath);
+        var fileName = Path.GetFileName(sampleDocumentFilePath);
+
+        foreach (var employee in employees)
+        {
+            var documentResult = await this.documentsService.CreateAsync(
+                employee.Id,
+                "ID Card",
+                description: null,
+                fileBytes,
+                fileName,
+                employees[0].Id);
+
+            if (documentResult.IsError)
+            {
+                throw new Exception($"Error creating document: {documentResult.ErrorMessage}");
+            }
+        }
     }
 
     public async Task SeedRolesAsync()

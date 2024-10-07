@@ -18,15 +18,21 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>(
     ResourceNames.EmployeesDb,
-    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+    configureDbContextOptions: options => options
+        .UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName))
+        .EnableDetailedErrors(true));
 
 builder.AddNpgsqlDbContext<SalariesDbContext>(
     ResourceNames.SalariesDb,
-    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+    configureDbContextOptions: options => options
+        .UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName))
+        .EnableDetailedErrors(true));
 
 builder.AddNpgsqlDbContext<VacationsDbContext>(
     ResourceNames.VacationsDb,
-    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+    configureDbContextOptions: options => options
+        .UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName))
+        .EnableDetailedErrors(true));
 
 builder.AddAzureBlobClient(ResourceNames.Blobs);
 

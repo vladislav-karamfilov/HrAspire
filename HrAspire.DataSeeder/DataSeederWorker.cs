@@ -56,6 +56,8 @@ public class DataSeederWorker : BackgroundService
         await employeesDbSeeder.SeedRolesAsync();
 
         var employees = await employeesDbSeeder.SeedEmployeesAsync();
+
+        await employeesDbSeeder.SeedDocumentsAsync(employees);
     }
 
     private async Task MigrateAndSeedSalariesDbAsync(CancellationToken cancellationToken)

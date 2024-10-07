@@ -6,15 +6,13 @@ using Microsoft.AspNetCore.Identity;
 
 public class Employee : IdentityUser, IDeletableEntity
 {
-    // TODO: non-nullable
-    public string? FullName { get; set; } = default!;
+    public string FullName { get; set; } = default!;
 
     public DateOnly DateOfBirth { get; set; }
 
     public string? Department { get; set; }
 
-    // TODO: non-nullable
-    public string? Position { get; set; } = default!;
+    public string Position { get; set; } = default!;
 
     public decimal Salary { get; set; }
 

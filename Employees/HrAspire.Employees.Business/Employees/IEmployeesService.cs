@@ -21,7 +21,7 @@ public interface IEmployeesService
         string? department,
         string? managerId,
         decimal salary,
-        string role,
+        string? role,
         string createdById);
 
     Task<ServiceResult> UpdateAsync(
@@ -31,7 +31,7 @@ public interface IEmployeesService
         string position,
         string? department,
         string? managerId,
-        string role);
+        string? role);
 
     Task<ServiceResult> DeleteAsync(string id);
 

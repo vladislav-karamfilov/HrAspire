@@ -46,7 +46,7 @@ public class EmployeesService : IEmployeesService
         string? department,
         string? managerId,
         decimal salary,
-        string role,
+        string? role,
         string createdById)
     {
         var employee = new Employee
@@ -99,7 +99,7 @@ public class EmployeesService : IEmployeesService
         string position,
         string? department,
         string? managerId,
-        string role)
+        string? role)
     {
         var employee = await this.dbContext.Employees.FirstOrDefaultAsync(e => e.Id == id);
         if (employee is null)

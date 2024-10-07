@@ -71,6 +71,7 @@ builder
     .WithReference(employeesDb)
     .WithReference(salariesDb)
     .WithReference(vacationsDb)
+    .WithReference(blobs)
     .WithReference(cache);
 
 builder.Build().Run();

@@ -36,7 +36,7 @@ public class EmployeesDbSeeder
     {
         if (await dbContext.Employees.AnyAsync())
         {
-            // TODO: return (null, null, []);
+            return (null, null, []);
         }
 
         var employeesFaker = new Faker<Employee>()

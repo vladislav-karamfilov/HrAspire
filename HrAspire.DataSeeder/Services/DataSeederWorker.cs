@@ -90,6 +90,8 @@ public class DataSeederWorker : BackgroundService
         await dbContext.Database.MigrateAsync(cancellationToken);
         logger.LogInformation("Migrated vacations DB.");
 
-        // TODO: seed data - vacation requests?
+        var vacationsDbSeeder = scope.ServiceProvider.GetRequiredService<VacationsDbSeeder>();
+
+        await vacationsDbSeeder.SeedVacationRequestsAsync(employeeIds);
     }
 }

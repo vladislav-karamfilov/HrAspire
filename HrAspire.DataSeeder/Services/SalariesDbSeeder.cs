@@ -2,7 +2,6 @@
 
 using HrAspire.Employees.Data;
 using HrAspire.Salaries.Business.SalaryRequests;
-using HrAspire.Salaries.Data;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +49,9 @@ public class SalariesDbSeeder
             {
                 throw new Exception("Error creating salary request: " + salaryRequestResult.ErrorMessage);
             }
+
+            this.logger.LogInformation(
+                "Created salary request {SalaryRequestId} for employee {EmployeeId}", salaryRequestResult.Data, employeeId);
         }
     }
 }

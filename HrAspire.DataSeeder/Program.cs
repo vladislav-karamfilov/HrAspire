@@ -44,6 +44,7 @@ builder.Services.AddScoped<IVacationRequestsService, VacationRequestsService>();
 
 builder.Services.AddScoped<EmployeesDbSeeder>();
 builder.Services.AddScoped<SalariesDbSeeder>();
+builder.Services.AddScoped<VacationsDbSeeder>();
 
 builder.Services.AddHostedService<DataSeederWorker>();
 

@@ -24,7 +24,7 @@ public class SalaryRequestApprovedEventConsumer : IConsumer<SalaryRequestApprove
         if (result.IsError)
         {
             this.logger.LogError(
-                "Error consuming event for employee {employeeId}, salary {salary} and approved on {approvedOn}: {errorMessage}",
+                "Error consuming event for employee {EmployeeId}, salary {Salary} and approved on {ApprovedOn}: {ErrorMessage}",
                 context.Message.EmployeeId,
                 context.Message.NewSalary,
                 context.Message.ApprovedOn,

@@ -13,6 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 
 public static class EmployeesEndpoints
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1116:Split parameters should start on line after declaration",
+        Justification = "Better readability.")]
     public static IEndpointConventionBuilder MapEmployeesEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/Employees").RequireAuthorization();
@@ -31,7 +35,7 @@ public static class EmployeesEndpoints
                             {
                                 CurrentEmployeeId = user.GetId()!,
                                 PageNumber = pageNumber,
-                                PageSize = pageSize
+                                PageSize = pageSize,
                             });
 
                         var employees = employeesResponse.Employees.Select(e => e.MapToResponseModel()).ToList();

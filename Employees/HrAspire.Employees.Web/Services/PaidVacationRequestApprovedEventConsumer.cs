@@ -29,7 +29,7 @@ public class PaidVacationRequestApprovedEventConsumer : IConsumer<PaidVacationRe
         if (result.IsError)
         {
             this.logger.LogError(
-                "Error consuming event for employee {employeeId}, from date {fromDate}, to date {toDate}, total used paid vacation days {totalUsedPaidVacationDays} and approved on {approvedOn}: {errorMessage}",
+                "Error consuming event for employee {EmployeeId}, from date {FromDate}, to date {ToDate}, total used paid vacation days {TotalUsedPaidVacationDays} and approved on {ApprovedOn}: {ErrorMessage}",
                 context.Message.EmployeeId,
                 context.Message.FromDate,
                 context.Message.ToDate,

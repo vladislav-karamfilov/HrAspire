@@ -1,12 +1,12 @@
 ﻿namespace HrAspire.Web.ApiGateway;
 
-using FluentValidation;
-
-using Microsoft.AspNetCore.Mvc;
-
 using System;
 using System.Net;
 using System.Reflection;
+
+using FluentValidation;
+
+using Microsoft.AspNetCore.Mvc;
 
 public static class ValidationHelper
 {
@@ -44,17 +44,16 @@ public static class ValidationHelper
     private static IEnumerable<ValidatorDescriptor> GetValidators(MethodInfo methodInfo, IServiceProvider serviceProvider)
     {
         var parameters = methodInfo.GetParameters();
-        for (int i = 0; i < parameters.Length; i++)
+        for (var i = 0; i < parameters.Length; i++)
         {
             var parameter = parameters[i];
 
-            // If route or query string params need to be validated too this should be changed 
+            // If route or query string params need to be validated too this should be changed
             if (parameter.GetCustomAttribute<FromBodyAttribute>() is not null)
             {
                 var validatorType = typeof(IValidator<>).MakeGenericType(parameter.ParameterType);
 
-                var validator = serviceProvider.GetService(validatorType) as IValidator;
-                if (validator is not null)
+                if (serviceProvider.GetService(validatorType) is IValidator validator)
                 {
                     yield return new ValidatorDescriptor(i, validator);
                 }
@@ -62,5 +61,5 @@ public static class ValidationHelper
         }
     }
 
-    private record ValidatorDescriptor(int ArgumentIndex, IValidator Validator);
+    private sealed record ValidatorDescriptor(int ArgumentIndex, IValidator Validator);
 }

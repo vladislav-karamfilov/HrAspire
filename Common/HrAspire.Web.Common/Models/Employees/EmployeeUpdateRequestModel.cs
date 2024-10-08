@@ -1,4 +1,5 @@
 ﻿namespace HrAspire.Web.Common.Models.Employees;
+
 public class EmployeeUpdateRequestModel
 {
     public string FullName { get; set; } = default!;

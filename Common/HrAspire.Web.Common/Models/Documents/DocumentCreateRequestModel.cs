@@ -1,4 +1,5 @@
 ﻿namespace HrAspire.Web.Common.Models.Documents;
+
 public class DocumentCreateRequestModel
 {
     public string Title { get; set; } = default!;

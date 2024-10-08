@@ -12,6 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 
 public static class SalaryRequestsEndpoints
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1116:Split parameters should start on line after declaration",
+        Justification = "Better readability.")]
     public static IEndpointConventionBuilder MapSalaryRequestsEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/").RequireAuthorization();
@@ -19,9 +23,7 @@ public static class SalaryRequestsEndpoints
         group
             .MapGet(
                 "/SalaryRequests",
-                (SalaryRequests.SalaryRequestsClient salaryRequestsClient,
-                    [FromQuery] int pageNumber = 0,
-                    [FromQuery] int pageSize = 10)
+                (SalaryRequests.SalaryRequestsClient salaryRequestsClient, [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 10)
                     => GrpcToHttpHelper.HandleGrpcCallAsync(async () =>
                     {
                         var salaryRequestsResponse = await salaryRequestsClient.ListAsync(
@@ -113,7 +115,7 @@ public static class SalaryRequestsEndpoints
                                 Id = id,
                                 NewSalary = model.NewSalary,
                                 Notes = model.Notes,
-                                CurrentEmployeeId = user.GetId()!
+                                CurrentEmployeeId = user.GetId()!,
                             });
 
                         return Results.Ok();

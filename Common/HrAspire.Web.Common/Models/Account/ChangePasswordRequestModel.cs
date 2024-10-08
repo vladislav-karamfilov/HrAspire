@@ -1,4 +1,5 @@
 ﻿namespace HrAspire.Web.Common.Models.Account;
+
 public class ChangePasswordRequestModel
 {
     public string OldPassword { get; set; } = default!;

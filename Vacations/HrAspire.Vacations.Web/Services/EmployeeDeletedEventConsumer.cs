@@ -10,12 +10,10 @@ using MassTransit;
 public class EmployeeDeletedEventConsumer : IConsumer<EmployeeDeletedEvent>
 {
     private readonly IVacationRequestsService vacationRequestsService;
-    private readonly ILogger<EmployeeDeletedEventConsumer> logger;
 
-    public EmployeeDeletedEventConsumer(IVacationRequestsService vacationRequestsService, ILogger<EmployeeDeletedEventConsumer> logger)
+    public EmployeeDeletedEventConsumer(IVacationRequestsService vacationRequestsService)
     {
         this.vacationRequestsService = vacationRequestsService;
-        this.logger = logger;
     }
 
     public Task Consume(ConsumeContext<EmployeeDeletedEvent> context)

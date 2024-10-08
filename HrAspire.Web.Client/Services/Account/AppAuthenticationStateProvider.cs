@@ -28,7 +28,7 @@ public class AppAuthenticationStateProvider : AuthenticationStateProvider, IAuth
                 {
                     new(ClaimTypes.NameIdentifier, userInfo.Id),
                     new(ClaimTypes.Name, userInfo.Email),
-                    new(ClaimTypes.Email, userInfo.Email)
+                    new(ClaimTypes.Email, userInfo.Email),
                 };
 
                 claims.AddRange(userInfo.Roles.Select(r => new Claim(ClaimTypes.Role, r)));

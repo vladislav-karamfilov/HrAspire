@@ -11,18 +11,18 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
 {
     private static readonly TimeSpan TimeToWaitBeforeNextFetchAfterNoMessagesProcessed = TimeSpan.FromSeconds(5);
 
-    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceScopeFactory serviceScopeFactory;
     private readonly ILogger<ProcessOutboxMessagesBackgroundService> logger;
 
     public ProcessOutboxMessagesBackgroundService(
-        IServiceProvider serviceProvider,
+        IServiceScopeFactory serviceScopeFactory,
         ILogger<ProcessOutboxMessagesBackgroundService> logger)
     {
-        this.serviceProvider = serviceProvider;
+        this.serviceScopeFactory = serviceScopeFactory;
         this.logger = logger;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) => ProcessOutboxMessagesAsync(stoppingToken);
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) => this.ProcessOutboxMessagesAsync(stoppingToken);
 
     private async Task ProcessOutboxMessagesAsync(CancellationToken cancellationToken)
     {
@@ -30,7 +30,7 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
         {
             var processedMessages = 0;
 
-            using (var scope = serviceProvider.CreateScope())
+            using (var scope = this.serviceScopeFactory.CreateScope())
             {
                 try
                 {
@@ -44,7 +44,7 @@ public class ProcessOutboxMessagesBackgroundService : BackgroundService
                 }
                 catch (Exception e)
                 {
-                    logger.LogError($"{nameof(this.ProcessOutboxMessagesAsync)}() failed with ex: {e}");
+                    this.logger.LogError("{Method}() failed with ex: {Exception}", nameof(this.ProcessOutboxMessagesAsync), e);
                 }
             }
 

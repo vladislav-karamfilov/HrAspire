@@ -1,6 +1,7 @@
 ﻿namespace HrAspire.Web.ApiGateway.Endpoints;
 
 using System.Security.Claims;
+
 using HrAspire.Vacations.Web;
 using HrAspire.Web.ApiGateway.Mappers;
 using HrAspire.Web.Common;
@@ -10,6 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 
 public static class VacationRequestsEndpoints
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1116:Split parameters should start on line after declaration",
+        Justification = "Better readability.")]
     public static IEndpointConventionBuilder MapVacationRequestsEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/").RequireAuthorization();

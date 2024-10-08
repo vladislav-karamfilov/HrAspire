@@ -34,7 +34,7 @@ public class EmployeesDbSeeder
 
     public async Task<(string? HrManagerId, string? ManagerId, string[] EmployeeIds)> SeedEmployeesAsync()
     {
-        if (await dbContext.Employees.AnyAsync())
+        if (await this.dbContext.Employees.AnyAsync())
         {
             return (null, null, []);
         }
@@ -50,8 +50,9 @@ public class EmployeesDbSeeder
         var employees = employeesFaker.Generate(count: 10);
 
         var hrManager = employees[0];
-        var hrManagerResult = await employeesService.CreateAsync(
-            GenerateEmailFromFullName(hrManager.FullName),
+        hrManager.Email = GenerateEmailFromFullName(hrManager.FullName);
+        var hrManagerResult = await this.employeesService.CreateAsync(
+            hrManager.Email,
             UserPassword,
             hrManager.FullName,
             hrManager.DateOfBirth,
@@ -69,11 +70,12 @@ public class EmployeesDbSeeder
 
         hrManager.Id = hrManagerResult.Data!;
 
-        logger.LogInformation("Created {Position} employee: {Email}", hrManager.Position, hrManager.Email);
+        this.logger.LogInformation("Created HR Manager employee: {Email}", hrManager.Email);
 
         var teamLead = employees[1];
-        var teamLeadResult = await employeesService.CreateAsync(
-            GenerateEmailFromFullName(teamLead.FullName),
+        teamLead.Email = GenerateEmailFromFullName(teamLead.FullName);
+        var teamLeadResult = await this.employeesService.CreateAsync(
+            teamLead.Email,
             UserPassword,
             teamLead.FullName,
             teamLead.DateOfBirth,
@@ -91,7 +93,7 @@ public class EmployeesDbSeeder
 
         teamLead.Id = teamLeadResult.Data!;
 
-        logger.LogInformation("Created {Position} employee: {Email}", teamLead.Position, teamLead.Email);
+        this.logger.LogInformation("Created Team Lead employee: {Email}", teamLead.Email);
 
         for (var i = 2; i < employees.Count; i++)
         {
@@ -110,8 +112,9 @@ public class EmployeesDbSeeder
             };
 
             var employee = employees[i];
-            var employeeResult = await employeesService.CreateAsync(
-                GenerateEmailFromFullName(employee.FullName),
+            employee.Email = GenerateEmailFromFullName(employee.FullName);
+            var employeeResult = await this.employeesService.CreateAsync(
+                employee.Email,
                 UserPassword,
                 employee.FullName,
                 employee.DateOfBirth,
@@ -129,7 +132,7 @@ public class EmployeesDbSeeder
 
             employee.Id = employeeResult.Data!;
 
-            logger.LogInformation("Created {Position} employee: {Email}", employee.Position, employee.Email);
+            this.logger.LogInformation("Created {Position} employee: {Email}", position, employee.Email);
         }
 
         return (hrManager.Id, teamLead.Id, employees.Skip(2).Select(e => e.Id).ToArray());
@@ -144,7 +147,7 @@ public class EmployeesDbSeeder
         foreach (var employeeId in employeeIds)
         {
             var documentResult =
-                await documentsService.CreateAsync(employeeId, "ID Card", description: null, fileBytes, fileName, hrManagerId);
+                await this.documentsService.CreateAsync(employeeId, "ID Card", description: null, fileBytes, fileName, hrManagerId);
 
             if (documentResult.IsError)
             {
@@ -155,12 +158,12 @@ public class EmployeesDbSeeder
 
     public async Task SeedRolesAsync()
     {
-        if (await dbContext.Roles.AnyAsync())
+        if (await this.dbContext.Roles.AnyAsync())
         {
             return;
         }
 
-        dbContext.Roles.Add(new IdentityRole
+        this.dbContext.Roles.Add(new IdentityRole
         {
             Id = BusinessConstants.ManagerRole,
             Name = BusinessConstants.ManagerRole,
@@ -168,7 +171,7 @@ public class EmployeesDbSeeder
             ConcurrencyStamp = Guid.NewGuid().ToString(),
         });
 
-        dbContext.Roles.Add(new IdentityRole
+        this.dbContext.Roles.Add(new IdentityRole
         {
             Id = BusinessConstants.HrManagerRole,
             Name = BusinessConstants.HrManagerRole,
@@ -176,7 +179,7 @@ public class EmployeesDbSeeder
             ConcurrencyStamp = Guid.NewGuid().ToString(),
         });
 
-        await dbContext.SaveChangesAsync();
+        await this.dbContext.SaveChangesAsync();
     }
 
     private static string GenerateEmailFromFullName(string fullName)

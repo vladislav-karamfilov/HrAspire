@@ -1,4 +1,5 @@
 ﻿namespace HrAspire.Web.Common.Models.Employees;
+
 public class EmployeeCreateRequestModel
 {
     public string Email { get; set; } = default!;

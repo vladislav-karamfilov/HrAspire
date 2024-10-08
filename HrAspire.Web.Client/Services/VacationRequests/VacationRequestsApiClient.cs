@@ -1,9 +1,9 @@
 ﻿namespace HrAspire.Web.Client.Services.VacationRequests;
 
+using System.Net.Http.Json;
+
 using HrAspire.Web.Common.Models.SalaryRequests;
 using HrAspire.Web.Common.Models.VacationRequests;
-
-using System.Net.Http.Json;
 
 public class VacationRequestsApiClient
 {

@@ -30,29 +30,29 @@ public class DataSeederWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (hostEnvironment.IsDevelopment())
+        if (this.hostEnvironment.IsDevelopment())
         {
-            var (hrManagerId, managerId, employeeIds) = await MigrateAndSeedEmployeesDbAsync(stoppingToken);
+            var (hrManagerId, managerId, employeeIds) = await this.MigrateAndSeedEmployeesDbAsync(stoppingToken);
             if (hrManagerId is not null && managerId is not null)
             {
-                await MigrateAndSeedSalariesDbAsync(managerId, employeeIds, stoppingToken);
+                await this.MigrateAndSeedSalariesDbAsync(managerId, employeeIds, stoppingToken);
 
-                await MigrateAndSeedVacationsDbAsync(employeeIds.Concat([hrManagerId, managerId]), stoppingToken);
+                await this.MigrateAndSeedVacationsDbAsync(employeeIds.Concat([hrManagerId, managerId]), stoppingToken);
             }
         }
 
-        hostApplicationLifetime.StopApplication();
+        this.hostApplicationLifetime.StopApplication();
     }
 
     private async Task<(string? HrManagerId, string? ManagerId, string[] EmployeeIds)> MigrateAndSeedEmployeesDbAsync(
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        using var scope = this.scopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<EmployeesDbContext>();
 
-        logger.LogInformation("Migrating employees DB...");
+        this.logger.LogInformation("Migrating employees DB...");
         await dbContext.Database.MigrateAsync(cancellationToken);
-        logger.LogInformation("Migrated employees DB.");
+        this.logger.LogInformation("Migrated employees DB.");
 
         var employeesDbSeeder = scope.ServiceProvider.GetRequiredService<EmployeesDbSeeder>();
 
@@ -69,12 +69,12 @@ public class DataSeederWorker : BackgroundService
 
     private async Task MigrateAndSeedSalariesDbAsync(string managerId, string[] employeeIds, CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        using var scope = this.scopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<SalariesDbContext>();
 
-        logger.LogInformation("Migrating salaries DB...");
+        this.logger.LogInformation("Migrating salaries DB...");
         await dbContext.Database.MigrateAsync(cancellationToken);
-        logger.LogInformation("Migrated salaries DB.");
+        this.logger.LogInformation("Migrated salaries DB.");
 
         var salariesDbSeeder = scope.ServiceProvider.GetRequiredService<SalariesDbSeeder>();
 
@@ -83,12 +83,12 @@ public class DataSeederWorker : BackgroundService
 
     private async Task MigrateAndSeedVacationsDbAsync(IEnumerable<string> employeeIds, CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        using var scope = this.scopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<VacationsDbContext>();
 
-        logger.LogInformation("Migrating vacations DB...");
+        this.logger.LogInformation("Migrating vacations DB...");
         await dbContext.Database.MigrateAsync(cancellationToken);
-        logger.LogInformation("Migrated vacations DB.");
+        this.logger.LogInformation("Migrated vacations DB.");
 
         var vacationsDbSeeder = scope.ServiceProvider.GetRequiredService<VacationsDbSeeder>();
 

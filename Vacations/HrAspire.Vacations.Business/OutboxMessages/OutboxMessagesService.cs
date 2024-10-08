@@ -51,7 +51,7 @@ public class OutboxMessagesService : IOutboxMessagesService
             {
                 await this.ProcessMessageAsync(message, cancellationToken);
 
-                await dbContext.SaveChangesAsync(cancellationToken);
+                await this.dbContext.SaveChangesAsync(cancellationToken);
 
                 processedMessages++;
             }
@@ -62,7 +62,7 @@ public class OutboxMessagesService : IOutboxMessagesService
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Error processing message {messageId}: {exception}", message.Id, ex);
+                this.logger.LogError("Error processing message {MessageId}: {Exception}", message.Id, ex);
             }
         }
 
@@ -108,7 +108,7 @@ public class OutboxMessagesService : IOutboxMessagesService
         catch (JsonException ex)
         {
             this.logger.LogError(
-                "Error deserializing payload of message {messageId} to {messageType}: {exception}",
+                "Error deserializing payload of message {MessageId} to {MessageType}: {Exception}",
                 message.Id,
                 message.Type,
                 ex);

@@ -4,10 +4,10 @@ using System;
 
 public class ServiceResult
 {
-    internal const string ErrorNotFoundMessage = "Object not found.";
-
     public static readonly ServiceResult Success = new();
     public static readonly ServiceResult ErrorNotFound = new() { ErrorMessage = ErrorNotFoundMessage };
+
+    internal const string ErrorNotFoundMessage = "Object not found.";
 
     protected ServiceResult()
     {
@@ -15,7 +15,7 @@ public class ServiceResult
 
     public string? ErrorMessage { get; protected set; }
 
-    public bool IsError => !string.IsNullOrWhiteSpace(ErrorMessage);
+    public bool IsError => !string.IsNullOrWhiteSpace(this.ErrorMessage);
 
     public static ServiceResult Error(string errorMessage)
     {

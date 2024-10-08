@@ -16,6 +16,10 @@ using Microsoft.Net.Http.Headers;
 
 public static class DocumentsEndpoints
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1116:Split parameters should start on line after declaration",
+        Justification = "Better readability.")]
     public static IEndpointConventionBuilder MapDocumentsEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/").RequireAuthorization(Constants.ManagerOrHrManagerAuthPolicyName);

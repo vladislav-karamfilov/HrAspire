@@ -5,7 +5,7 @@ using System;
 public class ServiceResult<T> : ServiceResult
 {
     public static readonly ServiceResult<T> EmptySuccess = new();
-    public new static readonly ServiceResult<T> ErrorNotFound = new() { ErrorMessage = ErrorNotFoundMessage };
+    public static new readonly ServiceResult<T> ErrorNotFound = new() { ErrorMessage = ErrorNotFoundMessage };
 
     protected ServiceResult()
     {
@@ -13,9 +13,9 @@ public class ServiceResult<T> : ServiceResult
 
     public T? Data { get; protected set; }
 
-    public new static ServiceResult<T> Success(T? data) => new() { Data = data };
+    public static new ServiceResult<T> Success(T? data) => new() { Data = data };
 
-    public new static ServiceResult<T> Error(string errorMessage)
+    public static new ServiceResult<T> Error(string errorMessage)
     {
         if (string.IsNullOrWhiteSpace(errorMessage))
         {

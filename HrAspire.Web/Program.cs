@@ -1,5 +1,6 @@
-using HrAspire.ServiceDefaults;
+﻿using HrAspire.ServiceDefaults;
 using HrAspire.Web.Components;
+using HrAspire.Web.Services;
 
 using Microsoft.AspNetCore.Authorization;
 

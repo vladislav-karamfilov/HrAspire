@@ -19,6 +19,7 @@ using HrAspire.Employees.Data.Models;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using StackExchange.Redis;
 
 public class DocumentsService : IDocumentsService
@@ -204,7 +205,7 @@ public class DocumentsService : IDocumentsService
         }
         catch (Exception ex)
         {
-            this.logger.LogError("Error uploading file '{file}' to container '{container}': {exception}", fileName, containerName, ex);
+            this.logger.LogError("Error uploading file '{File}' to container '{Container}': {Exception}", fileName, containerName, ex);
             return null;
         }
 

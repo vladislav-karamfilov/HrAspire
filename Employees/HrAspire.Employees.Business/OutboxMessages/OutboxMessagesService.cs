@@ -72,7 +72,7 @@ public class OutboxMessagesService : IOutboxMessagesService
     private async Task ProcessMessageAsync(OutboxMessage message, CancellationToken cancellationToken)
     {
         object? payloadObject = null;
-        string? errorMessage = null;
+        string? errorMessage;
         if (message.Type == typeof(EmployeeDeletedEvent).FullName)
         {
             (payloadObject, errorMessage) = this.TryDeserializeEmployeeDeletedEvent(message);

@@ -72,7 +72,7 @@ public class OutboxMessagesService : IOutboxMessagesService
     private async Task ProcessMessageAsync(OutboxMessage message, CancellationToken cancellationToken)
     {
         object? payloadObject = null;
-        string? errorMessage = null;
+        string? errorMessage;
         if (message.Type == typeof(PaidVacationRequestApprovedEvent).FullName)
         {
             (payloadObject, errorMessage) = this.TryDeserializePaidVacationRequestApprovedEvent(message);

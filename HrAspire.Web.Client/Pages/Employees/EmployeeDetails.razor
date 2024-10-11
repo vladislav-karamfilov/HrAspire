@@ -120,7 +120,11 @@
 
             <TemplateColumn Title="Title">
                 <a href="/documents/@context.Id">View</a>
-                <a href="/document-update/@context.Id" class="ms-3">Update</a>
+
+                @if (context.CreatedById == UserId)
+                {
+                    <a href="/document-update/@context.Id" class="ms-3">Update</a>
+                }
             </TemplateColumn>
         </QuickGrid>
         <Paginator State="DocumentsPagination"></Paginator>
@@ -203,13 +207,17 @@
     private GridItemsProvider<VacationRequestResponseModel>? GridVacationRequestsProvider { get; set; }
     private PaginationState VacationRequestsPagination { get; set; } = new() { ItemsPerPage = 5 };
 
+    private string UserId { get; set; } = default!;
     private bool IsUserCurrentEmployee { get; set; }
     private bool IsUserEmployeeManager { get; set; }
 
     private string? ErrorMessage { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var authState = await this.AuthState;
+        this.UserId = authState.User.GetId()!;
+
         this.GridDocumentsProvider = this.GetGridDocumentsAsync;
         this.GridSalaryRequestsProvider = this.GetGridSalaryRequestsAsync;
         this.GridVacationRequestsProvider = this.GetGridVacationRequestsAsync;
@@ -219,10 +227,8 @@
     {
         (this.Employee, this.ErrorMessage) = await this.EmployeesApiClient.GetEmployeeAsync(this.Id);
 
-        var authState = await this.AuthState;
-        var currentUserId = authState.User.GetId();
-        this.IsUserCurrentEmployee = currentUserId == this.Id;
-        this.IsUserEmployeeManager = currentUserId == this.Employee?.ManagerId;
+        this.IsUserCurrentEmployee = this.UserId == this.Id;
+        this.IsUserEmployeeManager = this.UserId == this.Employee?.ManagerId;
     }
 
     private async Task DeleteEmployeeAsync()

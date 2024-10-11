@@ -1,4 +1,4 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 option csharp_namespace = "HrAspire.Employees.Web";
 
@@ -42,7 +42,8 @@ message DocumentModel {
 	int32 id = 1;
 	string title = 2;
 	string fileName = 3;
-	google.protobuf.Timestamp createdOn = 4;
+    string createdById = 4;
+	google.protobuf.Timestamp createdOn = 5;
 }
 
 message DocumentDetailsModel {

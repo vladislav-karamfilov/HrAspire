@@ -40,10 +40,10 @@ public class EmployeesDbSeeder
         }
 
         var employeesFaker = new Faker<Employee>()
-            .RuleFor(e => e.FullName, p => p.Name.FullName())
+            .RuleFor(e => e.FullName, f => f.Name.FullName())
             .RuleFor(
                 e => e.DateOfBirth,
-                p => p.Date.BetweenDateOnly(
+                f => f.Date.BetweenDateOnly(
                     DateOnly.FromDateTime(DateTime.Today.AddYears(-42)),
                     DateOnly.FromDateTime(DateTime.Today.AddYears(-21))));
 

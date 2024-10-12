@@ -25,7 +25,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  <PrivateAssets>all</PrivateAssets>
 	</PackageReference>
-	<PackageReference Include="Riok.Mapperly" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
+	<PackageReference Include="Riok.Mapperly" Version="4.0.0" ExcludeAssets="runtime" PrivateAssets="all">
+	  <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
   </ItemGroup>
 
   <ItemGroup>

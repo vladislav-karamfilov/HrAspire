@@ -540,3 +540,9 @@ dotnet_diagnostic.CA1859.severity = suggestion
 
 # CA1862: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 dotnet_diagnostic.CA1862.severity = suggestion
+
+# RMG020: Source member is not mapped to any target member
+dotnet_diagnostic.RMG020.severity = suggestion
+
+# RMG012: Source member was not found for target member
+dotnet_diagnostic.RMG012.severity = suggestion

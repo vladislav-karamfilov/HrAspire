@@ -61,7 +61,8 @@ public static class Extensions
             logging.IncludeScopes = true;
         });
 
-        builder.Services.AddOpenTelemetry()
+        builder.Services
+            .AddOpenTelemetry()
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
@@ -69,7 +70,8 @@ public static class Extensions
             .WithTracing(tracing => tracing
                 .AddAspNetCoreInstrumentation()
                 .AddGrpcClientInstrumentation()
-                .AddHttpClientInstrumentation());
+                .AddHttpClientInstrumentation()
+                .AddSource("MassTransit"));
 
         builder.AddOpenTelemetryExporters();
 

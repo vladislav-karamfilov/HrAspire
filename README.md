@@ -6,11 +6,11 @@ HrAspire is a project that I built in my spare time with a couple of key goals i
 - learn [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/)
 - explore and deepen my knowledge of technologies like [PostgreSQL](https://www.postgresql.org/), [RabbitMQ](https://www.rabbitmq.com/), [Garnet](https://microsoft.github.io/garnet/docs), [ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview), [gRPC](https://grpc.io/), which I know about but haven't used in projects at work or in other personal projects
 - explore and deepen my knowledge of libraries like [MassTransit](https://masstransit.io/), [FluentValidation](https://docs.fluentvalidation.net/), [Mapperly](https://mapperly.riok.app/), which I know about but haven't used in projects at work or in other personal projects
-- practice my software design skills
+- practice my system design skills
 - have fun architecting and coding!
 
 ## Functionalities
-HrAspire is a simple HR system designed to streamline employee management. The system offers role-based functionality for Employees, Managers and HR Managers, enabling efficient handling of common HR tasks. 
+HrAspire is a simple HR system designed to streamline common employee management operations. The system offers role-based functionality for Employees, Managers and HR Managers, enabling efficient handling of common HR tasks. 
 
 ### Employee functionalities
 All app users are employees including users in Manager and HR Manager roles. Employees can:
@@ -37,7 +37,7 @@ HR managers have all the capabilities of an employee plus additional HR-specific
 - view vacation requests for all employees
 
 ## Architecture
-HrAspire is built using the [microservice architecture](https://en.wikipedia.org/wiki/Microservices), with multiple (micro)services handling different aspects of HR management.
+HrAspire is built using the [microservice architecture](https://en.wikipedia.org/wiki/Microservices), with multiple (micro)services handling different aspects of HR management and architectural concerns. These services can be divided into 2 groups: frontend and backend. Frontend services are designed to be Internet-facing and backend services are designed to be accessible only within a protected internal network. In addition to these services, a [data seeder console application](/HrAspire.DataSeeder) has been implemented to provide a quickstart experience for development environment.
 
 ### Frontend
 - The UI of the system is a web-based [single-page app](/HrAspire.Web.Client) built with [Blazor WebAssembly](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) and hosted by an [ASP.NET Core server](/HrAspire.Web)

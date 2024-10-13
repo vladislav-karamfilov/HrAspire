@@ -66,12 +66,15 @@ var webFrontEndEndpoint = webFrontEnd.GetEndpoint("https");
 
 apiGateway = apiGateway.WithEnvironment(EnvironmentVariableNames.WebFrontEndUrl, webFrontEndEndpoint);
 
-builder
-    .AddProject<Projects.HrAspire_DataSeeder>(ResourceNames.DataSeeder)
-    .WithReference(employeesDb)
-    .WithReference(salariesDb)
-    .WithReference(vacationsDb)
-    .WithReference(blobs)
-    .WithReference(cache);
+if (builder.ExecutionContext.IsRunMode)
+{
+    builder
+        .AddProject<Projects.HrAspire_DataSeeder>(ResourceNames.DataSeeder)
+        .WithReference(employeesDb)
+        .WithReference(salariesDb)
+        .WithReference(vacationsDb)
+        .WithReference(blobs)
+        .WithReference(cache);
+}
 
 builder.Build().Run();

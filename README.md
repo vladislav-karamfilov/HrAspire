@@ -41,6 +41,6 @@ HrAspire is built using the [microservice architecture](https://en.wikipedia.org
 
 ### Frontend
 - The UI of the system is a web-based [single-page app](/HrAspire.Web.Client) built with [Blazor WebAssembly](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) and hosted by an [ASP.NET Core server](/HrAspire.Web)
-- The [API Gateway](/HrAspire.Web.ApiGateway) exposes the endpoints of all backend services to the web app through HTTP-based API. It also handles cross-cutting concerns like authentication, authorization and account management.
+- The [API Gateway](/HrAspire.Web.ApiGateway) exposes the functionalities of all backend services to the web app through HTTP-based API endpoints. It also handles cross-cutting concerns like authentication, authorization, account management and data validation.
 
 ### Backend

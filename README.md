@@ -25,7 +25,7 @@ Managers have all the capabilities of an employee plus additional management fea
 - view all managed employees
 - access details of all managed employees
 - view and create/update/delete documents for managed employees
-- view and create/update/delete salary (increase) requests for managed employees
+- view and create/update/delete salary (change) requests for managed employees
 - view and approve/reject vacation requests for managed employees
 
 ### HR Manager functionalities
@@ -33,14 +33,17 @@ HR managers have all the capabilities of an employee plus additional HR-specific
 - view and create/update/delete employees
 - access details of all employees
 - view and create/update/delete documents for all employees
-- view and approve/reject salary (increase) requests for all employees
+- view and approve/reject salary (change) requests for all employees
 - view vacation requests for all employees
 
 ## Architecture
 HrAspire is built using the [microservice architecture](https://en.wikipedia.org/wiki/Microservices), with multiple (micro)services handling different aspects of HR management and architectural concerns. These services can be divided into 2 groups: frontend and backend. Frontend services are designed to be Internet-facing and backend services are designed to be accessible only within a protected internal network. In addition to these services, a [data seeder console application](/HrAspire.DataSeeder) has been implemented to provide a quickstart experience for development environment.
 
 ### Frontend
-- The UI of the system is a web-based [single-page app](/HrAspire.Web.Client) built with [Blazor WebAssembly](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) and hosted by an [ASP.NET Core server](/HrAspire.Web)
-- The [API Gateway](/HrAspire.Web.ApiGateway) exposes the functionalities of all backend services to the web app through HTTP-based API endpoints. It also handles cross-cutting concerns like authentication, authorization, account management and data validation.
+- The UI of the system is a web-based [single-page app](/HrAspire.Web.Client) built with [Blazor WebAssembly](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) and hosted by an [ASP.NET Core server](/HrAspire.Web).
+- The [API Gateway](/HrAspire.Web.ApiGateway) exposes the functionalities of all backend services to the web app through HTTP-based API endpoints. It also handles cross-cutting concerns like authentication, authorization, account management and input data validation.
 
 ### Backend
+- The [Employees service](/Employees) is the microservice responsible for managing employees and their documents. It's built using the 3-tier architecture. The main data storage is a PostgreSQL database but document files are stored in [Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs) containers. It exposes employee and document operations through [gRPC-based API endpoints](/Employees/HrAspire.Employees.Web/Services). The service is also asynchronously communicating with the other backend services by producing and consuming RabbitMQ messages and is reading and writing specific employee info in a shared Garnet cache.
+- The [Salaries service](/Salaries) is the microservice responsible for managing salary requests. It's built using the 3-tier architecture. The data is stored in a PostgreSQL database. It exposes salary request operations through [gRPC-based API endpoints](/Salaries/HrAspire.Salaries.Web/Services). The service is also asynchronously communicating with the [Employees service](/Employees) by producing and consuming RabbitMQ messages and is reading specific employee info from the shared Garnet cache.
+- The [Vacations service](/Vacations) is the microservice responsible for managing vacation requests. It's built using the 3-tier architecture. The data is stored in a PostgreSQL database. It exposes vacation request operations through [gRPC-based API endpoints](/Vacations/HrAspire.Vacations.Web/Services). The service is also asynchronously communicating with the [Employees service](/Employees) by producing and consuming RabbitMQ messages and is reading specific employee info from the shared Garnet cache.

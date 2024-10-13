@@ -1,8 +1,8 @@
 # HrAspire
 
-HrAspire is a simple but resilient, observable, cloud ready distributed HR system. It is built with Microsoft's new framework for building observable, production ready, distributed applications [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/).
+HrAspire is a simple but resilient, observable, cloud ready distributed HR system. It is built with [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/) - Microsoft's new framework for building observable, production ready, distributed applications.
 
-# Functionalities
+## Functionalities
 HrAspire is a simple HR system designed to streamline employee management. The system offers role-based functionality for Employees, Managers and HR Managers, enabling efficient handling of common HR tasks. 
 
 ### Employee functionalities
@@ -28,9 +28,3 @@ HR managers have all the capabilites of an employee plus additional HR specific 
 - view and create/update/delete documents for all employees
 - view and approve/reject salary (increase) requests for all employees
 - view vacation requests for all employees
-
-# Architecture
-TODO
-
-# Goals
-TODO

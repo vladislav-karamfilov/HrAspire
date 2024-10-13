@@ -10,7 +10,7 @@ HrAspire is a project that I built in my spare time with a couple of key goals i
 - have fun architecting and coding!
 
 ## Functionalities
-HrAspire is a simple HR system designed to streamline common employee management operations. The system offers role-based functionality for Employees, Managers and HR Managers, enabling efficient handling of common HR tasks. 
+HrAspire is a simple HR system designed to streamline employee management. The system offers role-based functionality for Employees, Managers and HR Managers, enabling efficient handling of common HR tasks. 
 
 ### Employee functionalities
 All app users are employees including users in Manager and HR Manager roles. Employees can:

@@ -37,7 +37,7 @@ HR managers have all the capabilities of an employee plus additional HR-specific
 - view vacation requests for all employees
 
 ## Architecture
-HrAspire is built using the [microservice architecture](https://en.wikipedia.org/wiki/Microservices), with multiple (micro)services handling different aspects of HR management and architectural concerns. These services can be divided into 2 groups: frontend and backend. Frontend services are designed to be Internet-facing and backend services are designed to be accessible only within a protected internal network. In addition to these services, a [data seeder console application](/HrAspire.DataSeeder) has been implemented to provide a quickstart experience for development environment.
+HrAspire is built using the [microservice architecture](https://en.wikipedia.org/wiki/Microservices), with multiple (micro)services handling different aspects of HR management and architectural concerns. These services can be divided into 2 groups: frontend and backend. Frontend services are designed to be Internet-facing and backend services are designed to be accessible only within a protected internal network. In addition to these services, a [data seeder console app](/HrAspire.DataSeeder) has been implemented to provide a quickstart experience for development environment.
 
 ### Frontend
 - The UI of the system is a web-based [single-page app](/HrAspire.Web.Client) built with [Blazor WebAssembly](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) and hosted by an [ASP.NET Core server](/HrAspire.Web).

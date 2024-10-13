@@ -35,3 +35,12 @@ HR managers have all the capabilities of an employee plus additional HR-specific
 - view and create/update/delete documents for all employees
 - view and approve/reject salary (increase) requests for all employees
 - view vacation requests for all employees
+
+## Architecture
+HrAspire is built using the [microservice architecture](https://en.wikipedia.org/wiki/Microservices), with multiple (micro)services handling different aspects of HR management.
+
+### Frontend
+- The UI of the system is a web-based [single-page app](/HrAspire.Web.Client) built with [Blazor WebAssembly](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) and hosted by an [ASP.NET Core server](/HrAspire.Web)
+- The [API Gateway](/HrAspire.Web.ApiGateway) exposes the endpoints of all backend services to the web app through HTTP-based API. It also handles cross-cutting concerns like authentication, authorization and account management.
+
+### Backend

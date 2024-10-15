@@ -4,8 +4,8 @@ HrAspire is a simple but resilient, observable, cloud ready distributed HR syste
 
 HrAspire is a project that I built in my spare time with a couple of key goals in mind:
 - learn [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/) and try out various [integrations](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/integrations-overview)
-- explore and deepen my knowledge of technologies like [PostgreSQL](https://www.postgresql.org/), [RabbitMQ](https://www.rabbitmq.com/), [Garnet](https://microsoft.github.io/garnet/docs), [ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview), [gRPC](https://grpc.io/), which I know about but haven't used in projects at work or in other personal projects
-- explore and deepen my knowledge of libraries like [MassTransit](https://masstransit.io/), [FluentValidation](https://docs.fluentvalidation.net/), [Mapperly](https://mapperly.riok.app/), which I know about but haven't used in projects at work or in other personal projects
+- explore and deepen my knowledge of technologies like [PostgreSQL](https://www.postgresql.org/), [RabbitMQ](https://www.rabbitmq.com/), [Garnet](https://microsoft.github.io/garnet/docs), [ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview), [gRPC](https://grpc.io/), which I know about but haven't used in projects at work or in other side projects
+- explore and deepen my knowledge of libraries like [MassTransit](https://masstransit.io/), [FluentValidation](https://docs.fluentvalidation.net/), [Mapperly](https://mapperly.riok.app/), which I know about but haven't used in projects at work or in other side projects
 - practice my system design skills
 - have fun architecting and coding!
 

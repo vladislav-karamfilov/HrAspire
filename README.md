@@ -49,7 +49,9 @@ HrAspire is built using the [microservice architecture](https://en.wikipedia.org
 - The [Vacations service](/Vacations) is the microservice responsible for managing vacation requests. It's built using the 3-tier architecture. The data is stored in a PostgreSQL database. It exposes vacation request operations through a [gRPC-based API](/Vacations/HrAspire.Vacations.Web/Services). The service is also asynchronously communicating with the [Employees service](/Employees) by producing and consuming RabbitMQ messages and is reading specific employee info from the shared Garnet cache.
 
 Architecture diagram:
+
 ![HrAspire architecture diagram](./architecture-diagram.png)
 
 Solution projects diagram:
+
 ![HrAspire solution projects diagram](./solution-projects-diagram.png)

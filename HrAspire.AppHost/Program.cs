@@ -32,19 +32,29 @@ var employeesService = builder
     .WithReference(employeesDb)
     .WithReference(blobs)
     .WithReference(cache)
-    .WithReference(messaging);
+    .WithReference(messaging)
+    .WaitFor(employeesDb)
+    .WaitFor(blobs)
+    .WaitFor(cache)
+    .WaitFor(messaging);
 
 var salariesService = builder
     .AddProject<Projects.HrAspire_Salaries_Web>(ResourceNames.SalariesService)
     .WithReference(salariesDb)
     .WithReference(cache)
-    .WithReference(messaging);
+    .WithReference(messaging)
+    .WaitFor(salariesDb)
+    .WaitFor(cache)
+    .WaitFor(messaging);
 
 var vacationsService = builder
     .AddProject<Projects.HrAspire_Vacations_Web>(ResourceNames.VacationsService)
     .WithReference(vacationsDb)
     .WithReference(cache)
-    .WithReference(messaging);
+    .WithReference(messaging)
+    .WaitFor(vacationsDb)
+    .WaitFor(cache)
+    .WaitFor(messaging);
 
 var apiGateway = builder
     .AddProject<Projects.HrAspire_Web_ApiGateway>(ResourceNames.ApiGateway)
@@ -52,6 +62,9 @@ var apiGateway = builder
     .WithReference(employeesService)
     .WithReference(salariesService)
     .WithReference(vacationsService)
+    .WaitFor(employeesService)
+    .WaitFor(salariesService)
+    .WaitFor(vacationsService)
     .WithExternalHttpEndpoints();
 
 var apiGatewayEndpoint = apiGateway.GetEndpoint("https");
@@ -59,6 +72,7 @@ var apiGatewayEndpoint = apiGateway.GetEndpoint("https");
 var webFrontEnd = builder
     .AddProject<Projects.HrAspire_Web>(ResourceNames.WebFrontEnd)
     .WithReference(apiGateway)
+    .WaitFor(apiGateway)
     .WithExternalHttpEndpoints()
     .WithEnvironment(EnvironmentVariableNames.ApiGatewayUrl, apiGatewayEndpoint);
 
@@ -74,7 +88,12 @@ if (builder.ExecutionContext.IsRunMode)
         .WithReference(salariesDb)
         .WithReference(vacationsDb)
         .WithReference(blobs)
-        .WithReference(cache);
+        .WithReference(cache)
+        .WaitFor(employeesDb)
+        .WaitFor(salariesDb)
+        .WaitFor(vacationsDb)
+        .WaitFor(blobs)
+        .WaitFor(cache);
 }
 
 builder.Build().Run();

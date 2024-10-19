@@ -13,11 +13,7 @@ var azureStorage = builder
 
 var blobs = azureStorage.AddBlobs(ResourceNames.Blobs);
 
-var cache = builder
-    .AddGarnet(ResourceNames.Cache)
-    //// TODO: .WithDataVolume("cache-data") // workaround for https://github.com/dotnet/aspire/issues/4870
-    .WithVolume("HrAspire-cache-data", "/data")
-    .WithArgs("--checkpointdir", "/data/checkpoints", "--recover", "--aof", "--aof-commit-freq", "60000");
+var cache = builder.AddGarnet(ResourceNames.Cache).WithDataVolume("HrAspire-cache-data");
 
 var messaging = builder
     .AddRabbitMQ(

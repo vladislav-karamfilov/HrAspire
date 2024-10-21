@@ -2,26 +2,35 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres(ResourceNames.Postgres).WithPgAdmin().WithDataVolume("HrAspire-db-data");
+var postgres = builder
+    .AddPostgres(ResourceNames.Postgres)
+    .WithDataVolume("HrAspire-db-data")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithPgAdmin(c => c.WithLifetime(ContainerLifetime.Persistent));
+
 var employeesDb = postgres.AddDatabase(ResourceNames.EmployeesDb, "employees");
 var salariesDb = postgres.AddDatabase(ResourceNames.SalariesDb, "salaries");
 var vacationsDb = postgres.AddDatabase(ResourceNames.VacationsDb, "vacations");
 
 var azureStorage = builder
     .AddAzureStorage(ResourceNames.AzureStorage)
-    .RunAsEmulator(c => c.WithDataVolume("HrAspire-blob-data").WithImageTag("3.32.0").WithBlobPort(22192));
+    .RunAsEmulator(c => c.WithDataVolume("HrAspire-blob-data").WithBlobPort(22192).WithLifetime(ContainerLifetime.Persistent));
 
 var blobs = azureStorage.AddBlobs(ResourceNames.Blobs);
 
-var cache = builder.AddGarnet(ResourceNames.Cache).WithDataVolume("HrAspire-cache-data");
+var cache = builder
+    .AddGarnet(ResourceNames.Cache)
+    .WithDataVolume("HrAspire-cache-data")
+    .WithLifetime(ContainerLifetime.Persistent);
 
 var messaging = builder
     .AddRabbitMQ(
         ResourceNames.Messaging,
         builder.AddParameter("messaging-user", secret: true),
         builder.AddParameter("messaging-password", secret: true))
-    .WithManagementPlugin()
-    .WithDataVolume("HrAspire-messaging-data");
+    .WithDataVolume("HrAspire-messaging-data")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithManagementPlugin();
 
 var employeesService = builder
     .AddProject<Projects.HrAspire_Employees_Web>(ResourceNames.EmployeesService)

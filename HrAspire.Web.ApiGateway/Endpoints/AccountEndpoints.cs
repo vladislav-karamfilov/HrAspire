@@ -19,12 +19,10 @@ public static class AccountEndpoints
         accountGroup
             .MapGet(
                 "/UserInfo",
-                (ClaimsPrincipal user) => new UserInfoResponseModel
-                {
-                    Id = user.FindFirstValue(ClaimTypes.NameIdentifier)!,
-                    Email = user.FindFirstValue(ClaimTypes.Email)!,
-                    Roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList(),
-                })
+                (ClaimsPrincipal user) => new UserInfoResponseModel(
+                    user.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                    user.FindFirstValue(ClaimTypes.Email)!,
+                    user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList()))
             .RequireAuthorization();
 
         accountGroup

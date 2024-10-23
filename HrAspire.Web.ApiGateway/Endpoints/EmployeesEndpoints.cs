@@ -70,7 +70,7 @@ public static class EmployeesEndpoints
                             FullName = model.FullName,
                             Password = model.Password,
                             Position = model.Position,
-                            DateOfBirth = model.DateOfBirth!.Value.ToTimestamp(),
+                            DateOfBirth = model.DateOfBirth.GetValueOrDefault().ToTimestamp(),
                             Department = model.Department,
                             ManagerId = string.IsNullOrWhiteSpace(model.ManagerId) ? null : model.ManagerId,
                             Salary = model.Salary,

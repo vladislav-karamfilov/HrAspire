@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 using HrAspire.Web.Client.Services;
 using HrAspire.Web.Client.Services.Account;
@@ -47,6 +47,6 @@ await builder.Build().RunAsync();
 
 static async Task<string> GetApiBaseUrlAsync(WebAssemblyHostBuilder hostBuilder)
 {
-    using var httpClient = new HttpClient() { BaseAddress = new Uri(hostBuilder.HostEnvironment.BaseAddress) };
+    using var httpClient = new HttpClient { BaseAddress = new Uri(hostBuilder.HostEnvironment.BaseAddress) };
     return await httpClient.GetStringAsync("/ApiBaseUrl");
 }

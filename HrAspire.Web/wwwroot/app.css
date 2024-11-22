@@ -1,4 +1,4 @@
-html, body {
+﻿html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -52,4 +52,8 @@ h1:focus {
 
 .floating-label-textarea {
     height: 100px !important;
+}
+
+td:empty {
+    display: none;
 }

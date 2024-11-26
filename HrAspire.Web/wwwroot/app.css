@@ -54,6 +54,6 @@ h1:focus {
     height: 100px !important;
 }
 
-td:empty {
+table.quickgrid td:empty {
     display: none;
 }

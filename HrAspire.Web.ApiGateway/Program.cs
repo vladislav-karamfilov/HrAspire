@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
@@ -57,9 +57,14 @@ builder.Services
 
 builder.Services.AddValidatorsFromAssemblyContaining<EmployeeCreateRequestModelValidator>(ServiceLifetime.Singleton);
 
+builder.Services.AddExceptionHandler<GrpcExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

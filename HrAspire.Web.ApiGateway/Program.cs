@@ -1,4 +1,7 @@
-﻿using FluentValidation;
+﻿using System.Net;
+using System.Net.Mime;
+
+using FluentValidation;
 
 using HrAspire.Business.Common;
 using HrAspire.Employees.Data;
@@ -12,6 +15,8 @@ using HrAspire.Web.ApiGateway.Endpoints;
 using HrAspire.Web.Common;
 using HrAspire.Web.Common.Validators.Employees;
 
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,12 +68,29 @@ builder.Services.AddProblemDetails();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseExceptionHandler();
-
 if (app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler(alternativeApp =>
+        alternativeApp.Run(async httpContext =>
+        {
+            var ex = httpContext.Features.GetRequiredFeature<IExceptionHandlerFeature>().Error;
+
+            var grpcExceptionHandler = alternativeApp.ApplicationServices.GetService<GrpcExceptionHandler>();
+            if (grpcExceptionHandler is null || !await grpcExceptionHandler.TryHandleAsync(httpContext, ex, httpContext.RequestAborted))
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                httpContext.Response.ContentType = MediaTypeNames.Text.Plain;
+
+                await httpContext.Response.WriteAsync(ex.ToString(), httpContext.RequestAborted);
+            }
+        }));
+
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseExceptionHandler();
 }
 
 app.UseHttpsRedirection();

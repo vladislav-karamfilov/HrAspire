@@ -26,13 +26,14 @@ public class GrpcExceptionHandler : IExceptionHandler
             return false;
         }
 
-        if (grpcException.StatusCode is StatusCode.InvalidArgument or StatusCode.OutOfRange or StatusCode.FailedPrecondition)
+        var grpcStatus = grpcException.Status;
+        if (grpcStatus.StatusCode is StatusCode.InvalidArgument or StatusCode.OutOfRange or StatusCode.FailedPrecondition)
         {
-            await Results.Problem(grpcException.Status.Detail, statusCode: (int)HttpStatusCode.BadRequest).ExecuteAsync(httpContext);
+            await Results.Problem(grpcStatus.Detail, statusCode: (int)HttpStatusCode.BadRequest).ExecuteAsync(httpContext);
         }
         else
         {
-            var httpStatusCode = GrpcToHttpStatusCode(grpcException.StatusCode);
+            var httpStatusCode = GrpcToHttpStatusCode(grpcStatus.StatusCode);
 
             // Don't log trivial 404 errors
             if (httpStatusCode != HttpStatusCode.NotFound)

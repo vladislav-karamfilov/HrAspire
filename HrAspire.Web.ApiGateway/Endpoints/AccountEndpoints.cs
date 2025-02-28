@@ -16,32 +16,29 @@ public static class AccountEndpoints
 
         accountGroup.MapIdentityApi<Employee>();
 
-        accountGroup
-            .MapGet(
-                "/UserInfo",
-                (ClaimsPrincipal user) => new UserInfoResponseModel(
-                    user.FindFirstValue(ClaimTypes.NameIdentifier)!,
-                    user.FindFirstValue(ClaimTypes.Email)!,
-                    user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList()))
-            .RequireAuthorization();
+        accountGroup.MapGet("/UserInfo", GetUserInfo).RequireAuthorization();
 
-        accountGroup
-            .MapPost(
-                "/Logout",
-                async (SignInManager<Employee> signInManager, [FromBody] LogoutRequestModel? model) =>
-                {
-                    // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
-                    if (model is not null)
-                    {
-                        await signInManager.SignOutAsync();
-
-                        return Results.Ok();
-                    }
-
-                    return Results.Unauthorized();
-                })
-            .RequireAuthorization();
+        accountGroup.MapPost("/Logout", LogoutAsync).RequireAuthorization();
 
         return accountGroup;
+    }
+
+    private static UserInfoResponseModel GetUserInfo(ClaimsPrincipal user)
+        => new(
+            user.FindFirstValue(ClaimTypes.NameIdentifier)!,
+            user.FindFirstValue(ClaimTypes.Email)!,
+            user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList());
+
+    private static async Task<IResult> LogoutAsync(SignInManager<Employee> signInManager, [FromBody] LogoutRequestModel? model)
+    {
+        // https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
+        if (model is not null)
+        {
+            await signInManager.SignOutAsync();
+
+            return Results.Ok();
+        }
+
+        return Results.Unauthorized();
     }
 }

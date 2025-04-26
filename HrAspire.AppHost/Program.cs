@@ -5,8 +5,9 @@ var builder = DistributedApplication.CreateBuilder(args);
 var postgres = builder
     .AddPostgres(ResourceNames.Postgres)
     .WithDataVolume("HrAspire-db-data")
-    .WithLifetime(ContainerLifetime.Persistent)
-    .WithPgAdmin(c => c.WithLifetime(ContainerLifetime.Persistent));
+    .WithLifetime(ContainerLifetime.Persistent);
+
+postgres.WithPgAdmin(c => c.WithLifetime(ContainerLifetime.Persistent).WithParentRelationship(postgres));
 
 var employeesDb = postgres.AddDatabase(ResourceNames.EmployeesDb, "employees");
 var salariesDb = postgres.AddDatabase(ResourceNames.SalariesDb, "salaries");

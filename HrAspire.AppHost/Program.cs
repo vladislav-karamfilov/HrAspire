@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-
-using HrAspire.AppHost;
+﻿using HrAspire.AppHost;
 using HrAspire.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);

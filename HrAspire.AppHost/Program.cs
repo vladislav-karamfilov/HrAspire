@@ -1,4 +1,7 @@
-﻿using HrAspire.ServiceDefaults;
+﻿using System.Diagnostics.Metrics;
+
+using HrAspire.AppHost;
+using HrAspire.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -26,7 +29,8 @@ var blobs = azureStorage.AddBlobs(ResourceNames.Blobs);
 var cache = builder
     .AddGarnet(ResourceNames.Cache)
     .WithDataVolume("HrAspire-cache-data")
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithRedisInsight(ContainerLifetime.Persistent);
 
 var messaging = builder
     .AddRabbitMQ(

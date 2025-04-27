@@ -6,16 +6,17 @@ internal static class Extensions
         this IResourceBuilder<GarnetResource> garnetBuilder,
         ContainerLifetime containerLifetime,
         string? containerName = null,
-        string? containerTag = null)
+        string? imageTag = null)
     {
         ArgumentNullException.ThrowIfNull(garnetBuilder);
 
         var garnetResource = garnetBuilder.Resource;
 
         containerName ??= $"{garnetResource.Name}-insight";
-        containerTag ??= "2.68";
+        imageTag ??= "2.68";
 
-        garnetBuilder.ApplicationBuilder.AddContainer(containerName, image: "redis/redisinsight", containerTag)
+        garnetBuilder.ApplicationBuilder
+            .AddContainer(containerName, image: "redis/redisinsight", imageTag)
             .WithImageRegistry("docker.io")
             .WithLifetime(containerLifetime)
             .WithHttpEndpoint(targetPort: 5540, name: "http")

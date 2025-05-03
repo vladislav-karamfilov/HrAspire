@@ -48,7 +48,8 @@ var employeesService = builder
     .WaitFor(employeesDb)
     .WaitFor(blobs)
     .WaitFor(cache)
-    .WaitFor(messaging);
+    .WaitFor(messaging)
+    .WithApplyDbMigrationsCommand(ResourceNames.EmployeesDb);
 
 var salariesService = builder
     .AddProject<Projects.HrAspire_Salaries_Web>(ResourceNames.SalariesService)
@@ -57,7 +58,8 @@ var salariesService = builder
     .WithReference(messaging)
     .WaitFor(salariesDb)
     .WaitFor(cache)
-    .WaitFor(messaging);
+    .WaitFor(messaging)
+    .WithApplyDbMigrationsCommand(ResourceNames.SalariesDb);
 
 var vacationsService = builder
     .AddProject<Projects.HrAspire_Vacations_Web>(ResourceNames.VacationsService)
@@ -66,7 +68,8 @@ var vacationsService = builder
     .WithReference(messaging)
     .WaitFor(vacationsDb)
     .WaitFor(cache)
-    .WaitFor(messaging);
+    .WaitFor(messaging)
+    .WithApplyDbMigrationsCommand(ResourceNames.VacationsDb);
 
 var apiGateway = builder
     .AddProject<Projects.HrAspire_Web_ApiGateway>(ResourceNames.ApiGateway)
@@ -105,7 +108,10 @@ if (builder.ExecutionContext.IsRunMode)
         .WaitFor(salariesDb)
         .WaitFor(vacationsDb)
         .WaitFor(blobs)
-        .WaitFor(cache);
+        .WaitFor(cache)
+        .WithApplyDbMigrationsCommand(ResourceNames.EmployeesDb)
+        .WithApplyDbMigrationsCommand(ResourceNames.SalariesDb)
+        .WithApplyDbMigrationsCommand(ResourceNames.VacationsDb);
 }
 
 builder.Build().Run();

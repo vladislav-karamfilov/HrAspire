@@ -41,38 +41,21 @@ internal static class Extensions
         return garnetBuilder;
     }
 
-    public static IResourceBuilder<ProjectResource> WithApplyDbMigrationsCommand(
-        this IResourceBuilder<ProjectResource> projectBuilder,
-        string databaseResourceName)
+    public static IResourceBuilder<PostgresDatabaseResource> WithApplyDbMigrationsCommand(
+        this IResourceBuilder<PostgresDatabaseResource> postgresDatabaseBuilder)
     {
-        ArgumentNullException.ThrowIfNull(projectBuilder);
-        ArgumentException.ThrowIfNullOrWhiteSpace(databaseResourceName);
+        ArgumentNullException.ThrowIfNull(postgresDatabaseBuilder);
 
-        var endIndex = databaseResourceName.LastIndexOf("-db", StringComparison.Ordinal);
-        if (endIndex < 0)
-        {
-            throw new ArgumentException("Invalid database resource name - it should end with '-db'", nameof(databaseResourceName));
-        }
-
-        var databaseResource = projectBuilder.ApplicationBuilder.Resources
-            .OfType<PostgresDatabaseResource>()
-            .SingleOrDefault(r => r.Name == databaseResourceName);
-
-        if (databaseResource is null)
-        {
-            throw new ArgumentException(
-                "No PostgreSQL resource found with the specified database resource name",
-                nameof(databaseResourceName));
-        }
-
-        var databaseName = databaseResourceName[..endIndex];
-
-        return projectBuilder.WithCommand(
-            $"{databaseName}-db-migrations",
-            $"Apply '{databaseName}' DB migrations",
+        return postgresDatabaseBuilder.WithCommand(
+            "apply-db-migrations",
+            "Apply DB migrations",
             async context =>
             {
-                var dbConnectionString = await databaseResource.ConnectionStringExpression.GetValueAsync(context.CancellationToken);
+                var postgresDatabaseResource = postgresDatabaseBuilder.Resource;
+
+                var databaseName = postgresDatabaseResource.DatabaseName;
+                var dbConnectionString = await postgresDatabaseResource.ConnectionStringExpression.GetValueAsync(
+                    context.CancellationToken);
 
                 var dotnetProcessInfo = new ProcessStartInfo("dotnet")
                 {
@@ -116,7 +99,7 @@ internal static class Extensions
             new CommandOptions
             {
                 IconName = "DatabaseArrowUp",
-                Description = $"Applies pending DB migrations to the '{databaseName}' DB",
+                Description = "Applies pending DB migrations to the database",
             });
     }
 }

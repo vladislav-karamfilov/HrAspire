@@ -10,9 +10,9 @@ var postgres = builder
 
 postgres.WithPgAdmin(c => c.WithLifetime(ContainerLifetime.Persistent).WithParentRelationship(postgres));
 
-var employeesDb = postgres.AddDatabase(ResourceNames.EmployeesDb, "employees");
-var salariesDb = postgres.AddDatabase(ResourceNames.SalariesDb, "salaries");
-var vacationsDb = postgres.AddDatabase(ResourceNames.VacationsDb, "vacations");
+var employeesDb = postgres.AddDatabase(ResourceNames.EmployeesDb, "employees").WithApplyDbMigrationsCommand();
+var salariesDb = postgres.AddDatabase(ResourceNames.SalariesDb, "salaries").WithApplyDbMigrationsCommand();
+var vacationsDb = postgres.AddDatabase(ResourceNames.VacationsDb, "vacations").WithApplyDbMigrationsCommand();
 
 var azureStorage = builder
     .AddAzureStorage(ResourceNames.AzureStorage)
@@ -48,8 +48,7 @@ var employeesService = builder
     .WaitFor(employeesDb)
     .WaitFor(blobs)
     .WaitFor(cache)
-    .WaitFor(messaging)
-    .WithApplyDbMigrationsCommand(ResourceNames.EmployeesDb);
+    .WaitFor(messaging);
 
 var salariesService = builder
     .AddProject<Projects.HrAspire_Salaries_Web>(ResourceNames.SalariesService)
@@ -58,8 +57,7 @@ var salariesService = builder
     .WithReference(messaging)
     .WaitFor(salariesDb)
     .WaitFor(cache)
-    .WaitFor(messaging)
-    .WithApplyDbMigrationsCommand(ResourceNames.SalariesDb);
+    .WaitFor(messaging);
 
 var vacationsService = builder
     .AddProject<Projects.HrAspire_Vacations_Web>(ResourceNames.VacationsService)
@@ -68,8 +66,7 @@ var vacationsService = builder
     .WithReference(messaging)
     .WaitFor(vacationsDb)
     .WaitFor(cache)
-    .WaitFor(messaging)
-    .WithApplyDbMigrationsCommand(ResourceNames.VacationsDb);
+    .WaitFor(messaging);
 
 var apiGateway = builder
     .AddProject<Projects.HrAspire_Web_ApiGateway>(ResourceNames.ApiGateway)
@@ -108,10 +105,7 @@ if (builder.ExecutionContext.IsRunMode)
         .WaitFor(salariesDb)
         .WaitFor(vacationsDb)
         .WaitFor(blobs)
-        .WaitFor(cache)
-        .WithApplyDbMigrationsCommand(ResourceNames.EmployeesDb)
-        .WithApplyDbMigrationsCommand(ResourceNames.SalariesDb)
-        .WithApplyDbMigrationsCommand(ResourceNames.VacationsDb);
+        .WaitFor(cache);
 }
 
 builder.Build().Run();

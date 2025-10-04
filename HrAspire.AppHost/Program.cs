@@ -28,16 +28,20 @@ var cache = builder
     .AddGarnet(ResourceNames.Cache)
     .WithDataVolume("HrAspire-cache-data")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithRedisInsight(ContainerLifetime.Persistent);
+    .WithRedisInsight(ContainerLifetime.Persistent)
+    .WithImageTag("1.0.81");
+
+var messagingUserParameter = builder.AddParameter("messaging-user", secret: true);
+var messagingPasswordParameter = builder.AddParameter("messaging-password", secret: true);
 
 var messaging = builder
-    .AddRabbitMQ(
-        ResourceNames.Messaging,
-        builder.AddParameter("messaging-user", secret: true),
-        builder.AddParameter("messaging-password", secret: true))
+    .AddRabbitMQ(ResourceNames.Messaging, messagingUserParameter, messagingPasswordParameter)
     .WithDataVolume("HrAspire-messaging-data")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
+
+messagingUserParameter = messagingUserParameter.WithParentRelationship(messaging);
+messagingPasswordParameter = messagingPasswordParameter.WithParentRelationship(messaging);
 
 var employeesService = builder
     .AddProject<Projects.HrAspire_Employees_Web>(ResourceNames.EmployeesService)

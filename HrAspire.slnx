@@ -1,0 +1,28 @@
+<Solution>
+  <Folder Name="/Common/">
+    <Project Path="Common/HrAspire.Business.Common/HrAspire.Business.Common.csproj" />
+    <Project Path="Common/HrAspire.Data.Common/HrAspire.Data.Common.csproj" />
+    <Project Path="Common/HrAspire.ServiceDefaults/HrAspire.ServiceDefaults.csproj" />
+    <Project Path="Common/HrAspire.Web.Common/HrAspire.Web.Common.csproj" />
+  </Folder>
+  <Folder Name="/Employees/">
+    <Project Path="Employees/HrAspire.Employees.Business/HrAspire.Employees.Business.csproj" />
+    <Project Path="Employees/HrAspire.Employees.Data/HrAspire.Employees.Data.csproj" />
+    <Project Path="Employees/HrAspire.Employees.Web/HrAspire.Employees.Web.csproj" />
+  </Folder>
+  <Folder Name="/Salaries/">
+    <Project Path="Salaries/HrAspire.Salaries.Business/HrAspire.Salaries.Business.csproj" />
+    <Project Path="Salaries/HrAspire.Salaries.Data/HrAspire.Salaries.Data.csproj" />
+    <Project Path="Salaries/HrAspire.Salaries.Web/HrAspire.Salaries.Web.csproj" />
+  </Folder>
+  <Folder Name="/Vacations/">
+    <Project Path="Vacations/HrAspire.Vacations.Business/HrAspire.Vacations.Business.csproj" />
+    <Project Path="Vacations/HrAspire.Vacations.Data/HrAspire.Vacations.Data.csproj" />
+    <Project Path="Vacations/HrAspire.Vacations.Web/HrAspire.Vacations.Web.csproj" />
+  </Folder>
+  <Project Path="HrAspire.AppHost/HrAspire.AppHost.csproj" />
+  <Project Path="HrAspire.DataSeeder/HrAspire.DataSeeder.csproj" />
+  <Project Path="HrAspire.Web.ApiGateway/HrAspire.Web.ApiGateway.csproj" />
+  <Project Path="HrAspire.Web.Client/HrAspire.Web.Client.csproj" />
+  <Project Path="HrAspire.Web/HrAspire.Web.csproj" />
+</Solution>

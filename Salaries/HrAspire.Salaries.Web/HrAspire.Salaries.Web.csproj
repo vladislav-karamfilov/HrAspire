@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.4.2" />
-    <PackageReference Include="Aspire.StackExchange.Redis" Version="9.4.2" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.5.1" />
+    <PackageReference Include="Aspire.StackExchange.Redis" Version="9.5.1" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.2" />
-    <PackageReference Include="Riok.Mapperly" Version="4.2.1" ExcludeAssets="runtime" PrivateAssets="all">
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.4" />
+    <PackageReference Include="Riok.Mapperly" Version="4.3.0" ExcludeAssets="runtime" PrivateAssets="all">
 	    <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">

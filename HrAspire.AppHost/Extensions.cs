@@ -26,12 +26,12 @@ internal static class Extensions
             .WithHttpEndpoint(targetPort: 5540, name: "http")
             .WithEnvironment(context =>
             {
-                context.EnvironmentVariables.Add($"RI_REDIS_HOST1", garnetResource.Name);
-                context.EnvironmentVariables.Add($"RI_REDIS_PORT1", garnetResource.PrimaryEndpoint.TargetPort!.Value);
-                context.EnvironmentVariables.Add($"RI_REDIS_ALIAS1", garnetResource.Name);
+                context.EnvironmentVariables.Add("RI_REDIS_HOST", garnetResource.Name);
+                context.EnvironmentVariables.Add("RI_REDIS_PORT", garnetResource.PrimaryEndpoint.TargetPort!.Value);
+                context.EnvironmentVariables.Add("RI_REDIS_ALIAS", garnetResource.Name);
                 if (garnetResource.PasswordParameter is not null)
                 {
-                    context.EnvironmentVariables.Add($"RI_REDIS_PASSWORD1", garnetResource.PasswordParameter.Value);
+                    context.EnvironmentVariables.Add("RI_REDIS_PASSWORD", garnetResource.PasswordParameter);
                 }
             })
             .WithRelationship(garnetResource, "RedisInsight")

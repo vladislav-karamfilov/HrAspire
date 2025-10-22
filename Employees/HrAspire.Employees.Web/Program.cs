@@ -1,4 +1,4 @@
-using HrAspire.Business.Common.Services;
+﻿using HrAspire.Business.Common.Services;
 using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Business.OutboxMessages;
@@ -21,7 +21,7 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>(ResourceNames.EmployeesDb);
 
-builder.AddAzureBlobClient(ResourceNames.Blobs);
+builder.AddAzureBlobServiceClient(ResourceNames.Blobs);
 
 builder.AddRedisClient(ResourceNames.Cache);
 

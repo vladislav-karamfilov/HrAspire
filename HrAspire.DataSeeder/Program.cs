@@ -1,4 +1,4 @@
-using HrAspire.DataSeeder.Services;
+﻿using HrAspire.DataSeeder.Services;
 using HrAspire.Employees.Business.Documents;
 using HrAspire.Employees.Business.Employees;
 using HrAspire.Employees.Data;
@@ -28,7 +28,7 @@ builder.AddNpgsqlDbContext<VacationsDbContext>(
     ResourceNames.VacationsDb,
     configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
-builder.AddAzureBlobClient(ResourceNames.Blobs);
+builder.AddAzureBlobServiceClient(ResourceNames.Blobs);
 
 builder.AddRedisClient(ResourceNames.Cache);
 

@@ -40,8 +40,8 @@ var messaging = builder
     .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
 
-messagingUserParameter = messagingUserParameter.WithParentRelationship(messaging);
-messagingPasswordParameter = messagingPasswordParameter.WithParentRelationship(messaging);
+messagingUserParameter.WithParentRelationship(messaging);
+messagingPasswordParameter.WithParentRelationship(messaging);
 
 var employeesService = builder
     .AddProject<Projects.HrAspire_Employees_Web>(ResourceNames.EmployeesService)
@@ -94,7 +94,7 @@ var webFrontEnd = builder
 
 var webFrontEndEndpoint = webFrontEnd.GetEndpoint("https");
 
-apiGateway = apiGateway.WithEnvironment(EnvironmentVariableNames.WebFrontEndUrl, webFrontEndEndpoint);
+apiGateway.WithEnvironment(EnvironmentVariableNames.WebFrontEndUrl, webFrontEndEndpoint);
 
 if (builder.ExecutionContext.IsRunMode)
 {

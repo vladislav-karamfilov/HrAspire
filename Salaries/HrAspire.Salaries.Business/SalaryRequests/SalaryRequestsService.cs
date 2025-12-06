@@ -275,7 +275,7 @@ public class SalaryRequestsService : ISalaryRequestsService
         return employeesInfo
             .Select(e =>
             {
-                var cachedEmployee = e.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(e!);
+                var cachedEmployee = e.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>((string)e!);
                 return cachedEmployee?.FullName ?? string.Empty;
             })
             .ToArray();
@@ -285,7 +285,7 @@ public class SalaryRequestsService : ISalaryRequestsService
     {
         var employeeInfo = await this.CacheDatabase.HashGetAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 
-        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(employeeInfo!);
+        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>((string)employeeInfo!);
         return cachedEmployee?.ManagerId;
     }
 

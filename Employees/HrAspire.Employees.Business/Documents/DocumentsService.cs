@@ -238,7 +238,7 @@ public class DocumentsService : IDocumentsService
     {
         var employeeInfo = await this.CacheDatabase.HashGetAsync(BusinessConstants.EmployeesCacheSetName, employeeId);
 
-        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>(employeeInfo!);
+        var cachedEmployee = employeeInfo.IsNull ? null : JsonSerializer.Deserialize<CachedEmployee>((string)employeeInfo!);
         return cachedEmployee?.ManagerId;
     }
 }

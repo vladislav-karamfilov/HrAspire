@@ -529,6 +529,9 @@ dotnet_diagnostic.CA1816.severity = suggestion
 # CA1826: Do not use Enumerable methods on indexable collections
 dotnet_diagnostic.CA1826.severity = suggestion
 
+# CA1873: Avoid potentially expensive logging
+dotnet_diagnostic.CA1873.severity = suggestion
+
 # CA1304: Specify CultureInfo
 dotnet_diagnostic.CA1304.severity = suggestion
 

@@ -17,7 +17,8 @@ var apiBaseUrl = await GetApiBaseUrlAsync(builder);
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider>();
-builder.Services.AddScoped(serviceProvider => (IAuthenticationService)serviceProvider.GetRequiredService<AuthenticationStateProvider>());
+builder.Services.AddScoped(
+    static serviceProvider => (IAuthenticationService)serviceProvider.GetRequiredService<AuthenticationStateProvider>());
 
 builder.Services.AddTransient<CookieHttpMessageHandler>();
 

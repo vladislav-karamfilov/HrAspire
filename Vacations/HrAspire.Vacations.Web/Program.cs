@@ -1,4 +1,4 @@
-using HrAspire.Business.Common.Services;
+﻿using HrAspire.Business.Common.Services;
 using HrAspire.ServiceDefaults;
 using HrAspire.Vacations.Business.OutboxMessages;
 using HrAspire.Vacations.Business.VacationRequests;
@@ -18,16 +18,16 @@ builder.AddNpgsqlDbContext<VacationsDbContext>(ResourceNames.VacationsDb);
 
 builder.AddRedisClient(ResourceNames.Cache);
 
-builder.Services.AddMassTransit(x =>
+builder.Services.AddMassTransit(static x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddConsumer<EmployeeDeletedEventConsumer>().Endpoint(e => e.InstanceId = "vacations");
+    x.AddConsumer<EmployeeDeletedEventConsumer>().Endpoint(static e => e.InstanceId = "vacations");
 
-    x.UsingRabbitMq((context, configurator) =>
+    x.UsingRabbitMq(static (context, configurator) =>
     {
         configurator.UseMessageRetry(
-            retry => retry.Incremental(
+            static retry => retry.Incremental(
                 retryLimit: 10,
                 initialInterval: TimeSpan.FromMilliseconds(500),
                 intervalIncrement: TimeSpan.FromMilliseconds(500)));
@@ -51,7 +51,7 @@ app.MapGrpcService<VacationRequestsGrpcService>();
 
 app.MapGet(
     "/",
-    () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+    static () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.MapDefaultEndpoints();
 

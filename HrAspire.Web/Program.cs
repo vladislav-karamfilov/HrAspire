@@ -45,7 +45,7 @@ app
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(HrAspire.Web.Client._Imports).Assembly);
 
-app.MapGet("/ApiBaseUrl", (IConfiguration configuration) => configuration[EnvironmentVariableNames.ApiGatewayUrl]);
+app.MapGet("/ApiBaseUrl", static (IConfiguration configuration) => configuration[EnvironmentVariableNames.ApiGatewayUrl]);
 
 app.MapDefaultEndpoints();
 

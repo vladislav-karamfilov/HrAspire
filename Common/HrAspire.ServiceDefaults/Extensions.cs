@@ -27,7 +27,7 @@ public static class Extensions
 
         builder.Services.AddServiceDiscovery();
 
-        builder.Services.ConfigureHttpClientDefaults(http =>
+        builder.Services.ConfigureHttpClientDefaults(static http =>
         {
             // Turn on resilience by default
             http.AddStandardResilienceHandler();
@@ -49,7 +49,7 @@ public static class Extensions
             app.MapHealthChecks("/health");
 
             // Only health checks tagged with the "live" tag must pass for app to be considered alive
-            app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });
+            app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = static r => r.Tags.Contains("live") });
         }
 
         return app;
@@ -57,7 +57,7 @@ public static class Extensions
 
     private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
-        builder.Logging.AddOpenTelemetry(logging =>
+        builder.Logging.AddOpenTelemetry(static logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
@@ -65,12 +65,12 @@ public static class Extensions
 
         builder.Services
             .AddOpenTelemetry()
-            .WithMetrics(metrics => metrics
+            .WithMetrics(static metrics => metrics
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
                 .AddNpgsqlInstrumentation())
-            .WithTracing(tracing => tracing
+            .WithTracing(static tracing => tracing
                 .AddAspNetCoreInstrumentation()
                 .AddGrpcClientInstrumentation()
                 .AddHttpClientInstrumentation()
@@ -105,7 +105,7 @@ public static class Extensions
         builder.Services
             .AddHealthChecks()
             //// Add a default liveness check to ensure app is responsive
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+            .AddCheck("self", static () => HealthCheckResult.Healthy(), ["live"]);
 
         return builder;
     }

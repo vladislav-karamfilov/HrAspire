@@ -16,7 +16,7 @@ var vacationsDb = postgres.AddDatabase(ResourceNames.VacationsDb, "vacations").W
 
 var azureStorage = builder
     .AddAzureStorage(ResourceNames.AzureStorage)
-    .RunAsEmulator(c => c
+    .RunAsEmulator(static c => c
         .WithDataVolume("HrAspire-blob-data")
         .WithBlobPort(22192)
         .WithLifetime(ContainerLifetime.Persistent)

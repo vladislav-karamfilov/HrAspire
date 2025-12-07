@@ -33,29 +33,31 @@ builder.AddNpgsqlDbContext<EmployeesDbContext>(ResourceNames.EmployeesDb);
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
-    .AddIdentityCookies(options => options.ApplicationCookie!
-        .Configure(cookieOptions =>
+    .AddIdentityCookies(static options => options.ApplicationCookie!
+        .Configure(static cookieOptions =>
         {
             cookieOptions.Cookie.SameSite = SameSiteMode.None;
             cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         }));
 
-builder.Services.AddGrpcClient<Employees.EmployeesClient>(o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
-builder.Services.AddGrpcClient<Documents.DocumentsClient>(o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
-builder.Services.AddGrpcClient<SalaryRequests.SalaryRequestsClient>(o => o.Address = new Uri($"https://{ResourceNames.SalariesService}"));
+builder.Services.AddGrpcClient<Employees.EmployeesClient>(static o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
+builder.Services.AddGrpcClient<Documents.DocumentsClient>(static o => o.Address = new Uri($"https://{ResourceNames.EmployeesService}"));
+builder.Services.AddGrpcClient<SalaryRequests.SalaryRequestsClient>(
+    static o => o.Address = new Uri($"https://{ResourceNames.SalariesService}"));
+
 builder.Services.AddGrpcClient<VacationRequests.VacationRequestsClient>(
-    o => o.Address = new Uri($"https://{ResourceNames.VacationsService}"));
+    static o => o.Address = new Uri($"https://{ResourceNames.VacationsService}"));
 
 builder.Services
     .AddAuthorizationBuilder()
-    .AddPolicy(Constants.ManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.ManagerRole))
-    .AddPolicy(Constants.HrManagerAuthPolicyName, p => p.RequireRole(BusinessConstants.HrManagerRole))
+    .AddPolicy(Constants.ManagerAuthPolicyName, static p => p.RequireRole(BusinessConstants.ManagerRole))
+    .AddPolicy(Constants.HrManagerAuthPolicyName, static p => p.RequireRole(BusinessConstants.HrManagerRole))
     .AddPolicy(
         Constants.ManagerOrHrManagerAuthPolicyName,
-        p => p.RequireRole(BusinessConstants.ManagerRole, BusinessConstants.HrManagerRole));
+        static p => p.RequireRole(BusinessConstants.ManagerRole, BusinessConstants.HrManagerRole));
 
 builder.Services
-    .AddIdentityCore<Employee>(options => options.Password.RequiredLength = AccountConstants.PasswordMinLength)
+    .AddIdentityCore<Employee>(static options => options.Password.RequiredLength = AccountConstants.PasswordMinLength)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<EmployeesDbContext>()
     .AddApiEndpoints();
@@ -70,12 +72,12 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler(alternativeApp =>
-        alternativeApp.Run(async httpContext =>
+    app.UseExceptionHandler(static alternativeApp =>
+        alternativeApp.Run(static async httpContext =>
         {
             var ex = httpContext.Features.GetRequiredFeature<IExceptionHandlerFeature>().Error;
 
-            var grpcExceptionHandler = alternativeApp.ApplicationServices.GetService<GrpcExceptionHandler>();
+            var grpcExceptionHandler = httpContext.RequestServices.GetService<GrpcExceptionHandler>();
             if (grpcExceptionHandler is null || !await grpcExceptionHandler.TryHandleAsync(httpContext, ex, httpContext.RequestAborted))
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

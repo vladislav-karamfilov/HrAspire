@@ -25,16 +25,16 @@ builder.AddAzureBlobServiceClient(ResourceNames.Blobs);
 
 builder.AddRedisClient(ResourceNames.Cache);
 
-builder.Services.AddMassTransit(x =>
+builder.Services.AddMassTransit(static x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
     x.AddConsumers(typeof(Program).Assembly);
 
-    x.UsingRabbitMq((context, configurator) =>
+    x.UsingRabbitMq(static (context, configurator) =>
     {
         configurator.UseMessageRetry(
-            retry => retry.Incremental(
+            static retry => retry.Incremental(
                 retryLimit: 10,
                 initialInterval: TimeSpan.FromMilliseconds(500),
                 intervalIncrement: TimeSpan.FromMilliseconds(500)));
@@ -53,7 +53,7 @@ builder.Services.AddScoped<IOutboxMessagesService, OutboxMessagesService>();
 builder.Services.AddHostedService<ProcessOutboxMessagesBackgroundService>();
 
 builder.Services
-    .AddIdentityCore<Employee>(options =>
+    .AddIdentityCore<Employee>(static options =>
     {
         options.User.RequireUniqueEmail = true;
         options.Password.RequiredLength = AccountConstants.PasswordMinLength;
@@ -69,7 +69,7 @@ app.MapGrpcService<DocumentsGrpcService>();
 
 app.MapGet(
     "/",
-    () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+    static () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.MapDefaultEndpoints();
 

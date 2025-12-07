@@ -18,22 +18,22 @@ builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>(
     ResourceNames.EmployeesDb,
-    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+    configureDbContextOptions: static options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.AddNpgsqlDbContext<SalariesDbContext>(
     ResourceNames.SalariesDb,
-    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+    configureDbContextOptions: static options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.AddNpgsqlDbContext<VacationsDbContext>(
     ResourceNames.VacationsDb,
-    configureDbContextOptions: options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
+    configureDbContextOptions: static options => options.UseNpgsql(b => b.MigrationsAssembly(typeof(Program).Assembly.FullName)));
 
 builder.AddAzureBlobServiceClient(ResourceNames.Blobs);
 
 builder.AddRedisClient(ResourceNames.Cache);
 
 builder.Services
-    .AddIdentityCore<Employee>(options => options.User.RequireUniqueEmail = true)
+    .AddIdentityCore<Employee>(static options => options.User.RequireUniqueEmail = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<EmployeesDbContext>();
 
